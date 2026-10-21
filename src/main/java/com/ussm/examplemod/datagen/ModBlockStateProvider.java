@@ -32,6 +32,8 @@ public class ModBlockStateProvider extends BlockStateProvider { // Juste ne TOUC
         blockWithItem(ModBlocks.VOID_PLANKS);
 
         leavesBlock(ModBlocks.VOID_LEAVES);
+
+        saplingBlock(ModBlocks.VOID_SAPLING);
     }
 
     private void blockWithItem(DeferredBlock<?> deferredBlock){
@@ -48,6 +50,20 @@ public class ModBlockStateProvider extends BlockStateProvider { // Juste ne TOUC
                         blockTexture(blockRegistryObject.get())
                 ).renderType("cutout")
         );
+    }
+
+    private void saplingBlock(DeferredBlock<Block> block) {
+        simpleBlock(
+                block.get(),
+                models().cross(
+                        block.getId().getPath(),
+                        blockTexture(block.get())
+                ).renderType("cutout")
+        );
+
+        simpleBlockItem(block.get(), models().getExistingFile(
+                modLoc("block/" + block.getId().getPath())
+        ));
     }
 
     private ConfiguredModel[] states(BlockState state, String modelName, String textureName) {
