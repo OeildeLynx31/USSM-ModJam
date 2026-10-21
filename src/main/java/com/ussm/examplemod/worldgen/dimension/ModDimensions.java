@@ -2,6 +2,7 @@ package com.ussm.examplemod.worldgen.dimension;
 
 import com.mojang.datafixers.util.Pair;
 import com.ussm.examplemod.ExampleMod;
+import com.ussm.examplemod.worldgen.ModNoiseGeneratorSettings;
 import com.ussm.examplemod.worldgen.biome.ModBiomes;
 import net.minecraft.core.HolderGetter;
 import net.minecraft.core.registries.Registries;
@@ -22,7 +23,7 @@ import java.util.List;
 import java.util.OptionalLong;
 
 public class ModDimensions {
-    public static final ResourceKey<LevelStem> KAUPENDIM_KEY =
+    public static final ResourceKey<LevelStem> UNDERVOID_DIM =
             ResourceKey.create(
                     Registries.LEVEL_STEM,
                     ResourceLocation.fromNamespaceAndPath(
@@ -30,7 +31,7 @@ public class ModDimensions {
                     )
             );
 
-    public static final ResourceKey<Level> KAUPENDIM_LEVEL_KEY =
+    public static final ResourceKey<Level> UNDERVOID_DIM_LEVEL_KEY =
             ResourceKey.create(
                     Registries.DIMENSION,
                     ResourceLocation.fromNamespaceAndPath(
@@ -38,7 +39,7 @@ public class ModDimensions {
                     )
             );
 
-    public static final ResourceKey<DimensionType> KAUPEN_DIM_TYPE =
+    public static final ResourceKey<DimensionType> UNDERVOID_DIM_TYPE =
             ResourceKey.create(
                     Registries.DIMENSION_TYPE,
                     ResourceLocation.fromNamespaceAndPath(
@@ -47,7 +48,7 @@ public class ModDimensions {
             );
 
     public static void bootstrapType(BootstrapContext<DimensionType> context) {
-        context.register(KAUPEN_DIM_TYPE, new DimensionType(
+        context.register(UNDERVOID_DIM_TYPE, new DimensionType(
                 OptionalLong.of(12000), // fixedTime
                 false, // hasSkylight
                 false, // hasCeiling
@@ -60,7 +61,7 @@ public class ModDimensions {
                 256, // height
                 256, // logicalHeight
                 BlockTags.INFINIBURN_OVERWORLD, // infiniburn
-                BuiltinDimensionTypes.OVERWORLD_EFFECTS, // effectsLocation
+                BuiltinDimensionTypes.NETHER_EFFECTS, // effectsLocation
                 1.0f, // ambientLight
                 new DimensionType.MonsterSettings(false, false, ConstantInt.of(0), 0)));
     }
@@ -77,19 +78,13 @@ public class ModDimensions {
         NoiseBasedChunkGenerator noiseBasedChunkGenerator = new NoiseBasedChunkGenerator(
                 MultiNoiseBiomeSource.createFromList(
                         new Climate.ParameterList<>(List.of(Pair.of(
-                                        Climate.parameters(0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F), biomeRegistry.getOrThrow(ModBiomes.TEST_BIOME)),
-                                Pair.of(
-                                        Climate.parameters(0.1F, 0.2F, 0.0F, 0.2F, 0.0F, 0.0F, 0.0F), biomeRegistry.getOrThrow(Biomes.BIRCH_FOREST)),
-                                Pair.of(
-                                        Climate.parameters(0.3F, 0.6F, 0.1F, 0.1F, 0.0F, 0.0F, 0.0F), biomeRegistry.getOrThrow(Biomes.OCEAN)),
-                                Pair.of(
-                                        Climate.parameters(0.4F, 0.3F, 0.2F, 0.1F, 0.0F, 0.0F, 0.0F), biomeRegistry.getOrThrow(Biomes.DARK_FOREST))
+                                        Climate.parameters(0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F), biomeRegistry.getOrThrow(ModBiomes.TEST_BIOME))
 
                         ))),
-                noiseGenSettings.getOrThrow(NoiseGeneratorSettings.AMPLIFIED));
+                noiseGenSettings.getOrThrow(ModNoiseGeneratorSettings.UNDERVOID_NOISE_SETTINGS));
 
-        LevelStem stem = new LevelStem(dimTypes.getOrThrow(ModDimensions.KAUPEN_DIM_TYPE), noiseBasedChunkGenerator);
+        LevelStem stem = new LevelStem(dimTypes.getOrThrow(ModDimensions.UNDERVOID_DIM_TYPE), noiseBasedChunkGenerator);
 
-        context.register(KAUPENDIM_KEY, stem);
+        context.register(UNDERVOID_DIM, stem);
     }
 }

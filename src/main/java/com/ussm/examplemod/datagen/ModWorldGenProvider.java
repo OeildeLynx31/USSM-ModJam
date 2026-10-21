@@ -3,6 +3,7 @@ package com.ussm.examplemod.datagen;
 import com.ussm.examplemod.ExampleMod;
 import com.ussm.examplemod.worldgen.ModBiomeModifiers;
 import com.ussm.examplemod.worldgen.ModConfiguredFeatures;
+import com.ussm.examplemod.worldgen.ModNoiseGeneratorSettings;
 import com.ussm.examplemod.worldgen.ModPlacedFeatures;
 import com.ussm.examplemod.worldgen.biome.ModBiomes;
 import com.ussm.examplemod.worldgen.dimension.ModDimensions;
