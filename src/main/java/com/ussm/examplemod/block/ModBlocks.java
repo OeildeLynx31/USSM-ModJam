@@ -1,10 +1,14 @@
 package com.ussm.examplemod.block;
 
 import com.ussm.examplemod.ExampleMod;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredBlock;
 import net.neoforged.neoforge.registries.DeferredRegister;
@@ -21,6 +25,71 @@ public class ModBlocks {
     public static final DeferredBlock<Block> DARK_DIRT = registerBlock("dark_dirt",
             () -> new DarkDirt(BlockBehaviour.Properties.of().strength(1.5f)
                     .sound(SoundType.GRASS)));
+
+    public static final DeferredBlock<Block> VOID_LOG = registerBlock(
+            "void_log",
+            () -> new ModFlammableRotatedPillarBlock(
+                    BlockBehaviour.Properties.ofFullCopy(Blocks.OAK_LOG)
+                            .strength(3f)
+            )
+    );
+
+    public static final DeferredBlock<Block> VOID_WOOD = registerBlock(
+            "void_wood",
+            () -> new ModFlammableRotatedPillarBlock(
+                    BlockBehaviour.Properties.ofFullCopy(Blocks.OAK_WOOD)
+                            .strength(3f)
+            )
+    );
+
+    /*public static final DeferredBlock<Block> STRIPPED_VOID_LOG =
+            BLOCKS.registerBlock("stripped_void_log",
+                    properties -> new ModFlammableRotatedPillarBlock(
+                            properties.strength(3f)
+                    ),
+                    BlockBehaviour.Properties.ofFullCopy(Blocks.STRIPPED_OAK_LOG));
+
+    public static final DeferredBlock<Block> STRIPPED_VOID_WOOD =
+            BLOCKS.registerBlock("stripped_void_wood",
+                    properties -> new ModFlammableRotatedPillarBlock(
+                            properties.strength(3f)
+                    ),
+                    BlockBehaviour.Properties.ofFullCopy(Blocks.STRIPPED_OAK_WOOD));*/
+    
+    public static final DeferredBlock<Block> VOID_PLANKS = registerBlock("void_planks",
+            () -> new Block(BlockBehaviour.Properties.ofFullCopy(Blocks.OAK_PLANKS)) {
+                @Override
+                public boolean isFlammable(BlockState state, BlockGetter level, BlockPos pos, Direction direction) {
+                    return true;
+                }
+
+                @Override
+                public int getFlammability(BlockState state, BlockGetter level, BlockPos pos, Direction direction) {
+                    return 20;
+                }
+
+                @Override
+                public int getFireSpreadSpeed(BlockState state, BlockGetter level, BlockPos pos, Direction direction) {
+                    return 5;
+                }
+            });
+    public static final DeferredBlock<Block> VOID_LEAVES = registerBlock("void_leaves",
+            () -> new LeavesBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.OAK_LEAVES)){
+                @Override
+                public boolean isFlammable(BlockState state, BlockGetter level, BlockPos pos, Direction direction) {
+                    return true;
+                }
+
+                @Override
+                public int getFlammability(BlockState state, BlockGetter level, BlockPos pos, Direction direction) {
+                    return 60;
+                }
+
+                @Override
+                public int getFireSpreadSpeed(BlockState state, BlockGetter level, BlockPos pos, Direction direction) {
+                    return 30;
+                }
+            });
 
 
     // <-_-_-_-_-_-_-_--_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_->

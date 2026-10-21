@@ -2,18 +2,17 @@ package com.ussm.examplemod.datagen;
 
 import com.ussm.examplemod.ExampleMod;
 import com.ussm.examplemod.block.ModBlocks;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.SweetBerryBushBlock;
+import net.minecraft.world.level.block.RotatedPillarBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.client.model.generators.BlockStateProvider;
 import net.neoforged.neoforge.client.model.generators.ConfiguredModel;
 import net.neoforged.neoforge.client.model.generators.ModelFile;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
 import net.neoforged.neoforge.registries.DeferredBlock;
-
-import java.util.function.Function;
 
 public class ModBlockStateProvider extends BlockStateProvider { // Juste ne TOUCHES PAS à la datagen, sinon ban
     public ModBlockStateProvider(PackOutput output, ExistingFileHelper exFileHelper) {
@@ -23,19 +22,32 @@ public class ModBlockStateProvider extends BlockStateProvider { // Juste ne TOUC
     @Override
     protected void registerStatesAndModels() {
         blockWithItem(ModBlocks.DARK_DIRT);
+
+        logBlock(((RotatedPillarBlock) ModBlocks.VOID_LOG.get()));
+        axisBlock(((RotatedPillarBlock) ModBlocks.VOID_WOOD.get()), blockTexture(ModBlocks.VOID_LOG.get()), blockTexture(ModBlocks.VOID_LOG.get()));
+
+        blockItem(ModBlocks.VOID_LOG);
+        blockItem(ModBlocks.VOID_WOOD);
+
+        blockWithItem(ModBlocks.VOID_PLANKS);
+
+        leavesBlock(ModBlocks.VOID_LEAVES);
     }
+
     private void blockWithItem(DeferredBlock<?> deferredBlock){
         simpleBlockWithItem(deferredBlock.get(), cubeAll(deferredBlock.get()));
     }
-    public void makeBush(SweetBerryBushBlock block, String modelName, String textureName) {
-        Function<BlockState, ConfiguredModel[]> function = state -> states(state, modelName, textureName);
 
-        getVariantBuilder(block).forAllStates(function);
-    }
-    public void caveBlock(Block block) {
-        Function<BlockState, ConfiguredModel[]> function = cutout -> cutout();
-
-        getVariantBuilder(block).forAllStates(function);
+    private void leavesBlock(DeferredBlock<Block> blockRegistryObject) {
+        simpleBlockWithItem(
+                blockRegistryObject.get(),
+                models().singleTexture(
+                        BuiltInRegistries.BLOCK.getKey(blockRegistryObject.get()).getPath(),
+                        ResourceLocation.withDefaultNamespace("block/leaves"),
+                        "all",
+                        blockTexture(blockRegistryObject.get())
+                ).renderType("cutout")
+        );
     }
 
     private ConfiguredModel[] states(BlockState state, String modelName, String textureName) {
@@ -51,8 +63,15 @@ public class ModBlockStateProvider extends BlockStateProvider { // Juste ne TOUC
 
         return models;
     }
-    private void blockItem(DeferredBlock<?> deferredBlock) {
-        simpleBlockItem(deferredBlock.get(), new ModelFile.UncheckedModelFile(ExampleMod.MODID+":block/" + deferredBlock.getId().getPath()));
+
+
+    private void blockItem(DeferredBlock<Block> block) {
+        simpleBlockItem(
+                block.get(),
+                new ModelFile.UncheckedModelFile(
+                        modLoc("block/" + block.getId().getPath())
+                )
+        );
     }
 
     private void simpleSidedBlock(DeferredBlock<?> deferredBlock) {
