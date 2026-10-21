@@ -56,8 +56,13 @@ public class ExampleMod {
             .withTabsBefore(CreativeModeTabs.COMBAT)
             .icon(() -> SPAWNER_RECEPTACLE.get().getDefaultInstance())
             .displayItems((parameters, output) -> {
-                output.accept(SPAWNER_RECEPTACLE.get()); // Add the example item to the tab. For your own tabs, this method is preferred over the event
-                output.accept(DARK_DIRT.asItem());
+                output.accept(ModItems.SPAWNER_RECEPTACLE.get()); // Add the example item to the tab. For your own tabs, this method is preferred over the event
+                output.accept(ModBlocks.DARK_DIRT.asItem());
+                output.accept(ModBlocks.VOID_SAPLING.asItem());
+                output.accept(ModBlocks.VOID_LOG.asItem());
+                output.accept(ModBlocks.VOID_WOOD.asItem());
+                output.accept(ModBlocks.VOID_PLANKS.asItem());
+                output.accept(ModBlocks.VOID_LEAVES.asItem());
             }).build());
 
     // The constructor for the mod class is the first code that is run when your mod is loaded.
