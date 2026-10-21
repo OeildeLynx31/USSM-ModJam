@@ -1,6 +1,7 @@
 package com.ussm.examplemod;
 
 import com.ussm.examplemod.block.ModBlocks;
+import com.ussm.examplemod.block.custom.DarkDirt;
 import com.ussm.examplemod.effect.ModEffects;
 import com.ussm.examplemod.item.ModItems;
 import org.slf4j.Logger;
@@ -33,6 +34,7 @@ import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
+import static com.ussm.examplemod.block.ModBlocks.DARK_DIRT;
 import static com.ussm.examplemod.item.ModItems.SPAWNER_RECEPTACLE;
 
 // The value here should match an entry in the META-INF/neoforge.mods.toml file
@@ -54,7 +56,8 @@ public class ExampleMod {
             .withTabsBefore(CreativeModeTabs.COMBAT)
             .icon(() -> SPAWNER_RECEPTACLE.get().getDefaultInstance())
             .displayItems((parameters, output) -> {
-                output.accept(SPAWNER_RECEPTACLE.get());// Add the example item to the tab. For your own tabs, this method is preferred over the event
+                output.accept(SPAWNER_RECEPTACLE.get()); // Add the example item to the tab. For your own tabs, this method is preferred over the event
+                output.accept(DARK_DIRT.asItem());
             }).build());
 
     // The constructor for the mod class is the first code that is run when your mod is loaded.
