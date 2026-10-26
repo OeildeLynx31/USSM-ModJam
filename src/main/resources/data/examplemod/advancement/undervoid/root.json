@@ -1,0 +1,22 @@
+{
+  "criteria": {
+    "entered_undervoid": {
+      "trigger": "minecraft:changed_dimension",
+      "conditions": {
+        "to": "examplemod:undervoid"
+      }
+    }
+  },
+  "display": {
+    "icon": {
+      "id": "examplemod:dark_dirt"
+    },
+    "title": {
+      "translate": "advancements.examplemod.undervoid.root.title"
+    },
+    "description": {
+      "translate": "advancements.examplemod.undervoid.root.description"
+    },
+    "background": "examplemod:textures/block/dark_dirt.png"
+  }
+}

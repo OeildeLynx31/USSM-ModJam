@@ -22,6 +22,8 @@ public class ModBlockLootTableProvider extends BlockLootSubProvider {
         dropSelf(ModBlocks.VOID_PLANKS.get());
         add(ModBlocks.VOID_LEAVES.get(), createLeavesDrops(ModBlocks.VOID_LEAVES.get(), ModBlocks.VOID_SAPLING.get(), 0.2f));
         dropSelf(ModBlocks.VOID_SAPLING.get());
+        dropSelf(ModBlocks.BLOOM_FLOWER.get());
+        add(ModBlocks.POTTED_BLOOM_FLOWER.get(), createPotFlowerItemTable(ModBlocks.BLOOM_FLOWER.get()));
     }
 
     @Override

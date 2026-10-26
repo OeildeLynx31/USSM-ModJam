@@ -34,6 +34,11 @@ public class ModBlockStateProvider extends BlockStateProvider { // Juste ne TOUC
         leavesBlock(ModBlocks.VOID_LEAVES);
 
         saplingBlock(ModBlocks.VOID_SAPLING);
+        saplingBlock(ModBlocks.BLOOM_FLOWER);
+        simpleBlock(ModBlocks.POTTED_BLOOM_FLOWER.get(), models().singleTexture("potted_bloom_flower",
+                ResourceLocation.withDefaultNamespace("block/flower_pot_cross"), "plant",
+                blockTexture(ModBlocks.BLOOM_FLOWER.get())).renderType("cutout"));
+        simpleBlock(ModBlocks.BLOOM_RIFT.get(), models().cross("bloom_rift", blockTexture(ModBlocks.BLOOM_RIFT.get())).renderType("translucent"));
     }
 
     private void blockWithItem(DeferredBlock<?> deferredBlock){
@@ -61,9 +66,10 @@ public class ModBlockStateProvider extends BlockStateProvider { // Juste ne TOUC
                 ).renderType("cutout")
         );
 
-        simpleBlockItem(block.get(), models().getExistingFile(
-                modLoc("block/" + block.getId().getPath())
-        ));
+        itemModels().withExistingParent(
+                block.getId().getPath(),
+                mcLoc("item/generated")
+        ).texture("layer0", blockTexture(block.get()));
     }
 
     private ConfiguredModel[] states(BlockState state, String modelName, String textureName) {

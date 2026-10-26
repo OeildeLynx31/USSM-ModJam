@@ -7,14 +7,16 @@ import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.*;
-import net.minecraft.world.level.block.grower.TreeGrower;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.material.PushReaction;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredBlock;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import com.ussm.examplemod.block.custom.*;
 import com.ussm.examplemod.item.ModItems;
+import com.ussm.examplemod.effect.ModEffects;
+import com.ussm.examplemod.worldgen.tree.ModTreeGrowers;
 
 import java.util.function.Supplier;
 
@@ -46,7 +48,7 @@ public class ModBlocks {
     public static final DeferredBlock<Block> VOID_SAPLING = registerBlock(
             "void_sapling",
             () -> new SaplingBlock(
-                    TreeGrower.OAK,
+                    ModTreeGrowers.VOID,
                     BlockBehaviour.Properties.ofFullCopy(Blocks.OAK_SAPLING)
             )
     );
@@ -65,6 +67,26 @@ public class ModBlocks {
                     ),
                     BlockBehaviour.Properties.ofFullCopy(Blocks.STRIPPED_OAK_WOOD));*/
     
+    public static final DeferredBlock<Block> BLOOM_FLOWER = registerBlock("bloom_flower",
+            () -> new FlowerBlock(ModEffects.SERENITY, 8f,
+                    BlockBehaviour.Properties.ofFullCopy(Blocks.ALLIUM).lightLevel(state -> 7)));
+
+    public static final DeferredBlock<Block> POTTED_BLOOM_FLOWER = BLOCKS.register("potted_bloom_flower",
+            () -> new FlowerPotBlock(() -> (FlowerPotBlock) Blocks.FLOWER_POT, BLOOM_FLOWER,
+                    BlockBehaviour.Properties.ofFullCopy(Blocks.POTTED_ALLIUM).lightLevel(state -> 7)));
+
+    public static final DeferredBlock<Block> BLOOM_RIFT = BLOCKS.register("bloom_rift",
+            () -> new BloomRiftBlock(BlockBehaviour.Properties.of()
+                    .noCollission()
+                    .forceSolidOn()
+                    .strength(-1.0f, 3600000.0f)
+                    .lightLevel(state -> 12)
+                    .noLootTable()
+                    .noOcclusion()
+                    .pushReaction(PushReaction.BLOCK)
+                    .isValidSpawn(Blocks::never)
+                    .sound(SoundType.AMETHYST)));
+
     public static final DeferredBlock<Block> VOID_PLANKS = registerBlock("void_planks",
             () -> new Block(BlockBehaviour.Properties.ofFullCopy(Blocks.OAK_PLANKS)) {
                 @Override
