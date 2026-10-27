@@ -38,7 +38,7 @@ public class ExampleMod {
             .icon(() -> ModItems.SPAWNER_RECEPTACLE.get().getDefaultInstance())
             .displayItems((parameters, output) -> {
                 output.accept(ModItems.SPAWNER_RECEPTACLE.get());
-                output.accept(ModBlocks.DARK_DIRT.asItem());
+                output.accept(ModBlocks.VOID_STONE.asItem());
                 output.accept(ModBlocks.VOID_SAPLING.asItem());
                 output.accept(ModBlocks.VOID_LOG.asItem());
                 output.accept(ModBlocks.VOID_WOOD.asItem());

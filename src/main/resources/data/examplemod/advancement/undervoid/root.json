@@ -9,7 +9,7 @@
   },
   "display": {
     "icon": {
-      "id": "examplemod:dark_dirt"
+      "id": "examplemod:void_stone"
     },
     "title": {
       "translate": "advancements.examplemod.undervoid.root.title"
@@ -17,6 +17,6 @@
     "description": {
       "translate": "advancements.examplemod.undervoid.root.description"
     },
-    "background": "examplemod:textures/block/dark_dirt.png"
+    "background": "examplemod:textures/block/void_stone.png"
   }
 }
