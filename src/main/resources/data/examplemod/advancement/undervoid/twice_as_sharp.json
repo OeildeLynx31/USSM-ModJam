@@ -1,0 +1,20 @@
+{
+  "parent": "examplemod:undervoid/fast_and_sharp",
+  "criteria": {
+    "dual_dash": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "display": {
+    "icon": {
+      "id": "examplemod:katana"
+    },
+    "title": {
+      "translate": "advancements.examplemod.undervoid.twice_as_sharp.title"
+    },
+    "description": {
+      "translate": "advancements.examplemod.undervoid.twice_as_sharp.description"
+    },
+    "frame": "challenge"
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "parent": "examplemod:undervoid/root",
+  "criteria": {
+    "lost_sanity": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "display": {
+    "icon": {
+      "id": "minecraft:wither_rose"
+    },
+    "title": {
+      "translate": "advancements.examplemod.undervoid.ouch_my_head.title"
+    },
+    "description": {
+      "translate": "advancements.examplemod.undervoid.ouch_my_head.description"
+    }
+  }
+}
