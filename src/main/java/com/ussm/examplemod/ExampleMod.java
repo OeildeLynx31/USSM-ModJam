@@ -9,6 +9,7 @@ import com.ussm.examplemod.item.ModArmorMaterials;
 import com.ussm.examplemod.item.ModItems;
 import com.ussm.examplemod.particle.ModParticles;
 import com.ussm.examplemod.potion.ModPotions;
+import com.ussm.examplemod.potion.ModSanityTab;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.CreativeModeTab;
@@ -54,6 +55,16 @@ public class ExampleMod {
                 output.accept(ModItems.KATANA.get());
                 output.accept(ModItems.HEDGEHOG_SPAWN_EGG.get());
                 output.accept(ModItems.MIMIC_SPAWN_EGG.get());
+                output.accept(ModBlocks.CALM_LILY.asItem());
+                output.accept(ModBlocks.NIGHTSHADE_BLOOM.asItem());
+                output.accept(ModBlocks.ASHEN_POPPY.asItem());
+                output.accept(ModBlocks.PALE_TULIP.asItem());
+                output.accept(ModBlocks.EMBER_DAISY.asItem());
+                output.accept(ModBlocks.GLASS_ORCHID.asItem());
+                output.accept(ModBlocks.MOSS_VIOLET.asItem());
+                output.accept(ModBlocks.INK_BLOSSOM.asItem());
+                output.accept(ModBlocks.DUSK_BELL.asItem());
+                output.accept(ModBlocks.GHOST_FERN_BLOOM.asItem());
             }).build());
 
     public ExampleMod(IEventBus modEventBus, ModContainer modContainer) {
@@ -66,6 +77,7 @@ public class ExampleMod {
         ModAttachments.register(modEventBus);
         ModParticles.register(modEventBus);
         CREATIVE_MODE_TABS.register(modEventBus);
+        ModSanityTab.register(modEventBus);
 
         modEventBus.addListener(this::commonSetup);
 
@@ -74,6 +86,20 @@ public class ExampleMod {
     }
 
     private void commonSetup(FMLCommonSetupEvent event) {
-        event.enqueueWork(() -> ((FlowerPotBlock) Blocks.FLOWER_POT).addPlant(ModBlocks.BLOOM_FLOWER.getId(), ModBlocks.POTTED_BLOOM_FLOWER));
+        event.enqueueWork(() -> {
+            FlowerPotBlock pot = (FlowerPotBlock) Blocks.FLOWER_POT;
+            pot.addPlant(ModBlocks.BLOOM_FLOWER.getId(), ModBlocks.POTTED_BLOOM_FLOWER);
+
+            pot.addPlant(ModBlocks.CALM_LILY.getId(), ModBlocks.POTTED_CALM_LILY);
+            pot.addPlant(ModBlocks.NIGHTSHADE_BLOOM.getId(), ModBlocks.POTTED_NIGHTSHADE_BLOOM);
+            pot.addPlant(ModBlocks.ASHEN_POPPY.getId(), ModBlocks.POTTED_ASHEN_POPPY);
+            pot.addPlant(ModBlocks.PALE_TULIP.getId(), ModBlocks.POTTED_PALE_TULIP);
+            pot.addPlant(ModBlocks.EMBER_DAISY.getId(), ModBlocks.POTTED_EMBER_DAISY);
+            pot.addPlant(ModBlocks.GLASS_ORCHID.getId(), ModBlocks.POTTED_GLASS_ORCHID);
+            pot.addPlant(ModBlocks.MOSS_VIOLET.getId(), ModBlocks.POTTED_MOSS_VIOLET);
+            pot.addPlant(ModBlocks.INK_BLOSSOM.getId(), ModBlocks.POTTED_INK_BLOSSOM);
+            pot.addPlant(ModBlocks.DUSK_BELL.getId(), ModBlocks.POTTED_DUSK_BELL);
+            pot.addPlant(ModBlocks.GHOST_FERN_BLOOM.getId(), ModBlocks.POTTED_GHOST_FERN_BLOOM);
+        });
     }
 }

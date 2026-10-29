@@ -39,6 +39,17 @@ public class ModBlockStateProvider extends BlockStateProvider { // Juste ne TOUC
                 ResourceLocation.withDefaultNamespace("block/flower_pot_cross"), "plant",
                 blockTexture(ModBlocks.BLOOM_FLOWER.get())).renderType("cutout"));
         simpleBlock(ModBlocks.BLOOM_RIFT.get(), models().cross("bloom_rift", blockTexture(ModBlocks.BLOOM_RIFT.get())).renderType("translucent"));
+
+        flowerBlock(ModBlocks.CALM_LILY, ModBlocks.POTTED_CALM_LILY);
+        flowerBlock(ModBlocks.NIGHTSHADE_BLOOM, ModBlocks.POTTED_NIGHTSHADE_BLOOM);
+        flowerBlock(ModBlocks.ASHEN_POPPY, ModBlocks.POTTED_ASHEN_POPPY);
+        flowerBlock(ModBlocks.PALE_TULIP, ModBlocks.POTTED_PALE_TULIP);
+        flowerBlock(ModBlocks.EMBER_DAISY, ModBlocks.POTTED_EMBER_DAISY);
+        flowerBlock(ModBlocks.GLASS_ORCHID, ModBlocks.POTTED_GLASS_ORCHID);
+        flowerBlock(ModBlocks.MOSS_VIOLET, ModBlocks.POTTED_MOSS_VIOLET);
+        flowerBlock(ModBlocks.INK_BLOSSOM, ModBlocks.POTTED_INK_BLOSSOM);
+        flowerBlock(ModBlocks.DUSK_BELL, ModBlocks.POTTED_DUSK_BELL);
+        flowerBlock(ModBlocks.GHOST_FERN_BLOOM, ModBlocks.POTTED_GHOST_FERN_BLOOM);
     }
 
     private void blockWithItem(DeferredBlock<?> deferredBlock){
@@ -70,6 +81,14 @@ public class ModBlockStateProvider extends BlockStateProvider { // Juste ne TOUC
                 block.getId().getPath(),
                 mcLoc("item/generated")
         ).texture("layer0", blockTexture(block.get()));
+    }
+
+    private void flowerBlock(DeferredBlock<Block> flower, DeferredBlock<Block> pottedFlower) {
+        saplingBlock(flower);
+        simpleBlock(pottedFlower.get(), models().singleTexture(
+                pottedFlower.getId().getPath(),
+                ResourceLocation.withDefaultNamespace("block/flower_pot_cross"), "plant",
+                blockTexture(flower.get())).renderType("cutout"));
     }
 
     private ConfiguredModel[] states(BlockState state, String modelName, String textureName) {

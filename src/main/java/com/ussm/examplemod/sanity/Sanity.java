@@ -116,11 +116,16 @@ public class Sanity {
         if (HazmatArmorItem.isWearingFullSuit(player)) {
             return Config.HAZMAT_MULTIPLIER.get().floatValue();
         }
+        float multiplier = 1f;
         MobEffectInstance serenity = player.getEffect(ModEffects.SERENITY);
-        if (serenity == null) {
-            return 1f;
+        if (serenity != null) {
+            multiplier *= serenity.getAmplifier() > 0 ? 0.25f : 0.5f;
         }
-        return serenity.getAmplifier() > 0 ? 0.25f : 0.5f;
+        MobEffectInstance erosion = player.getEffect(ModEffects.EROSION);
+        if (erosion != null) {
+            multiplier *= erosion.getAmplifier() > 0 ? 3f : 2f;
+        }
+        return multiplier;
     }
 
     private static float gainMultiplier(Player player) {

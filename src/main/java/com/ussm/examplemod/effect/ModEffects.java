@@ -21,6 +21,15 @@ public class ModEffects {
     public static final Holder<MobEffect> CLARITY = MOB_EFFECTS.register("clarity",
             () -> new MobEffect(MobEffectCategory.BENEFICIAL, 0xF2E28C) {});
 
+    public static final Holder<MobEffect> RESTORATION = MOB_EFFECTS.register("restoration",
+            () -> new SanityInstantEffect(MobEffectCategory.BENEFICIAL, 0x4FC3F7, 30f));
+
+    public static final Holder<MobEffect> DISTRESS = MOB_EFFECTS.register("distress",
+            () -> new SanityInstantEffect(MobEffectCategory.HARMFUL, 0x8B1A1A, -30f));
+
+    public static final Holder<MobEffect> EROSION = MOB_EFFECTS.register("erosion",
+            () -> new MobEffect(MobEffectCategory.HARMFUL, 0x5A2A5A) {});
+
     public static void register(IEventBus eventBus) {
         MOB_EFFECTS.register(eventBus);
     }
