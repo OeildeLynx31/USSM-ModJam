@@ -39,6 +39,7 @@ public class ExampleMod {
             .displayItems((parameters, output) -> {
                 output.accept(ModItems.SPAWNER_RECEPTACLE.get());
                 output.accept(ModBlocks.VOID_STONE.asItem());
+                output.accept(ModBlocks.VOID_MATTER_ORE.asItem());
                 output.accept(ModBlocks.VOID_SAPLING.asItem());
                 output.accept(ModBlocks.VOID_LOG.asItem());
                 output.accept(ModBlocks.VOID_WOOD.asItem());
@@ -52,6 +53,10 @@ public class ExampleMod {
                 output.accept(ModItems.HAZMAT_BOOTS.get());
                 output.accept(ModItems.BLADE_FRAGMENT.get());
                 output.accept(ModItems.KATANA.get());
+                output.accept(ModItems.VOID_MATTER.get());
+                output.accept(ModItems.UNSTABLE_MATTER.get());
+                output.accept(ModItems.VOID_STABILIZER.get());
+                output.accept(ModItems.VOID_BALL.get());
                 output.accept(ModItems.HEDGEHOG_SPAWN_EGG.get());
                 output.accept(ModItems.MIMIC_SPAWN_EGG.get());
             }).build());

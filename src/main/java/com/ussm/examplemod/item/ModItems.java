@@ -1,19 +1,14 @@
 package com.ussm.examplemod.item;
 
 import com.ussm.examplemod.ExampleMod;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.*;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
-import com.ussm.examplemod.block.ModBlocks;
 import com.ussm.examplemod.item.custom.*;
 import com.ussm.examplemod.entity.ModEntities;
 import net.neoforged.neoforge.common.DeferredSpawnEggItem;
 
-import java.util.ArrayList;
-import java.util.Optional;
 public class ModItems {
     public static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(ExampleMod.MODID);
     //Enregistrer les Items ici
@@ -37,6 +32,19 @@ public class ModItems {
             () -> new Item(new Item.Properties()));
     public static final DeferredItem<Item> KATANA = ITEMS.register("katana",
             () -> new KatanaItem(new Item.Properties().rarity(Rarity.UNCOMMON)));
+
+    public static final DeferredItem<Item> UNSTABLE_MATTER = ITEMS.register("unstable_matter",
+            () -> new UnstableMatter(new Item.Properties()));
+
+    public static final DeferredItem<Item> VOID_MATTER = ITEMS.register("void_matter",
+            () -> new Item(new Item.Properties()));
+
+    public static final DeferredItem<Item> VOID_STABILIZER = ITEMS.register("void_stabilizer",
+            () -> new Item(new Item.Properties()));
+
+    public static final DeferredItem<Item> VOID_BALL = ITEMS.register("void_ball",
+            () -> new VoidBallItem(new Item.Properties()));
+
 
     public static final DeferredItem<Item> HEDGEHOG_SPAWN_EGG = ITEMS.register("hedgehog_spawn_egg",
             () -> new DeferredSpawnEggItem(ModEntities.HEDGEHOG, 0x6B4F3A, 0xD9C7A6, new Item.Properties()));

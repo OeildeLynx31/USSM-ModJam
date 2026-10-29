@@ -122,6 +122,9 @@ public class ModBlocks {
                 }
             });
 
+    public static final DeferredBlock<Block> VOID_MATTER_ORE = registerBlock("void_matter_ore",
+            () -> new Block(BlockBehaviour.Properties.ofFullCopy(Blocks.ANCIENT_DEBRIS)));
+
 
     // <-_-_-_-_-_-_-_--_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_->
     private static <T extends Block> DeferredBlock<T> registerBlock(String name, Supplier<T> block) {
