@@ -11,6 +11,7 @@ import com.ussm.examplemod.block.ModBlocks;
 import com.ussm.examplemod.item.custom.*;
 import com.ussm.examplemod.entity.ModEntities;
 import net.neoforged.neoforge.common.DeferredSpawnEggItem;
+import net.minecraft.world.level.block.Blocks;
 
 import java.util.ArrayList;
 import java.util.Optional;
@@ -20,7 +21,12 @@ public class ModItems {
     //-------------------------------------GENERAL-------------------------------------------------------
 
     public static final DeferredItem<Item> SPAWNER_RECEPTACLE = ITEMS.register("spawner_receptacle",
-            () -> new SpawnerReceptacle(new Item.Properties()));
+            () -> new SpawnerReceptacle(new Item.Properties()
+                    .stacksTo(1)
+                    .rarity(Rarity.RARE)));
+
+    public static final DeferredItem<Item> CAPTURED_SPAWNER = ITEMS.register("captured_spawner",
+            () -> new CapturedSpawnerItem(Blocks.SPAWNER, new Item.Properties()));
 
     public static final DeferredItem<Item> HAZMAT_FABRIC = ITEMS.register("hazmat_fabric",
             () -> new Item(new Item.Properties()));

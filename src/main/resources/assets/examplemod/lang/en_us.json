@@ -108,5 +108,6 @@
   "examplemod.configuration.miasmaSanityLoss": "Sanity loss per second in the miasma",
   "examplemod.configuration.miasmaDamage": "Miasma damage",
   "examplemod.configuration.miasmaDamageSeconds": "Seconds between miasma damage",
-  "examplemod.configuration.hallucinationIntensity": "Hallucination intensity"
+  "examplemod.configuration.hallucinationIntensity": "Hallucination intensity",
+  "tooltip.examplemod.spawner_receptacle_tooltip": "Placed in your Offhand, this artefact let you mine Spawners !"
 }
