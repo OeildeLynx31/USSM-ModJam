@@ -16,6 +16,7 @@ import net.minecraft.world.level.storage.loot.entries.LootItem;
 import net.minecraft.world.level.storage.loot.functions.ApplyBonusCount;
 import net.minecraft.world.level.storage.loot.functions.SetItemCountFunction;
 import net.minecraft.world.level.storage.loot.providers.number.UniformGenerator;
+import net.neoforged.neoforge.registries.DeferredBlock;
 
 import java.util.Set;
 
@@ -41,6 +42,20 @@ public class ModBlockLootTableProvider extends BlockLootSubProvider {
         dropSelf(ModBlocks.VOID_SAPLING.get());
         dropSelf(ModBlocks.BLOOM_FLOWER.get());
         add(ModBlocks.POTTED_BLOOM_FLOWER.get(), createPotFlowerItemTable(ModBlocks.BLOOM_FLOWER.get()));
+        flowerLoot(ModBlocks.CALM_LILY, ModBlocks.POTTED_CALM_LILY);
+        flowerLoot(ModBlocks.NIGHTSHADE_BLOOM, ModBlocks.POTTED_NIGHTSHADE_BLOOM);
+        flowerLoot(ModBlocks.ASHEN_POPPY, ModBlocks.POTTED_ASHEN_POPPY);
+        flowerLoot(ModBlocks.PALE_TULIP, ModBlocks.POTTED_PALE_TULIP);
+        flowerLoot(ModBlocks.EMBER_DAISY, ModBlocks.POTTED_EMBER_DAISY);
+        flowerLoot(ModBlocks.GLASS_ORCHID, ModBlocks.POTTED_GLASS_ORCHID);
+        flowerLoot(ModBlocks.MOSS_VIOLET, ModBlocks.POTTED_MOSS_VIOLET);
+        flowerLoot(ModBlocks.INK_BLOSSOM, ModBlocks.POTTED_INK_BLOSSOM);
+        flowerLoot(ModBlocks.DUSK_BELL, ModBlocks.POTTED_DUSK_BELL);
+        flowerLoot(ModBlocks.GHOST_FERN_BLOOM, ModBlocks.POTTED_GHOST_FERN_BLOOM);
+    }
+    private void flowerLoot(DeferredBlock<Block> flower, DeferredBlock<Block> pottedFlower) {
+        dropSelf(flower.get());
+        add(pottedFlower.get(), createPotFlowerItemTable(flower.get()));
     }
 
     @Override
