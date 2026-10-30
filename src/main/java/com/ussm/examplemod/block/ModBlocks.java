@@ -30,6 +30,10 @@ public class ModBlocks {
             () -> new VoidStone(BlockBehaviour.Properties.of().strength(1.5f)
                     .sound(SoundType.STONE)));
 
+    public static final DeferredBlock<Block> DARK_DIRT = registerBlock("dark_dirt",
+            () -> new Block(BlockBehaviour.Properties.of().strength(1.5f)
+                    .sound(SoundType.GRASS)));
+
     public static final DeferredBlock<Block> CORRUPTED_GRASS_BLOCK = registerBlock("corrupted_grass_block",
             () -> new Block(BlockBehaviour.Properties.of().strength(1.5f)
                     .sound(SoundType.GRASS)));
