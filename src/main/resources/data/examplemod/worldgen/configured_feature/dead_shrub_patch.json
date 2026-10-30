@@ -1,3 +1,4 @@
+
 {
   "type": "minecraft:random_patch",
   "config": {
@@ -10,7 +11,9 @@
         "config": {
           "to_place": {
             "type": "minecraft:simple_state_provider",
-            "state": { "Name": "examplemod:dead_shrub" }
+            "state": {
+              "Name": "examplemod:dead_shrub"
+            }
           }
         }
       },
@@ -20,8 +23,16 @@
           "predicate": {
             "type": "minecraft:all_of",
             "predicates": [
-              { "type": "minecraft:matching_blocks", "blocks": "minecraft:air" },
-              { "type": "minecraft:would_survive", "state": { "Name": "examplemod:dead_shrub" } }
+              {
+                "type": "minecraft:matching_blocks",
+                "blocks": "minecraft:air"
+              },
+              {
+                "type": "minecraft:would_survive",
+                "state": {
+                  "Name": "examplemod:dead_shrub"
+                }
+              }
             ]
           }
         }

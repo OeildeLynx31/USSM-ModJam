@@ -40,6 +40,12 @@ public class ExampleMod {
             .displayItems((parameters, output) -> {
                 output.accept(ModItems.SPAWNER_RECEPTACLE.get());
                 output.accept(ModBlocks.VOID_STONE.asItem());
+                output.accept(ModBlocks.DEAD_SHRUB.asItem());
+                output.accept(ModBlocks.MOSS_VIOLET.asItem());
+                output.accept(ModBlocks.DARK_DIRT.asItem());
+                output.accept(ModBlocks.DARK_DEEPSLATE.asItem());
+                output.accept(ModBlocks.CORRUPTED_GRASS_BLOCK.asItem());
+                output.accept(ModBlocks.CORRUPTED_GRASS.asItem());
                 output.accept(ModBlocks.VOID_MATTER_ORE.asItem());
                 output.accept(ModBlocks.VOID_SAPLING.asItem());
                 output.accept(ModBlocks.VOID_LOG.asItem());

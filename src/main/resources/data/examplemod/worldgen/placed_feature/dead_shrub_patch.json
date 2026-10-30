@@ -1,5 +1,5 @@
 {
-  "feature": "examplemod:dead_shrub",
+  "feature": "examplemod:dead_shrub_patch",
   "placement": [
     { "type": "minecraft:count", "count": 2 },
     { "type": "minecraft:in_square" },
