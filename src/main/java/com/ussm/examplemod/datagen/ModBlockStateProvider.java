@@ -22,6 +22,14 @@ public class ModBlockStateProvider extends BlockStateProvider { // Juste ne TOUC
     @Override
     protected void registerStatesAndModels() {
         blockWithItem(ModBlocks.DARK_DIRT);
+        blockWithItem(ModBlocks.DARK_DEEPSLATE);
+        saplingBlock(ModBlocks.CORRUPTED_GRASS);
+        saplingBlock(ModBlocks.DEAD_SHRUB);
+        simpleBlockWithItem(ModBlocks.CORRUPTED_GRASS_BLOCK.get(),
+                models().cubeBottomTop("corrupted_grass_block",
+                        modLoc("block/corrupted_grass_block_side"),
+                        modLoc("block/dark_dirt"),
+                        modLoc("block/corrupted_grass_block_top")));
 
         logBlock(((RotatedPillarBlock) ModBlocks.VOID_LOG.get()));
         axisBlock(((RotatedPillarBlock) ModBlocks.VOID_WOOD.get()), blockTexture(ModBlocks.VOID_LOG.get()), blockTexture(ModBlocks.VOID_LOG.get()));

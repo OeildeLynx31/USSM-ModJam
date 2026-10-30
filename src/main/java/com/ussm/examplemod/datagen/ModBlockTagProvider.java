@@ -1,6 +1,7 @@
 package com.ussm.examplemod.datagen;
 
 import com.ussm.examplemod.ExampleMod;
+import com.ussm.examplemod.block.ModBlocks;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
 import net.minecraft.tags.BlockTags;
@@ -17,7 +18,7 @@ public class ModBlockTagProvider extends BlockTagsProvider { // Juste ne TOUCHES
 
     @Override
     protected void addTags(HolderLookup.Provider provider) {
-        // pas de tags pour l'instant
     }
 }
+
 
