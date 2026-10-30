@@ -1,0 +1,13 @@
+{
+  "type": "neoforge:add_features",
+  "biomes": [
+    "examplemod:gloom",
+    "examplemod:bloom",
+    "examplemod:miasma"
+  ],
+  "features": [
+    "examplemod:corrupted_grass_patch",
+    "examplemod:dead_shrub_patch"
+  ],
+  "step": "vegetal_decoration"
+}

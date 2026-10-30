@@ -14,7 +14,7 @@ public class UnstableMatter extends Item {
 
     @Override
     public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltipComponents, TooltipFlag tooltipFlag) {
-        tooltipComponents.add(Component.translatable("tooltip.examplemod.spawner_receptacle_tooltip"));
+        //tooltipComponents.add(Component.translatable("tooltip.examplemod.spawner_receptacle_tooltip"));
         super.appendHoverText(stack, context, tooltipComponents, tooltipFlag);
     }
 }
