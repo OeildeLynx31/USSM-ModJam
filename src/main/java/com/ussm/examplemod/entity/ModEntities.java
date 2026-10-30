@@ -3,6 +3,7 @@ package com.ussm.examplemod.entity;
 import com.ussm.examplemod.ExampleMod;
 import com.ussm.examplemod.entity.custom.Hedgehog;
 import com.ussm.examplemod.entity.custom.Mimic;
+import com.ussm.examplemod.item.custom.VoidBallProjectile;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
@@ -26,6 +27,17 @@ public class ModEntities {
                     .eyeHeight(1.62f)
                     .clientTrackingRange(10)
                     .build("mimic"));
+
+    public static final Supplier<EntityType<VoidBallProjectile>> VOID_BALL =
+            ENTITY_TYPES.register("void_ball",
+                    () -> EntityType.Builder.<VoidBallProjectile>of(
+                                    VoidBallProjectile::new,
+                                    MobCategory.MISC
+                            )
+                            .sized(0.25F, 0.25F)
+                            .clientTrackingRange(4)
+                            .updateInterval(10)
+                            .build("void_ball"));
 
     public static void register(IEventBus eventBus) {
         ENTITY_TYPES.register(eventBus);

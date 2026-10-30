@@ -21,7 +21,8 @@ public class ModBlockStateProvider extends BlockStateProvider { // Juste ne TOUC
 
     @Override
     protected void registerStatesAndModels() {
-        blockWithItem(ModBlocks.DARK_DIRT);
+        blockWithItem(ModBlocks.VOID_STONE);
+        blockWithItem(ModBlocks.VOID_MATTER_ORE);
 
         logBlock(((RotatedPillarBlock) ModBlocks.VOID_LOG.get()));
         axisBlock(((RotatedPillarBlock) ModBlocks.VOID_WOOD.get()), blockTexture(ModBlocks.VOID_LOG.get()), blockTexture(ModBlocks.VOID_LOG.get()));

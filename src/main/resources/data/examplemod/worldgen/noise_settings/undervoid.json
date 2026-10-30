@@ -112,7 +112,7 @@
             "then_run": {
               "type": "minecraft:block",
               "result_state": {
-                "Name": "examplemod:dark_dirt"
+                "Name": "examplemod:void_stone"
               }
             }
           }

@@ -26,9 +26,9 @@ public class ModBlocks {
     public static final DeferredRegister.Blocks BLOCKS =
             DeferredRegister.createBlocks(ExampleMod.MODID);
 
-    public static final DeferredBlock<Block> DARK_DIRT = registerBlock("dark_dirt",
-            () -> new DarkDirt(BlockBehaviour.Properties.of().strength(1.5f)
-                    .sound(SoundType.GRASS)));
+    public static final DeferredBlock<Block> VOID_STONE = registerBlock("void_stone",
+            () -> new VoidStone(BlockBehaviour.Properties.of().strength(1.5f)
+                    .sound(SoundType.STONE)));
 
     public static final DeferredBlock<Block> VOID_LOG = registerBlock(
             "void_log",
@@ -194,6 +194,9 @@ public class ModBlocks {
                     return 30;
                 }
             });
+
+    public static final DeferredBlock<Block> VOID_MATTER_ORE = registerBlock("void_matter_ore",
+            () -> new Block(BlockBehaviour.Properties.ofFullCopy(Blocks.ANCIENT_DEBRIS)));
 
 
     // <-_-_-_-_-_-_-_--_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_->

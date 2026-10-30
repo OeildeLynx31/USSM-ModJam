@@ -36,6 +36,10 @@ public class ModItemModelProvider extends ItemModelProvider {
     @Override
     protected void registerModels() {
         basicItem(ModItems.SPAWNER_RECEPTACLE.get());
+        basicItem(ModItems.VOID_MATTER.get());
+        basicItem(ModItems.UNSTABLE_MATTER.get());
+        basicItem(ModItems.VOID_STABILIZER.get());
+        basicItem(ModItems.VOID_BALL.get());
     }
 
     private void trimmedArmorItem(DeferredItem<ArmorItem> itemDeferredItem) {
