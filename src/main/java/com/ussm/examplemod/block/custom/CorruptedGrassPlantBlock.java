@@ -1,6 +1,7 @@
 package com.ussm.examplemod.block.custom;
 
 import com.mojang.serialization.MapCodec;
+import com.ussm.examplemod.block.ModBlocks;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.Block;
@@ -20,6 +21,12 @@ public class CorruptedGrassPlantBlock extends BushBlock {
     @Override
     protected MapCodec<? extends BushBlock> codec() {
         return CODEC;
+    }
+
+    // Terre habituelle (tag dirt) + le sol des grottes
+    @Override
+    protected boolean mayPlaceOn(BlockState state, BlockGetter level, BlockPos pos) {
+        return super.mayPlaceOn(state, level, pos) || state.is(ModBlocks.DARK_DEEPSLATE.get());
     }
 
     @Override
