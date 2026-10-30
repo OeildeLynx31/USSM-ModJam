@@ -5,11 +5,11 @@ Nom du mod : à définir (mod_id actuel : `examplemod`)
 
 Légende des règles :
 - **[Discord]** : demandé dans le salon d'idées (citations en 1.3).
-- **[Demande]** : demandé le 26/10 (D14 à D26, citations en 1.3).
+- **[Demande]** : demandé le 26/10 (D14 à D41, citations en 1.3).
 - **[Existant]** : déjà dans le code.
 - **[Proposition]** : idée à valider par l'équipe.
 
-Tous les noms d'API cités ont été vérifiés dans les sources de NeoForge 21.1.262, de GeckoLib 4.8.4 et dans les mappings officiels de Minecraft 1.21.1. Les points marqués « à vérifier » sont les seuls que je n'ai pas pu confirmer.
+Les noms d'API cités correspondent à NeoForge 21.1.262, GeckoLib 4.8.4 et aux mappings officiels de Minecraft 1.21.1. Les points marqués « à vérifier » restent à confirmer.
 
 Depuis la version 0.2, les sections 4 et 5 décrivent ce qui est implémenté, avec les valeurs mesurées sur une génération réelle (§18). La version 0.3 ajoute les demandes du 26/10 : un katana plus fort (§10), les failles du Bloom (§5.3) et les zones de miasme (§4.9).
 
@@ -41,7 +41,7 @@ Depuis la version 0.2, les sections 4 et 5 décrivent ce qui est implémenté, a
 
 ### 1.1 Pitch
 
-Sous le vide, il y a l'Entre-monde. En surface, le Gloom : une plaine corrompue, noyée dans un brouillard étouffant. En dessous, le Bloom : des cavernes couvertes de fleurs. Pour y entrer, il faut survivre 10 secondes au vide. Une fois sur place, la santé mentale s'effrite. Le joueur alterne entre la surface hostile, où il farme ses katanas, et les cavernes, où il récupère, cueille de quoi brasser ses potions et croise des hérissons.
+Sous le vide, il y a l'Entre-monde. En surface, le Gloom : une plaine corrompue, noyée dans un brouillard étouffant. En dessous, le Bloom : des cavernes couvertes de fleurs. Pour y entrer, il faut survivre 5 secondes au vide. Une fois sur place, la santé mentale s'effrite. Le joueur alterne entre la surface hostile, où il farme ses katanas, et les cavernes, où il récupère, cueille de quoi brasser ses potions et croise des hérissons.
 
 ### 1.2 Piliers
 
@@ -82,6 +82,21 @@ Sous le vide, il y a l'Entre-monde. En surface, le Gloom : une plaine corrompue,
 | D24 | 26/10 | « C'est pas rare du tout les failles, j'en ai 3 à côté » |
 | D25 | 26/10 | « Il faut que l'overworld reset la santé mentale » |
 | D26 | 26/10 | « Pas de dégâts de chute après le dash » |
+| D27 | 30/10 | Un malus quand on a trop de santé mentale : « nausée en vrai, et quelques dégâts » |
+| D29 | 30/10 | Planches du vide : « barrières, dalles, escaliers, une porte, une trappe, un bouton, une plaque de pression, un portillon » |
+| D30 | 30/10 | « Un boost de vitesse quand on se déplace avec un ou 2 katanas » |
+| D31 | 30/10 | « Les void trees ne peuvent pousser que dans l'Undervoid » |
+| D32 | 30/10 | Modèles 3D du lot `nouvellebatch3d2` (caillou, chaîne, champignon, crâne de pierre, nid d'œil, os, œil bloom) : générés dans le monde |
+| D33 | 30/10 | Masque à gaz du même lot : porté en 3D |
+| D34 | 30/10 | « Qu'on ait besoin de rester dans le void que 5 s » |
+| D35 | 30/10 | Noms des blocs : « dark stone » et « dark grass stone », avec la bonne texture d'herbe |
+| D36 | 30/10 | « Mets les trucs comme les os et tout dans l'inventaire créa » |
+| D37 | 30/10 | « Les cailloux apparaissent noirs » |
+| D38 | 30/10 | « Avec hallucination on voit des mobs en double, des mirages, etc. » |
+| D40 | 30/10 | « Il manque des textures de fleurs » : les 10 fleurs d'ItzSuky avaient toutes la même image provisoire |
+| D41 | 30/10 | « On prend trop de dégâts quand on a 0 santé mentale » |
+| D39 | 30/10 | Imitateurs repris du mod `mimic` de tgkowski : apparition et joueur copié, approche en ami et révélation, rejeu des déplacements, voix avec Simple Voice Chat en optionnel |
+| D28 | 30/10 | « Un truc appelé bedrock breaker » : « un bloc que tu poses et avec un contact redstone il tire un giga rayon qui troue tout au-dessus de lui et en dessous ». Choix retenus : consommable, toute la bedrock, recette de fin de partie |
 
 La santé mentale, les potions qui modifient sa perte ou son gain, et l'effet hallucinations sont cités (D4, D10, D13) mais jamais décrits. Leur conception ci-dessous est donc une proposition.
 
@@ -90,7 +105,7 @@ La santé mentale, les potions qui modifient sa perte ou son gain, et l'effet ha
 | Fonctionnalité | Source | Priorité |
 |---|---|---|
 | L'Entre-monde : terrain plat, Gloom et Bloom, brouillard en surface | D1, D2 | Must |
-| Accès en survivant 10 s au vide | D3 | Must |
+| Accès en survivant 5 s au vide | D3, D34 | Must |
 | Sortie de la dimension | Proposition (sinon on reste bloqué) | Must |
 | Santé mentale et HUD | implicite (D4, D10) | Must |
 | Potions de santé mentale | implicite (D4) | Must |
@@ -112,6 +127,16 @@ La santé mentale, les potions qui modifient sa perte ou son gain, et l'effet ha
 | Failles du Bloom rares | D24 | Must |
 | L'overworld remet la santé mentale à 100 | D25 | Must |
 | Pas de dégâts de chute après un dash | D26 | Must |
+| Euphorie : nausée et dégâts quand la santé mentale est trop haute dans l'Entre-monde | D27 | Must |
+| Brise-bedrock : bloc à redstone qui troue toute la colonne | D28 | Must |
+| Déclinaisons en planches du vide | D29 | Must |
+| Vitesse avec le katana | D30 | Must |
+| Arbres du vide seulement dans l'Entre-monde | D31 | Must |
+| Décors 3D générés (Gloom et Bloom) et masque 3D porté | D32, D33 | Must |
+| Décors 3D dans l'onglet créatif | D36 | Must |
+| Vision double et mirages | D38 | Must |
+| Imitateurs : joueur absent, approche, rejeu des déplacements | D39 | Must |
+| Voix des imitateurs (Simple Voice Chat) | D39 | Should |
 
 ---
 
@@ -122,7 +147,7 @@ La santé mentale, les potions qui modifient sa perte ou son gain, et l'effet ha
 | Élément | Détail |
 |---|---|
 | Dimension `undervoid` | DimensionType `undervoid_type` (minY 0, hauteur 256, lits désactivés, `ambientLight` 1.0, effets du Nether), un seul biome `test_biome`, noise settings `undervoid.json` (copie de l'overworld) |
-| Blocs | `dark_dirt`, `void_log`, `void_wood`, `void_planks`, `void_leaves`, `void_sapling` |
+| Blocs | `void_stone` (ex-`dark_dirt`, renommée le 27/10), `void_matter_ore`, `void_log`, `void_wood`, `void_planks`, `void_leaves`, `void_sapling` |
 | Item | `spawner_receptacle` (rôle non documenté) |
 | Effets | registre `ModEffects` vide |
 | Téléportation | `ModEvents` : dans l'End, Y < 0 → Entre-monde en Y 250 ; dans l'Entre-monde, Y > 256 → End en Y 1 |
@@ -134,7 +159,7 @@ La santé mentale, les potions qui modifient sa perte ou son gain, et l'effet ha
 |---|---|---|---|---|
 | 1 | `src/generated/resources` n'est pas versionné | Un clone neuf ou la CI (`./gradlew build`) produit un jar sans dimension, sans biome, sans modèles ni loot tables | Lancer `runData` et versionner le dossier généré | Bloquant pour la remise |
 | 2 | `EntityTickEvent.Post` traité pour toutes les entités | Coût à chaque tick pour chaque entité chargée ; objets et mobs téléportés aussi | `PlayerTickEvent.Post`, joueurs seulement (§5) | Haute |
-| 3 | Accès : End, Y < 0, immédiat | Ne respecte pas D3, et sauve tout joueur qui tombe dans le vide de l'End | Règle des 10 s (§5) | Haute |
+| 3 | Accès : End, Y < 0, immédiat | Ne respecte pas D3, et sauve tout joueur qui tombe dans le vide de l'End | Règle des 5 s (§5) | Haute |
 | 4 | Sortie : End en Y 1, au-dessus du vide | Le joueur retombe dans le vide, donc dans l'Entre-monde : boucle | Retour au point de réapparition (§5) | Haute |
 | 5 | `ambientLight` 1.0 et `NETHER_EFFECTS` | Tout est éclairé et le brouillard est partout, alors que D2 le veut « juste à la surface » | §4.5 et §4.6 | Haute |
 | 6 | Noise settings en −64/384, dimension en 0/256 ; surface rules de l'overworld ; un seul biome | Relief d'overworld coupé à 0 et 256, pas de Gloom ni de Bloom | §4.3 | Haute |
@@ -152,7 +177,7 @@ Au 25/10/2026, les écarts 2 à 7 sont corrigés, et le n° 10 l'est sauf pour l
 ### 3.1 Parcours type
 
 1. **Préparation** (overworld) : potions de soin, pommes dorées, éventuellement la combinaison Hazmat.
-2. **La chute** : le joueur saute dans le vide et tient 10 s (§5). Succès « Welcome to the in-between world ».
+2. **La chute** : le joueur saute dans le vide et tient 5 s (§5). Succès « Welcome to the in-between world ».
 3. **Le Gloom** : brouillard, obscurité, monstres. La santé mentale baisse dès la première seconde (« Ouch, my head »). Les squelettes lâchent des fragments de lame (§10). Des nappes de miasme violet sont à contourner, ou à traverser en combinaison (§4.9).
 4. **Descente vers le Bloom** : environ 30 à 40 blocs de creusage. La santé remonte, on trouve des fleurs du Bloom (potions), des baies lumineuses et des hérissons.
 5. **Allers-retours** : farm en surface, récupération en dessous. Le katana arrive (« Fast and sharp »). Rester trop longtemps en surface déclenche des hallucinations (« What is this ? »).
@@ -187,7 +212,7 @@ En survie, le seul vide atteignable est celui de l'End : la bedrock de l'overwor
 
 ## 4. L'Entre-monde
 
-**Sources** : D1, D2, D16, D17. **[Existant]** dimension `undervoid`, blocs du vide, `dark_dirt`.
+**Sources** : D1, D2, D16, D17. **[Existant]** dimension `undervoid`, blocs du vide, `void_stone` (ex-`dark_dirt`).
 
 ### 4.1 Intention
 
@@ -253,7 +278,7 @@ La bascule du Bloom (`depth` 0,25) tombe vers Y 75 : le Bloom couvre les cellule
 
 **Surface rules** (dans cet ordre)
 1. Bedrock en bas : `vertical_gradient` de `above_bottom` 0 à 5.
-2. Biome `gloom` ou `miasma`, au-dessus de Y 96 : sol → `dark_dirt` sur 1 à 7 blocs (`stone_depth` avec `add_surface_depth`). Les tunnels gardent leur deepslate.
+2. Biome `gloom` ou `miasma`, au-dessus de Y 96 : sol → `void_stone` (ex-`dark_dirt`) sur 1 à 7 blocs (`stone_depth` avec `add_surface_depth`). Les tunnels gardent leur deepslate.
 3. Biome `bloom` : sol → `moss_block`, avec 1 à 2 blocs de `dirt` dessous.
 4. Partout ailleurs : `deepslate` (le `default_block`).
 
@@ -271,7 +296,7 @@ La bascule du Bloom (`depth` 0,25) tombe vers Y 75 : le Bloom couvre les cellule
 Avec ces lumières, 35 % de l'air des cavernes reste à lumière 0 : des squelettes peuvent y apparaître (§4.7).
 
 Tags et recettes ajoutés pour que les blocs du vide se comportent comme leurs équivalents vanilla :
-- `dark_dirt` dans `minecraft:dirt` (pousses et buissons) et `mineable/shovel` ;
+- `dark_dirt` était dans `minecraft:dirt` (pousses et buissons) et `mineable/shovel`. Depuis son remplacement par `void_stone` (27/10), le tag `minecraft:dirt` est vide : voir §18, « Intégration du 30/10 » ;
 - `void_log` et `void_wood` dans `examplemod:void_logs`, inclus dans `minecraft:logs_that_burn`. Sans le tag des bûches, les feuilles du vide se croient sans tronc et pourrissent ;
 - `void_planks` dans `minecraft:planks`, `void_leaves` dans `minecraft:leaves` et `mineable/hoe`, `void_sapling` dans `minecraft:saplings` ;
 - recettes : bûche du vide → 4 planches, 4 bûches → 3 bois. Les planches du vide n'avaient pas de recette, alors que le katana en demande une (§10.7).
@@ -345,7 +370,7 @@ Sans musique de biome, le jeu retombe sur `Musics.GAME`. `UndervoidFog` coupe do
 - Biome `miasma`, sous-biome de la surface du Gloom, placé par le bruit `vegetation` (paramètre `humidity`) au-dessus de 0,35 (§4.3).
 - Bruit `data/examplemod/worldgen/noise/miasma.json` : `firstOctave` −6 (échelle de 64 blocs), amplitudes `[1.0, 0.5]`, lu avec `xz_scale` 1,5 dans le `noise_router` (soit environ 43 blocs). Il est en 2D (`y_scale` 0) : une zone garde la même forme de la surface jusqu'à Y 93 environ. En dessous, c'est de nouveau le sous-sol du Gloom.
 - Objectif : 10 à 15 % de la surface, en taches de 20 à 60 blocs de large. Réglé le 26/10 sur le vrai bruit (les valeurs de départ, octave −7 et seuil 0,4, donnaient 8 % en taches de 60 à 100 blocs). Mesuré avec les valeurs finales : 13 % de la surface sur 16 km² ; sur 24 × 24 chunks générés, 11 % en taches de 27 blocs de diamètre médian, 86 % du miasme dans des taches de 20 à 60 blocs, la plus grande vers 60 (rarement 100 sur de grandes surfaces).
-- Même sol que le Gloom (`dark_dirt`), mêmes monstres et mêmes buissons morts, pas d'arbres du vide, pas de précipitations.
+- Même sol que le Gloom (`void_stone`), mêmes monstres et mêmes buissons morts, pas d'arbres du vide, pas de précipitations.
 
 **Rendu (client, `UndervoidFog`)**
 
@@ -410,11 +435,11 @@ Sans musique de biome, le jeu retombe sur `Musics.GAME`. `UndervoidFog` coupe do
 
 ### 5.1 Entrée
 
-**Lecture de D3.** D3 donne deux formulations : « survivre 10 s aux dégâts du void » et « atteindre des coordonnées bien en dessous de la bedrock ». En chute libre (vitesse limite d'environ 3,9 blocs par tick), tomber 10 s représente environ 780 blocs sous la limite du vide. Les deux lectures reviennent donc au même. Je recommande le chronomètre : il colle au « 10s » et reste juste pour un joueur sous Chute lente.
+**Lecture de D3.** D3 donne deux formulations : « survivre 10 s aux dégâts du void » et « atteindre des coordonnées bien en dessous de la bedrock ». En chute libre (vitesse limite d'environ 3,9 blocs par tick), tomber 10 s représente environ 780 blocs sous la limite du vide. Les deux lectures reviennent donc au même. Choix retenu : le chronomètre, qui colle au « 10s » et reste juste pour un joueur sous Chute lente. Depuis D34, il ne dure plus que 5 s.
 
 **Règles**
 1. [Discord] Dans n'importe quelle dimension sauf l'Entre-monde, un joueur sous `minBuildHeight − 64` (la zone où le vide fait des dégâts) accumule un tick de chrono par tick passé dans la zone.
-2. [Discord] À 200 ticks (10 s), s'il est vivant, il est envoyé dans l'Entre-monde.
+2. [Demande, D34] À 100 ticks (5 s ; 10 s dans D3), s'il est vivant, il est envoyé dans l'Entre-monde.
 3. [Proposition] Le chrono revient à 0 quand le joueur sort de la zone, meurt ou se reconnecte.
 4. [Proposition] En créatif et en spectateur, le transfert est immédiat à l'entrée dans la zone. Ces joueurs prennent aussi les dégâts du vide, car `out_of_world` passe outre l'invulnérabilité ; sans cette exception, ils mourraient. C'est aussi le moyen le plus simple de tester.
 5. [Proposition] Les entités non joueurs (objets, mobs) ne sont pas transférées et disparaissent normalement dans le vide.
@@ -422,9 +447,17 @@ Sans musique de biome, le jeu retombe sur `Musics.GAME`. `UndervoidFog` coupe do
 **Difficulté** (mécaniques vanilla 1.21.1 vérifiées)
 - Le vide inflige 4 dégâts par coup. Le tag `bypasses_cooldown` est vide, donc les frames d'invulnérabilité s'appliquent : environ 1 coup toutes les 10 ticks, soit **8 PV/s**.
 - `out_of_world` ignore l'armure, la Résistance et l'invulnérabilité. Le totem ne sauve pas.
-- Sur 10 s, le joueur prend environ 21 coups, soit **84 PV**, dont 20 couverts par sa vie de départ. Il faut donc environ 64 PV de soin ou d'absorption. Exemples de préparation :
-  - 8 à 9 potions jetables de Soin instantané II (8 PV chacune) ;
-  - ou une pomme de Notch (Absorption IV : 16 PV ; Régénération II : environ 8 PV sur 10 s) et 5 potions jetables de Soin II.
+- Sur 5 s, le joueur prend environ 11 coups, soit **44 PV**, dont 20 couverts par sa vie de départ. Il faut donc environ 24 PV de soin ou d'absorption. Exemples de préparation :
+  - 3 potions jetables de Soin instantané II (8 PV chacune) ;
+  - ou une pomme de Notch (Absorption IV : 16 PV ; Régénération II : environ 4 PV sur 5 s) et 1 potion jetable de Soin II.
+
+**Brise-bedrock** [Demande, D28]
+1. Bloc `examplemod:bedrock_breaker` (« Brise-bedrock »), à poser. Recette de fin de partie : un lingot de netherite au centre, 2 TNT sur les côtés, un bloc de redstone au-dessus, 5 obsidiennes autour (`ORO` / `TNT` / `OOO`). Se mine à la pioche et se ramasse tant qu'il n'a pas tiré.
+2. Comme la TNT, il se déclenche quand il reçoit un signal de redstone direct (`hasNeighborSignal`), ou dès la pose s'il est déjà alimenté. Ce n'est pas instantané : il charge d'abord pendant 3 s (état `charging`, lumière 12, son de charge du Warden, particules d'enchantement aspirées vers le bloc), puis tire. Le casser pendant la charge annule le tir ; les pistons ne peuvent pas le pousser. Il disparaît en tirant : c'est un consommable.
+3. Le rayon creuse une colonne de 3×3 centrée sur le bloc, vers le haut jusqu'au sommet du monde et vers le bas jusqu'au fond, 3 couches par tick de chaque côté (environ 6 s pour toute la hauteur de l'overworld : le rayon se voit avancer et la charge serveur reste faible). Il traverse tout, bedrock comprise, dans toutes les dimensions ; seuls la barrière et les blocs de commande, de structure et de jigsaw sont épargnés. Les blocs disparaissent sans rien laisser tomber.
+4. Effets : son d'onde de choc du Warden et d'activation de balise, flash, étincelles sur chaque couche creusée, colonne de particules `END_ROD` autour du bloc pendant le tir et 1 s après, visible jusqu'à 128 blocs.
+5. Usage : percer le fond de l'overworld ou du Nether ouvre un accès au vide, donc une deuxième entrée vers l'Entre-monde, plus tôt que l'End (il faut toujours tenir 5 s dans le vide). Il ne blesse pas les entités dans le rayon.
+6. Vérifié le 30/10 : GameTest (en charge 10 ticks après le signal, rien de troué avant la fin de la charge, tir annulé si on casse le bloc pendant la charge ; bloc inactif posé et avec un signal à 2 blocs ; tir avec un bloc de redstone collé ; bedrock du fond trouée au centre et dans les coins, intacte juste à côté ; blocs au-dessus troués jusqu'au sommet du monde ; barrière épargnée ; bloc disparu) et capture dans le client (trou de 3×3 et colonne de particules).
 
 **Arrivée**
 1. Mêmes X et Z (`coordinate_scale` 1).
@@ -440,7 +473,7 @@ Sans musique de biome, le jeu retombe sur `Musics.GAME`. `UndervoidFog` coupe do
 | Événement | `PlayerTickEvent.Post`, côté serveur seulement, dans `network/ModEvents` (l'`EntityTickEvent` est supprimé) |
 | Coût hors du vide | une comparaison de Y par joueur et par tick : on sort tout de suite si le joueur n'est pas sous la limite |
 | État | attachment `void_ticks` (int, ni sérialisé ni synchronisé), retiré dès que le joueur sort de la zone |
-| Réglage | `voidSurvivalTicks` (200) dans la config serveur |
+| Réglage | `voidSurvivalTicks` (100) dans la config serveur |
 | Réseau | aucun paquet custom |
 
 ### 5.3 Sortie
@@ -486,8 +519,8 @@ Ressources :
 ### 5.4 Critères d'acceptation
 
 - [ ] En survie, tomber dans le vide de l'End sans soins tue le joueur ; aucun transfert (mécanique vanilla, non testé).
-- [x] Avec assez de soins, après 10 s (200 ticks exactement) dans le vide, le joueur arrive debout sur la surface du Gloom, sans dégâts de chute, avec Obscurité, Régénération, la santé mentale à 90 et le succès racine.
-- [x] Remonter au-dessus de la zone de vide avant 10 s remet le chrono à 0.
+- [x] Avec assez de soins, à la fin du chrono (200 ticks exactement, le réglage de l'époque ; 100 depuis D34) dans le vide, le joueur arrive debout sur la surface du Gloom, sans dégâts de chute, avec Obscurité, Régénération, la santé mentale à 90 et le succès racine.
+- [x] Remonter au-dessus de la zone de vide avant la fin du chrono le remet à 0.
 - [x] En créatif, le transfert est immédiat.
 - [x] Les objets jetés dans le vide ne réapparaissent pas dans l'Entre-monde.
 - [x] Monter au-dessus de Y 256 renvoie au point de réapparition (testé avec le spawn du monde), inventaire intact, sans retomber dans le vide.
@@ -559,13 +592,16 @@ Toutes les variations passent par une seule méthode, `Sanity.add(ServerPlayer, 
 
 | Palier | Seuil | Effets |
 |---|---|---|
-| Stable | de 100 à 71 | aucun |
+| Euphorie [Demande, D27] | > 95 (`euphoriaThreshold`), dans l'Entre-monde seulement | Nausée tant qu'on reste au-dessus (effet de 5 s remis chaque seconde, il retombe en 2 s environ une fois sous le seuil) et 1 dégât toutes les 4 s (`euphoriaDamage`, `euphoriaDamageSeconds`), type de dégât `euphoria` (ignore l'armure, sans recul ; message de mort « %1$s est mort d'euphorie ») |
+| Stable | de 100 à 71 | aucun, sauf l'euphorie au-dessus de 95 dans l'Entre-monde |
 | Troublé | ≤ 70 | battement de cœur discret côté client toutes les 10 à 20 s (`WARDEN_HEARTBEAT`, volume 0,3) ; les icônes du HUD tremblent ; sous 70, des imitateurs peuvent apparaître dans le Gloom (§8 bis) |
 | Hallucinations | ≤ 40 | effet `hallucinations` I, 30 s, réappliqué toutes les 10 s tant qu'on reste sous le seuil (§8) |
 | Panique | ≤ 15 | `hallucinations` II et Faiblesse I, mêmes durées |
-| Effondrement | 0 | 1 dégât toutes les 2 s, type de dégât `insanity` (ignore l'armure ; message de mort « %1$s a perdu la raison ») |
+| Effondrement | 0 | [Demande, D41] 1 dégât toutes les 5 s (`insanityDamage`, `insanityDamageSeconds` ; c'était toutes les 2 s), type de dégât `insanity` (ignore l'armure ; message de mort « %1$s a perdu la raison »). La régénération naturelle (1 PV toutes les 4 s, rassasié) suit à peu près : on tient en mangeant |
 
 En remontant au-dessus d'un seuil, on ne retire rien : l'effet expire de lui-même en 30 s au plus. Cela évite les clignotements autour du seuil.
+
+L'euphorie empêche de camper à 100 dans le Bloom ou avec la Clarté : on arrive à 90 (−10), donc rien ne se passe à l'entrée, mais le Bloom (+0,25 par seconde), la Clarté ou une caresse de hérisson (+8) font passer le seuil. Elle ne s'applique ni dans l'overworld, qui remet la jauge à 100, ni dans le Nether et l'End. Vérifié par GameTest le 30/10 : à 98 dans l'Entre-monde, nausée et un dégât ; à 90, rien ; à 100 dans le Nether et dans l'overworld, rien.
 
 **Succès « Ouch, my head »** : attribué la première fois que la jauge passe de 100 à moins de 100. Le code ne le vérifie qu'à ce passage (§12).
 
@@ -664,8 +700,8 @@ Faire douter le joueur de ce qu'il voit et entend, sans jamais tricher contre lu
 
 1. Effet `hallucinations`, nocif, couleur `0x6A3D9A`. Il est appliqué par la santé mentale : I à 40 ou moins, II à 15 ou moins (§6.5).
 2. Tout est joué côté client, pour le seul joueur concerné. Pas de trafic réseau en plus de la synchro vanilla des effets.
-3. Une seule ombre à la fois ; pas de flash ni de clignotement.
-4. Une option de config client, `hallucinationIntensity` (de 0 à 1, 1 par défaut), règle les distorsions visuelles. À 0, il ne reste que les sons : l'ombre disparaît aussi.
+3. Une seule ombre et un seul mirage à la fois ; pas de flash ni de clignotement.
+4. Une option de config client, `hallucinationIntensity` (de 0 à 1, 1 par défaut), règle les distorsions visuelles. À 0, il ne reste que les sons : l'ombre, les mirages et la vision double disparaissent aussi.
 
 ### 8.3 Contenu par niveau
 
@@ -678,6 +714,8 @@ Faire douter le joueur de ce qu'il voit et entend, sans jamais tricher contre lu
 | Pulsation du champ de vision | ±2 % | ±4 % | `ViewportEvent.ComputeFov#setFOV` |
 | Vignette violette | opacité 25 % | 45 % | couche de HUD au-dessus de `VanillaGuiLayers.CAMERA_OVERLAYS` |
 | Ombre | toutes les 60 à 120 s | toutes les 25 à 50 s | voir 8.4 |
+| Vision double [D38] | environ 40 % du temps pour chaque mob, décalage de 0,5 bloc en moyenne | environ 45 % du temps, 0,75 bloc | voir 8.4 bis |
+| Mirage [D38] | toutes les 45 à 90 s | toutes les 15 à 35 s | voir 8.4 bis |
 
 Les sons passent par `ClientLevel#playLocalSound(x, y, z, son, SoundSource.HOSTILE, volume, pitch, false)` : seul le joueur local les entend. Les distorsions montent et descendent progressivement (facteur lissé, comme le brouillard).
 
@@ -688,12 +726,18 @@ Les sons passent par `ClientLevel#playLocalSound(x, y, z, son, SoundSource.HOSTI
 - **Méthode** : une seule instance d'Enderman, créée une fois côté client et jamais ajoutée au monde. Elle ne tick pas, n'a pas de collision et n'envoie rien au réseau. On la dessine dans `RenderLevelStageEvent`, à l'étape `AFTER_ENTITIES`, via `EntityRenderDispatcher#render(entité, x, y, z, rotation, partialTick, poseStack, buffers, lumière)`. L'instance est réutilisée : aucune allocation par frame.
 - On a écarté les particules (illisibles) et une entité client ajoutée au monde (fragile à nettoyer).
 
+### 8.4 bis Vision double et mirages [Demande, D38]
+
+- Vision double : les mobs à moins de 24 blocs sont dessinés une seconde fois dans `RenderLivingEvent.Post`, avec le même renderer, décalés sur le côté de la caméra (`Camera#getLeftVector`) d'une distance qui ondule. Chaque mob a sa propre phase : ils ne se dédoublent pas tous en même temps. La copie n'a pas d'ombre portée et ne touche pas au monde.
+- Mirage : un faux zombie, squelette (avec son arc), creeper ou araignée, ou en II parfois ton propre double (`RemotePlayer` avec ton profil et ton équipement), apparaît devant toi (±35°) entre 9 blocs et 85 % de la fin du brouillard, plafonné à 18. Il reste planté 1,5 s, puis marche vers toi à 0,07 bloc par tick en suivant le sol. Il se dissipe dans un nuage de fumée (`POOF`, son `ILLUSIONER_MIRROR_MOVE`) si on le fixe plus de 1,25 s, si on arrive à moins de 4,5 blocs, ou au bout de 20 s. Dans le miasme, on n'y voit pas assez loin : pas de mirage.
+- Même méthode que l'ombre : entités créées côté client, jamais ajoutées au monde, dessinées à `AFTER_ENTITIES`, avec la position interpolée et l'animation de marche mise à jour à la main (`walkAnimation.update`). Elles n'attaquent pas et ne font pas de dégâts.
+
 ### 8.5 Mise en œuvre
 
 | Classe | Rôle |
 |---|---|
 | `effect/ModEffects` | déclaration de l'effet |
-| `client/Hallucinations` | `ClientTickEvent.Post` : lit `player.getEffect(ModEffects.HALLUCINATIONS)` une fois par tick, gère les minuteurs (aléatoire client) et l'ombre |
+| `client/Hallucinations` | `ClientTickEvent.Post` : lit `player.getEffect(ModEffects.HALLUCINATIONS)` une fois par tick, gère les minuteurs (aléatoire client), l'ombre et le mirage ; `RenderLivingEvent.Post` pour la vision double |
 | `client/HallucinationRender` | `ComputeCameraAngles`, `ComputeFov`, `RenderLevelStageEvent`, couche de vignette |
 
 **Ressources** : `textures/gui/hallucination_vignette.png` (dégradé violet, centre transparent), `textures/mob_effect/hallucinations.png` (icône 18×18), lang. Tous les sons sont vanilla.
@@ -703,6 +747,7 @@ Les sons passent par `ClientLevel#playLocalSound(x, y, z, son, SoundSource.HOSTI
 - [ ] L'ombre disparaît quand on la regarde.
 - [ ] Un second joueur à côté n'entend et ne voit rien.
 - [ ] Avec `hallucinationIntensity` à 0, la caméra ne bouge plus.
+- [x] En II, les mobs proches se dédoublent par moments et un mirage d'araignée apparaît dans le brouillard puis avance vers le joueur (captures du 30/10) ; pas de mirage dans le miasme.
 
 **Estimation** : 6 à 8 h, dont la moitié pour l'ombre.
 
@@ -710,23 +755,24 @@ Les sons passent par `ClientLevel#playLocalSound(x, y, z, son, SoundSource.HOSTI
 
 ## 8 bis. Imitateurs
 
-**Sources** : D12, D13. Les valeurs, la révélation et le rendu sont une **[Proposition]**.
+**Sources** : D12, D13, D39 (reprise du mod `mimic` de tgkowski, Fabric 1.20.1 : apparition, choix du joueur copié, approche et révélation, déplacements, voix). Ce qui n'est marqué ni [Discord] ni [Demande] est une **[Proposition]**.
 
 ### 8 bis.1 Intention
 
-Un monstre qui a l'air d'un coéquipier. Il prend le skin, le pseudo et l'équipement d'un joueur, marche avec le groupe et refait ses gestes, puis se retourne contre lui. Plus la tête lâche, plus on en croise : à faible santé mentale, on finit par se méfier de ses propres amis.
+Un monstre qui a l'air d'un coéquipier. Il prend le skin, le pseudo et l'équipement d'un joueur qui n'est pas là, bouge comme lui, vient vers toi comme un ami, parle parfois avec sa vraie voix, puis se retourne contre toi. Plus la tête lâche, plus on en croise : à faible santé mentale, on finit par se méfier de ses propres amis.
 
 ### 8 bis.2 Règles
 
 1. [Discord] Les imitateurs n'apparaissent que dans le biome `gloom`, et dans son sous-biome `miasma` (§4.9).
-2. [Discord] Un imitateur copie un joueur proche : skin, pseudo, équipement (tête, torse, jambes, pieds, deux mains) et main principale. Son nom est celui du joueur : l'étiquette de nom et les messages de mort affichent son pseudo.
-3. [Discord] Tant que le joueur copié est en ligne, dans la même dimension et à moins de 32 blocs, l'imitateur refait ses gestes : il s'accroupit et se relève avec lui, et frappe dans le vide quand il frappe.
-4. [Discord] Il attaque au bout d'une durée aléatoire, entre 15 et 45 s après la copie, et seulement si une victime est à moins de 20 blocs ; sinon il attend. Il se révèle aussi au premier dégât reçu, quelle qu'en soit la source (coup, flèche, chute).
-5. [Discord] Moins on a de santé mentale, plus on en croise : aucun à 70 ou plus, puis une chance par seconde qui suit le carré de la « peur » (§8 bis.3).
-6. [Proposition] Avant la révélation, il ne cible personne. Il suit sa victime à 3 à 6 blocs en la regardant, comme un coéquipier. La victime est le joueur vivant le plus proche à moins de 32 blocs, hors créatif et spectateur, autre que le joueur copié. Le joueur copié n'est choisi que si personne d'autre n'est proche, donc en solo.
-7. [Proposition] À la révélation : regard d'enderman (audible par tous les joueurs proches), pseudo brouillé en rouge foncé, vitesse +40 %, et attaque de la victime, ou de l'attaquant si c'est un joueur.
-8. [Proposition] L'équipement copié ne tombe jamais : pas de duplication possible. L'imitateur ne lâche que de l'XP.
-9. [Proposition] Un seul imitateur à moins de 48 blocs. Aucun en Paisible, ni pour un joueur en créatif ou en spectateur. Il disparaît comme un monstre vanilla : en Paisible, ou au-delà de 128 blocs de tout joueur.
+2. [Demande, D39] Il copie un joueur **absent** : déjà venu sur le monde et déconnecté, ou connecté mais à plus de 48 blocs (ou dans une autre dimension) ; parfois (15 %) le joueur visé lui-même. Jamais quelqu'un à moins de 48 blocs du joueur visé : deux fois le même joueur côte à côte, ça se verrait. Il reprend le skin (même déconnecté), le pseudo, le dernier équipement vu sur ce joueur (tête, torse, jambes, pieds, deux mains) et sa main principale. L'étiquette de nom et les messages de mort affichent son pseudo. Remplace « un joueur proche » de D12.
+3. [Demande, D39] Quand personne n'est à moins de 20 blocs, il rejoue de vrais déplacements enregistrés du joueur copié (démarche, sauts, accroupissements, regard, coups dans le vide). Remplace l'imitation en direct des gestes (D13), qui ne marchait que si le joueur copié était à côté.
+4. [Demande, D39] Il vient vers le joueur le plus proche comme un ami : il marche, ou sprinte au-delà de 12 blocs, s'arrête à 4,5 blocs et le regarde, s'accroupit plusieurs fois pour dire bonjour, refait ses accroupissements avec une demi-seconde de retard, frappe dans le vide ou saute de temps en temps, ouvre les portes.
+5. [Demande, D39] Il se révèle quand il a passé 20 à 60 s à moins de 16 blocs d'un joueur (le compteur redescend quand personne n'est là), quand on reste à moins de 2,5 blocs de lui pendant 1,5 s, ou quand un joueur à moins de 10 blocs et en vue a moins de 35 % de sa vie. [Discord] Il se révèle aussi au premier dégât reçu, quelle qu'en soit la source. Les joueurs en créatif ou en spectateur ne comptent pas.
+6. [Discord] Moins on a de santé mentale, plus on en croise : aucun à 70 ou plus, puis une chance par seconde qui suit le carré de la « peur » (§8 bis.3).
+7. À la révélation : regard d'enderman (audible par tous les joueurs proches), pseudo brouillé en rouge foncé, sprint, attaque du joueur le plus proche, ou de l'attaquant si c'est un joueur ; avec Simple Voice Chat, un cri enregistré du joueur copié.
+8. L'équipement copié ne tombe jamais : pas de duplication possible. L'imitateur ne lâche que de l'XP.
+9. Un seul imitateur à moins de 48 blocs. Aucun en Paisible, ni pour un joueur en créatif ou en spectateur. [Demande, D39] Il s'en va au bout de 5 min, au premier moment où personne ne le regarde et s'il n'a pas pris de coup depuis 10 s, sauf s'il a été renommé à l'étiquette. Il disparaît aussi comme un monstre vanilla, en Paisible ou au-delà de 128 blocs de tout joueur.
+10. [Demande, D39] La voix ne marche que si le mod Simple Voice Chat est installé ; il est optionnel (§8 bis.8).
 
 ### 8 bis.3 Valeurs
 
@@ -734,12 +780,14 @@ Un monstre qui a l'air d'un coéquipier. Il prend le skin, le pseudo et l'équip
 |---|---|
 | Taille | 0,6 × 1,8, yeux à 1,62 (comme un joueur) |
 | PV | 20 |
-| Vitesse | 0,25, puis +40 % après la révélation |
-| Dégâts à mains nues | 2 ; une arme ou une armure copiée apporte ses propres attributs |
-| Portée de suivi (`FOLLOW_RANGE`) | 32 blocs |
-| Délai avant l'attaque | 300 à 900 ticks (15 à 45 s), puis une victime à moins de 20 blocs |
-| Distance de suivi | 3 à 6 blocs, chemin recalculé toutes les 10 ticks |
-| Distance d'apparition | 16 à 28 blocs du joueur |
+| Vitesse | 0,313, la marche d'un joueur ; en poursuite, sprint (+30 %) avec un facteur 0,86, à peu près le sprint d'un joueur |
+| Dégâts à mains nues | 4 ; une arme ou une armure copiée apporte ses propres attributs |
+| Portée de suivi (`FOLLOW_RANGE`) | 48 blocs |
+| Délai avant l'attaque | 20 à 60 s passées à moins de 16 blocs d'un joueur (`mimicLureMinSeconds`, `mimicLureMaxSeconds`) |
+| Approche | à partir de 20 blocs (40 s'il n'a aucun déplacement enregistré à rejouer), arrêt à 4,5 blocs |
+| Distance d'apparition | 24 à 36 blocs, dans le dos du joueur (±100° autour de l'arrière) |
+| Départ | au bout de 300 s (`mimicDespawnSeconds`, 0 = jamais) |
+| Copie de soi | 15 % (`mimicCopySelfChance`) |
 | Seuil de santé mentale | `mimicSanityThreshold`, 70 |
 | Chance par seconde à 0 de santé mentale | `mimicChancePerSecond`, 0,02 |
 
@@ -761,84 +809,104 @@ Ces durées valent dans le Gloom, sans autre imitateur à moins de 48 blocs. En 
 2. Sorties immédiates, des moins chères aux plus chères : créatif, spectateur, mort, Paisible, hors de l'Entre-monde (`ModDimensions.UNDERVOID_DIM_LEVEL_KEY`), santé mentale (`Sanity.get`) au seuil ou au-dessus.
 3. Tirage (§8 bis.3).
 4. Seulement après un tirage réussi : biome `gloom` ou `miasma` à la position du joueur, puis aucun autre imitateur à moins de 48 blocs (une requête d'AABB), puis `spawnNear(player)`.
-5. `spawnNear` fait 8 essais au plus, chacun à un angle aléatoire et à 16 à 28 blocs, au-delà de la fin du brouillard de surface (14 blocs). Pour chaque essai, on descend de Y + 6 à Y − 10 (Y du joueur), sans passer sous la surface de la colonne (heightmap `MOTION_BLOCKING_NO_LEAVES`, D23), jusqu'à une case dont le chunk est chargé, dont le bloc du dessous a une face supérieure solide, dont les cases des pieds et de la tête sont vides, et dont le biome est `gloom` ou `miasma`.
-6. Joueur copié : le joueur le plus proche du joueur visé, hors spectateur, à moins de 64 blocs ; sinon le joueur visé lui-même. À plusieurs, l'imitateur prend donc l'apparence d'un coéquipier et suit le joueur visé.
+5. `spawnNear` fait 12 essais au plus, chacun dans le dos du joueur (±100° autour de l'arrière) et à 24 à 36 blocs : au-delà de la fin du brouillard, même avec le masque (24 blocs). Pour chaque essai, on descend de Y + 6 à Y − 10 (Y du joueur), sans passer sous la surface de la colonne (heightmap `MOTION_BLOCKING_NO_LEAVES`, D23), jusqu'à une case dont le chunk est chargé, dont le bloc du dessous a une face supérieure solide, dont les cases des pieds et de la tête sont vides, et dont le biome est `gloom` ou `miasma`.
+6. Joueur copié : `MimicSpawner.pickSource`, tirage pondéré parmi les joueurs connus de `MimicMemory` : poids 1, ×3 si on a gardé de sa voix, ×2 s'il est connecté ailleurs, ×1,5 s'il est déconnecté ; ceux à moins de 48 blocs du joueur visé sont exclus. Le joueur visé lui-même avec 15 % de chance, ou s'il n'y a aucun autre candidat (en solo).
 7. L'imitateur est placé tourné vers le joueur, puis `copy(source)`, `EventHooks.finalizeMobSpawn(mimic, level, level.getCurrentDifficultyAt(pos), MobSpawnType.EVENT, null)` (qui laisse les autres mods modifier ou annuler l'apparition) et `addFreshEntity`. `spawnNear` renvoie l'imitateur, ou null si aucune case ne convient.
 
-Avec le masque à gaz, le brouillard s'arrête à 24 blocs : un imitateur qui apparaît entre 16 et 24 blocs peut être vu au moment où il arrive.
+Même avec le masque à gaz (brouillard à 24 blocs), on ne le voit pas apparaître.
 
 ### 8 bis.5 Comportement
 
 | | Déguisé | Révélé |
 |---|---|---|
-| Cible | aucune | la victime, ou le joueur qui l'a frappé |
-| Déplacement | suit la victime à 3 à 6 blocs et la regarde ; sinon promenade | attaque au corps à corps, vitesse +40 % |
+| Cible | aucune | le joueur le plus proche à 32 blocs (cherché de nouveau une fois par seconde s'il n'est plus valable), ou le joueur qui l'a frappé |
+| Déplacement | approche en ami (règle 4) ; sinon rejoue un déplacement enregistré ; sinon promenade | attaque au corps à corps en sprintant |
 | Nom affiché | pseudo du joueur copié | même pseudo, brouillé (`OBFUSCATED`) et rouge foncé (`DARK_RED`) |
-| Sons | aucun son d'ambiance ; blessure et mort de joueur (`PLAYER_HURT`, `PLAYER_DEATH`) | idem, et `ENDERMAN_STARE` au moment de la révélation |
+| Sons | catégorie Joueurs : blessure, mort, chutes, nage, coups de joueur (`PLAYER_ATTACK_STRONG`, `PLAYER_ATTACK_KNOCKBACK` en sprint, `PLAYER_ATTACK_NODAMAGE`) ; aucun son d'ambiance | idem, et `ENDERMAN_STARE` au moment de la révélation |
 
 Goals :
 
 | Priorité | Goal |
 |---|---|
 | 0 | `FloatGoal` |
-| 2 | `MeleeAttackGoal(this, 1.0, true)` |
-| 3 | suivi de la victime (goal du mod, actif seulement déguisé et sans cible) |
+| 1 | `OpenDoorGoal(this, true)`, avec une navigation qui ouvre les portes |
+| 2 | `MeleeAttackGoal(this, 0.86, true)` |
+| 3 | `entity/mimic/MimicStalkGoal` : approche en ami, seulement déguisé et sans cible |
+| 4 | `entity/mimic/MimicReplayGoal` : rejeu, seulement déguisé et sans cible |
 | 5 | `WaterAvoidingRandomStrollGoal(this, 0.8)` |
-| 6 | `LookAtPlayerGoal(this, Player.class, 8f)` |
+| 6 | `LookAtPlayerGoal(this, Player.class, 16f)` |
 | 7 | `RandomLookAroundGoal` |
 | cible, 1 | `HurtByTargetGoal` |
-| cible, 2 | `NearestAttackableTargetGoal<Player>`, seulement une fois révélé, et jamais vers le joueur copié s'il y a quelqu'un d'autre à portée |
 
-Être blessé révèle l'imitateur : `HurtByTargetGoal` ne lui donne donc jamais de cible avant la révélation. Le second goal lui fait reprendre une cible après la mort de sa victime ou un rechargement. Accroupi, il prend la taille d'un joueur accroupi (1,5 bloc, yeux à 1,27), pour que son pseudo reste à la même hauteur.
+Être blessé révèle l'imitateur. Après la révélation, `Mimic` pose lui-même la cible. Accroupi, il prend la taille d'un joueur accroupi (1,5 bloc, yeux à 1,27), pour que son pseudo reste à la même hauteur.
+
+Rejeu : l'enregistrement est tourné d'un multiple de 90°. Parmi les orientations dont le trajet ne passe ni dans un mur (case de la tête) ni au-dessus d'un trou de plus de 3 blocs ou d'un liquide (vérifié tous les 5 ticks), il garde celle qui finit le plus près du joueur le plus proche à 48 blocs. Il s'arrête devant un trou, après 25 ticks bloqué, ou dès qu'un joueur passe à moins de 20 blocs. Pendant le rejeu, c'est l'enregistrement qui oriente la tête (`LookControl` en pause).
 
 ### 8 bis.6 Mise en œuvre
 
 | Élément | Choix |
 |---|---|
-| `entity/custom/Mimic` | étend `Monster`. API : `copy(Player)`, `getCopiedId()` (`@Nullable UUID`), `getCopiedName()`, `isRevealed()`, `createAttributes()` |
-| Données synchronisées | UUID copié (`EntityDataSerializers.OPTIONAL_UUID`), pseudo (`STRING`), drapeau de révélation (booléen) |
-| Copie | `copy(source)` : les 6 emplacements (`HEAD`, `CHEST`, `LEGS`, `FEET`, `MAINHAND`, `OFFHAND`) en `stack.copy()`, `setDropChance(slot, 0f)` sur chacun, `setLeftHanded(source.getMainArm() == HumanoidArm.LEFT)`, compte à rebours de 300 à 900 ticks |
+| `entity/custom/Mimic` | étend `Monster`. API : `copy(MimicMemory.Known)`, `getCopiedId()` (`@Nullable UUID`), `getCopiedName()`, `getGameProfile()` (client, pour le skin), `isRevealed()`, `canHunt(Player)`, `hasMoves()`, `pickMove()`, `createAttributes()` |
+| Données synchronisées | UUID copié (`OPTIONAL_UUID`), pseudo, propriété `textures` et sa signature (`STRING`), drapeau de révélation (booléen) |
+| Copie | `copy(known)` : profil, les 6 emplacements depuis le dernier équipement vu, `setDropChance(slot, 0f)` sur chacun, `setLeftHanded`. Toutes les 10 s, tant qu'il n'est pas révélé et que le joueur copié est connecté, il reprend son équipement du moment |
 | Nom | `getName()` renvoie le pseudo en `Component.literal` ; révélé, avec `ChatFormatting.OBFUSCATED` et `DARK_RED`. Sans pseudo : `super.getName()` |
-| Imitation | référence au joueur copié gardée en cache et résolue de nouveau au plus une fois par seconde ; `setShiftKeyDown`, `setPose(Pose.CROUCHING ou Pose.STANDING)`, `swing(InteractionHand.MAIN_HAND)` quand le joueur frappe et que l'imitateur ne frappe pas déjà |
-| Révélation | drapeau synchronisé, `setTarget`, `level.playSound(null, …, SoundEvents.ENDERMAN_STARE, SoundSource.HOSTILE, 1f, 0.8f)`, modificateur transitoire de `MOVEMENT_SPEED` (`examplemod:mimic_reveal`, +0,4, `ADD_MULTIPLIED_BASE`), remis au chargement d'un imitateur déjà révélé |
-| Sauvegarde | `CopiedId` (`putUUID` / `hasUUID`), `CopiedName`, `Revealed`, `RevealIn` |
-| Œuf et `/summon` | `finalizeSpawn` copie `level.getNearestPlayer(this, 64)` si rien n'a encore été copié |
-| Attributs | `Monster.createMonsterAttributes()`, `MAX_HEALTH` 20, `MOVEMENT_SPEED` 0,25, `ATTACK_DAMAGE` 2, `FOLLOW_RANGE` 32, via `EntityAttributeCreationEvent` |
+| Révélation | drapeau synchronisé, `setTarget`, `level.playSound(null, …, SoundEvents.ENDERMAN_STARE, SoundSource.HOSTILE, 1f, 0.8f)`, sprint pendant la poursuite |
+| Départ | au-delà de `mimicDespawnSeconds`, testé une fois par seconde : aucun joueur ne le voit (à portée d'affichage, au plus 78° de l'axe de son regard, rayon `ClipContext.Block.VISUAL` libre vers ses yeux, son buste ou ses pieds), aucun coup depuis 10 s, pas renommé à l'étiquette |
+| Sauvegarde | `CopiedId`, `CopiedName`, `Textures`, `Signature`, `Revealed`, `LifeTicks` |
+| Œuf et `/summon` | `finalizeSpawn` copie `MimicSpawner.pickSource(server, joueur le plus proche à 64 blocs)` si rien n'a encore été copié |
+| Attributs | `Monster.createMonsterAttributes()`, `MAX_HEALTH` 20, `MOVEMENT_SPEED` 0,313, `ATTACK_DAMAGE` 4, `FOLLOW_RANGE` 48, via `EntityAttributeCreationEvent` |
+| `entity/mimic/MimicMemory` | `SavedData` de l'overworld (`data/examplemod_mimics.dat`). Pour chaque joueur venu : `MimicProfile` (UUID, pseudo, propriété `textures` signée, main), dernier équipement vu, jusqu'à 24 déplacements, nombre de phrases gardées. Mis à jour à la connexion, à la déconnexion et toutes les 30 s pour les joueurs connectés ; marqué à sauvegarder seulement si quelque chose a changé |
+| `entity/mimic/MovementRecorder` | à chaque tick serveur, pour chaque joueur : fenêtres de 8 s (déplacement relatif, orientation de la tête, accroupi, sprint, saut, coup). La fenêtre repart de zéro en vol, en élytre, sur une monture, dans l'eau ou la lave, en spectateur, au lit, ou au moindre téléport, dash ou chute (plus d'un bloc par tick). Note : distance, accroupissements, sauts, coups et mouvements de tête ; une fenêtre AFK ou notée sous 0,8 est jetée ; au plafond (`mimicMovementClips`), la moins bonne n'est remplacée que par une meilleure |
+| `entity/mimic/MimicEvents` | tick serveur (enregistrement, fin des phrases, vie basse une fois par seconde, mémoire toutes les 30 s), connexion (message de §8 bis.8), déconnexion, dégâts, morts, minerais rares |
+| `entity/MimicSpawner` | `tick(ServerPlayer)`, `spawnNear(ServerPlayer)` (§8 bis.4) et `pickSource(server, cible, aléatoire)` |
 | `entity/ModEntities` | `MIMIC` : `EntityType.Builder.of(Mimic::new, MobCategory.MONSTER).sized(0.6f, 1.8f).eyeHeight(1.62f).clientTrackingRange(10)` |
-| `entity/MimicSpawner` | `tick(ServerPlayer)` et `spawnNear(ServerPlayer)` (§8 bis.4) |
 | `item/ModItems` | `MIMIC_SPAWN_EGG` : `DeferredSpawnEggItem(ModEntities.MIMIC, 0x2E2836, 0x8E8A99, props)`, couleurs du feuillage du Gloom et d'un gris pâle |
-| `Config` | section `mimic` de la config serveur, après `katana` : `mimicSanityThreshold` (70, de 0 à 100) et `mimicChancePerSecond` (0,02, de 0 à 1) |
+| `Config` | section `mimic` de la config serveur : `mimicSanityThreshold` (70), `mimicChancePerSecond` (0,02), `mimicLureMinSeconds` (20), `mimicLureMaxSeconds` (60), `mimicDespawnSeconds` (300), `mimicCopySelfChance` (0,15), `mimicMovementClips` (24), `mimicRecordVoice` (vrai), `mimicVoiceClips` (40) |
 
 ### 8 bis.7 Rendu (`client/MimicRenderer`)
 
 - `MimicRenderer` étend `EntityRenderer<Mimic>` (ombre de 0,5) et délègue `render` et `getTextureLocation` à l'un de deux corps, des `LivingEntityRenderer<Mimic, PlayerModel<Mimic>>` : un large et un fin, choisis selon le modèle du skin.
-- Skin : `Minecraft.getInstance().getConnection().getPlayerInfo(uuid).getSkin()` si le client connaît le joueur copié ; sinon `DefaultPlayerSkin.get(uuid)` ; sans UUID, le skin par défaut (`DefaultPlayerSkin.getDefaultTexture()`, modèle fin). Si le joueur copié se déconnecte, l'imitateur prend donc un skin par défaut.
-- Chaque corps : `PlayerModel` cuit depuis `ModelLayers.PLAYER` ou `PLAYER_SLIM`, couches `HumanoidArmorLayer` (`PLAYER_INNER_ARMOR` et `PLAYER_OUTER_ARMOR`, ou leurs variantes `PLAYER_SLIM_`, avec `context.getModelManager()`), `ItemInHandLayer`, `CustomHeadLayer` et `ElytraLayer`. Échelle de 0,9375, comme `PlayerRenderer.scale`.
+- Skin [D39] : la fiche `PlayerInfo` du joueur copié s'il est connecté ; sinon `SkinManager.getInsecureSkin(mimic.getGameProfile())`, construit avec la propriété `textures` gardée par le serveur : le skin d'un joueur déconnecté s'affiche (skin par défaut le temps du téléchargement, ou s'il n'y a pas de textures, par exemple sur un serveur hors ligne). Sans UUID, le skin par défaut (`DefaultPlayerSkin.getDefaultTexture()`, modèle fin).
+- Chaque corps : `PlayerModel` cuit depuis `ModelLayers.PLAYER` ou `PLAYER_SLIM`, couches `HumanoidArmorLayer` (`PLAYER_INNER_ARMOR` et `PLAYER_OUTER_ARMOR`, ou leurs variantes `PLAYER_SLIM_`, avec `context.getModelManager()`), `ItemInHandLayer`, `HazmatMaskLayer` (D33), `CustomHeadLayer` et `ElytraLayer`. Échelle de 0,9375, comme `PlayerRenderer.scale`.
 - Avant chaque rendu : `setAllVisible(true)`, `crouching = mimic.isCrouching()`, et les poses des bras `ITEM` ou `EMPTY` selon les mains, inversées si la main principale est la gauche.
 - L'étiquette de nom s'affiche comme celle d'un joueur, parce que le corps est un `LivingEntityRenderer` et non un `MobRenderer`. Sans étiquette, on reconnaîtrait l'imitateur au premier coup d'œil.
 
-### 8 bis.8 Ressources
+### 8 bis.8 Voix (Simple Voice Chat, optionnel) [Demande, D39]
+
+- Dépendance : `compileOnly "de.maxhenkel.voicechat:voicechat-api:2.5.0"` (dépôt `maven.maxhenkel.de`, version dans `gradle.properties`) et une dépendance `optional` vers `voicechat` dans `neoforge.mods.toml`. Le mod n'est pas fourni avec le nôtre : sans lui rien ne change et aucune classe de l'API n'est chargée. Seule `entity/mimic/voice/MimicVoicePlugin` touche à l'API ; Simple Voice Chat la trouve tout seul grâce à l'annotation `@ForgeVoicechatPlugin`. Le reste passe par deux interfaces à nous, `MimicVoice.Backend` et `VoiceRecorder.Decoder`. Pour tester en dev, le jar de Simple Voice Chat se met dans `run/mods` (ignoré par git).
+- Enregistrement (`VoiceRecorder`, thread de Simple Voice Chat) : le micro de chaque joueur est découpé en phrases ; une phrase finit après 0,7 s sans voix (seuil de −48 dBFS mesuré sur le son décodé). Avant le premier mot, on ne garde que 5 paquets muets. Une phrase de plus de 10 s est coupée à la dernière respiration (5 paquets muets d'affilée), ou jetée s'il n'y en a pas, pour ne jamais commencer en plein mot. La note et la banque passent sur le thread serveur (`server.execute`).
+- Note (`ClipScorer`) : il faut au moins 0,7 s et 35 % de paquets avec de la voix. Jusqu'à 1 point pour la durée (1 pour 1,2 à 6 s), 1 pour le volume moyen, 0,5 pour l'expressivité, 0,5 ou 1 pour un cri (pic au-dessus de −10 ou −6 dBFS, tag `loud`) ; les moments de jeu (`Moments`) dans les 2,5 s avant ou 1,5 s après : coup reçu d'au moins un cœur (+1,5, `hurt`), vie sous 30 % (+1, `panic`), mort (+3, `death`), monstre ou joueur tué (+1, `kill`), diamant, émeraude, débris antiques ou minerai de matière du vide (+2, `find`) ; +0,75 si un joueur à moins de 32 blocs venait de parler (`conversation`). Gardée à partir de 0,8.
+- Banque (`VoiceBank`) : un `SavedData` par joueur (`data/examplemod_voice_<uuid>.dat`), les paquets Opus sont gardés tels quels, `mimicVoiceClips` phrases au plus ; une nouvelle ne remplace la moins bonne que si elle est meilleure (avec un petit bonus aux récentes).
+- Parole (`Mimic`, `ClipPicker`, `MimicVoice`) : seulement si un joueur est à moins de 16 blocs (24 pour un cri), et jamais pendant qu'un joueur à moins de 24 blocs parle. Il répond parfois (40 %) juste après qu'un joueur proche a fini sa phrase (0,7 à 2,5 s après), et parle de lui-même toutes les 20 à 50 s, après 4 s de silence. Déguisé : de la conversation (jamais ce qui a été dit en prenant des coups, rarement un cri ou un mot isolé). À la révélation et quand il est blessé (30 %) : cris et panique. Après avoir tué un joueur (50 %) : ce que le joueur copié disait en tuant. Une phrase ne revient pas avant 4 min. Les paquets partent toutes les 20 ms dans un `EntityAudioChannel` accroché à l'imitateur (portée de Simple Voice Chat) : on l'entend en 3D comme un joueur, avec l'icône de haut-parleur au-dessus de lui.
+- Vie privée : à la connexion, si Simple Voice Chat est là et `mimicRecordVoice` est vrai, un message gris prévient que les imitateurs peuvent reprendre ta voix. Avec `mimicRecordVoice` à faux, rien n'est enregistré (on note seulement qui parle, pour ne pas couper la parole).
+- Le mod d'origine a aussi des commandes `/mimic` et le combat contre les monstres : pas repris (D39 ne les demande pas).
+
+### 8 bis.9 Ressources
 
 | Type | Entrées |
 |---|---|
 | Modèle d'item | `models/item/mimic_spawn_egg.json`, parent `minecraft:item/template_spawn_egg`, écrit à la main comme celui du hérisson |
-| Lang | `entity.examplemod.mimic`, `item.examplemod.mimic_spawn_egg`, `examplemod.configuration.mimic`, `.mimicSanityThreshold`, `.mimicChancePerSecond`, en en_us et fr_fr |
+| Lang | `entity.examplemod.mimic`, `item.examplemod.mimic_spawn_egg`, `examplemod.configuration.mimic` et les clés des réglages de 8 bis.6, `examplemod.mimic.voice_notice`, en en_us et fr_fr |
 | Textures | aucune : le skin vient du joueur copié |
-| Sons | vanilla : `PLAYER_HURT`, `PLAYER_DEATH`, `ENDERMAN_STARE` |
+| Sons | vanilla : `PLAYER_HURT`, `PLAYER_DEATH`, `PLAYER_ATTACK_*`, `ENDERMAN_STARE` ; la voix vient des joueurs |
 | Datagen | rien ; pas de loot table, l'XP suffit |
 
 **Critères d'acceptation**
-- [ ] Avec `/sanity set 0` à la surface du Gloom, un imitateur apparaît en général en moins de 2 min, entre 16 et 28 blocs.
+- [ ] Avec `/sanity set 0` à la surface du Gloom, un imitateur apparaît en général en moins de 2 min, entre 24 et 36 blocs, dans le dos.
 - [ ] Aucun imitateur au-dessus de 70 de santé mentale, hors du Gloom, en créatif, en spectateur ou en Paisible.
-- [ ] Il a le skin (large ou fin), le pseudo et l'équipement du joueur copié, et tient ses objets dans la bonne main.
-- [ ] Avant la révélation, il suit sa victime à 3 à 6 blocs sans l'attaquer, et s'accroupit et frappe en même temps que le joueur copié.
-- [ ] Il se révèle entre 15 et 45 s après la copie si une victime est à moins de 20 blocs, ou dès le premier dégât : son, pseudo brouillé en rouge, accélération, attaque.
+- [x] Il copie un joueur absent, jamais un joueur à moins de 48 blocs. GameTest du 30/10 : sur 400 tirages, jamais le joueur d'à côté, 62 fois le joueur visé lui-même ; 12 apparitions entre 26 et 35 blocs, toutes dans le dos.
+- [x] Le skin d'un joueur déconnecté s'affiche : capture du 30/10 avec le profil public d'un vrai compte (Notch), texture téléchargée par le client.
+- [x] Il vient à 4,5 blocs et refait l'accroupissement (GameTest : arrêt à 4,0 blocs, accroupi après le joueur).
+- [x] Il se révèle collé à 1,5 bloc pendant 1,5 s, sur un joueur à 5 PV à 7 blocs, et au bout du délai (GameTests).
+- [x] Seul, il rejoue un déplacement enregistré (GameTests : 8 à 13 blocs parcourus).
+- [x] Au bout du délai de départ, il s'en va dans le dos du joueur et reste s'il est devant ses yeux (GameTest).
+- [x] Avec Simple Voice Chat : 2,2 s de voix deviennent une phrase gardée (note 1,9), et la lecture de 50 paquets dure 1 s (GameTests). Sans le mod, le client tourne et l'imitateur marche normalement.
+- [ ] À deux vrais joueurs avec Simple Voice Chat, il parle avec la voix de l'absent (pas testable sans micro).
 - [ ] À sa mort, il ne lâche que de l'XP, jamais l'équipement copié.
-- [ ] Un imitateur révélé reste révélé et rapide après un rechargement du monde.
-- [ ] À deux joueurs, il prend l'apparence de l'un et suit l'autre.
-- [ ] Posé avec l'œuf ou `/summon`, il copie le joueur le plus proche.
+- [ ] Un imitateur révélé reste révélé après un rechargement du monde.
+- [ ] Posé avec l'œuf ou `/summon`, il copie un joueur connu et absent, sinon le plus proche.
 
-**Estimation** : 6 à 8 h, dont la moitié pour le rendu.
+**Estimation** : 6 à 8 h pour la première version ; la reprise de D39 s'appuie sur le code du mod `mimic`.
 
 ---
 
@@ -993,7 +1061,7 @@ La première version téléportait le joueur d'un coup : c'était saccadé. Le d
 9. Effets : `SWEEP_ATTACK` le long de chaque segment (un par bloc), `PLAYER_ATTACK_SWEEP` au départ, et un champ de vision élargi de 15 % pendant le dash (`client/DashFov`, réduit par le réglage d'accessibilité « Effets de champ de vision »).
 10. Coûts : cooldown posé des deux côtés, pour que le client ne puisse pas relancer un dash avant la réponse du serveur, sur le type d'item donc sur les deux katanas. Ensuite `hurtAndBreak(1, …)` sur chaque katana utilisé, côté serveur.
 11. État : attachment `katana_dash` (ni sérialisé ni synchronisé), retiré à la fin du dash.
-12. Chute [Demande, D26] : aucune chute ne blesse entre un dash et le retour au sol. Côté serveur, l'attachment `katana_dash` n'est retiré qu'une fois le balayage fini et le joueur au sol (`onGround`) ; tant qu'il existe, `LivingFallEvent` est annulé. Un dash tout droit vers le haut, ou lancé en pleine chute, ne fait donc aucun dégât à l'atterrissage. Le balayage, les coups et l'invulnérabilité (`isDashing()`) gardent leur durée. Avant D26, la chute après le dash comptait : 4 dégâts après un dash vertical.
+12. Chute [Demande, D26] : aucune chute ne blesse entre un dash et le retour au sol. Côté serveur, l'attachment `katana_dash` n'est retiré qu'une fois le balayage fini, le joueur au sol (`onGround`) et sa distance de chute revenue à 0 ; tant qu'il existe, `LivingFallEvent` est annulé. La condition sur la distance de chute compte : le serveur simule le joueur entre deux paquets et touche parfois le sol un tick avant le vrai atterrissage, qui arrive ensuite avec le paquet du client. Un dash tout droit vers le haut, ou lancé en pleine chute, ne fait donc aucun dégât à l'atterrissage. Le balayage, les coups et l'invulnérabilité (`isDashing()`) gardent leur durée. Avant D26, la chute après le dash comptait : 4 dégâts après un dash vertical.
 
 Il n'y a ni paquet réseau custom ni entité custom : le paquet vanilla d'utilisation d'objet suffit, puisque les deux côtés calculent le même trajet.
 
@@ -1057,7 +1125,7 @@ On a écarté l'idée de vider automatiquement la main gauche : l'objet serait p
 - [x] Le dash traverse un groupe de 3 monstres et les touche tous, chacun une fois, au moment où le joueur passe ; il s'arrête devant un mur, sans jamais finir dedans.
 - [x] Avec un bouclier en main gauche, impossible de le lever ; avec un second katana, le dash passe à 8 blocs et aux dégâts du mode double (vérifié avec 14, la valeur d'avant D14).
 - [x] Le mouvement est continu (4 ticks), et un dash qui finit en l'air laisse le joueur suspendu 0,2 s (0,5 s avant D19) ; au sol, on peut sauter tout de suite.
-- [x] Le dash suit le regard (haut, bas, côtés) ; au sol, regarder vers le bas dashe à l'horizontale. Mesuré dans le client le 26/10 : 7,00 blocs à l'horizontale, au sol en regardant à 30° vers le bas aussi ; 4,95 en avant et 4,95 en haut à 45° ; 7,00 tout droit vers le haut ; suspension de 4 ticks à chaque fois ; positions identiques côté client et côté serveur. Dégâts de chute ensuite : 2 après le dash à 45°, 4 après le dash vertical, supprimés depuis D26 (GameTest du 26/10 : chute de 12 blocs après un dash, aucun dégât ; la même chute sans dash, 6 dégâts ; protection retirée au sol).
+- [x] Le dash suit le regard (haut, bas, côtés) ; au sol, regarder vers le bas dashe à l'horizontale. Mesuré dans le client le 26/10 : 7,00 blocs à l'horizontale, au sol en regardant à 30° vers le bas aussi ; 4,95 en avant et 4,95 en haut à 45° ; 7,00 tout droit vers le haut ; suspension de 4 ticks à chaque fois ; positions identiques côté client et côté serveur. Dégâts de chute ensuite : 2 après le dash à 45°, 4 après le dash vertical, supprimés depuis D26 (GameTest du 26/10 : chute de 12 blocs après un dash, aucun dégât ; la même chute sans dash, 6 dégâts ; protection retirée au sol). Vérifié dans le client le 28/10 : aucun dégât de chute dans les 5 cas (au sol à plat, regard vers le bas, 45° vers le haut, tout droit vers le haut, en l'air vers le bas).
 - [ ] Le cooldown s'affiche sur les deux katanas.
 - [ ] Un totem en main gauche ne sauve pas.
 - [ ] Les fragments ne tombent que dans l'Entre-monde, et seulement quand c'est un joueur qui tue.
@@ -1158,7 +1226,7 @@ Il n'y a pas de déclencheur vanilla pour « commencer à perdre de la santé me
 - un `CriterionTrigger` custom : propre, mais il faut une classe, un codec et un registre ;
 - `minecraft:impossible` et un appel en code : `player.getAdvancements().award(server.getAdvancements().get(id), "lost_sanity")`.
 
-Je recommande la seconde. L'`id` est une constante, et l'appel n'a lieu qu'au passage de 100 à moins de 100. `award` ne fait rien si le succès est déjà obtenu.
+Choix retenu : la seconde. L'`id` est une constante, et l'appel n'a lieu qu'au passage de 100 à moins de 100. `award` ne fait rien si le succès est déjà obtenu.
 
 ### 12.3 Fichiers
 
@@ -1178,7 +1246,7 @@ Les JSON sont écrits à la main dans `src/main/resources/data/examplemod/advanc
   },
   "display": {
     "icon": {
-      "id": "examplemod:dark_dirt"
+      "id": "examplemod:void_stone"
     },
     "title": {
       "translate": "advancements.examplemod.undervoid.root.title"
@@ -1186,7 +1254,7 @@ Les JSON sont écrits à la main dans `src/main/resources/data/examplemod/advanc
     "description": {
       "translate": "advancements.examplemod.undervoid.root.description"
     },
-    "background": "examplemod:textures/block/dark_dirt.png",
+    "background": "examplemod:textures/block/void_stone.png",
     "show_toast": true,
     "announce_to_chat": true
   }
@@ -1286,6 +1354,8 @@ com/ussm/examplemod/
   effect/ModEffects                   + HALLUCINATIONS, SERENITY, CLARITY
   entity/ModEntities, ModEntityEvents, MimicSpawner
   entity/custom/Hedgehog, Mimic
+  entity/mimic/MimicMemory, MimicProfile, MovementClip, MovementRecorder, MimicStalkGoal, MimicReplayGoal, MimicEvents
+  entity/mimic/voice/VoiceRecorder, ClipScorer, ClipPicker, VoiceClip, VoiceBank, Moments, MimicVoice, MimicVoicePlugin
   item/ModItems, ModArmorMaterials, ModToolTiers, KatanaEvents
   item/custom/KatanaItem, KatanaDash, HazmatArmorItem
   network/ModEvents                   accès et sortie de la dimension (réécrit)
@@ -1309,7 +1379,7 @@ Le `Config` d'exemple est remplacé.
 
 | Config | Valeurs |
 |---|---|
-| SERVER (synchronisée aux clients) | durée de survie au vide (200 ticks), vitesses de santé mentale par situation, `M_hazmat`, seuils des paliers, distances, dégâts et cooldowns du katana, fenêtre et cooldown de la parade, seuil de santé mentale et chance d'apparition des imitateurs, perte de santé mentale et dégâts du miasme, chances de fragment (si on passe la loot table en config) |
+| SERVER (synchronisée aux clients) | durée de survie au vide (100 ticks), vitesses de santé mentale par situation, `M_hazmat`, seuils des paliers, seuil et dégâts de l'euphorie, distances, dégâts et cooldowns du katana, fenêtre et cooldown de la parade, seuil de santé mentale, chance d'apparition, délais, départ, copie de soi, déplacements et voix des imitateurs, perte de santé mentale et dégâts du miasme, chances de fragment (si on passe la loot table en config) |
 | CLIENT | `hallucinationIntensity` |
 
 Les valeurs se lisent avec `.get()`. NeoForge les met en cache : aucun coût à les lire chaque seconde.
@@ -1417,7 +1487,7 @@ On écrit du code auto-explicatif : des noms clairs plutôt que des commentaires
 3. **Comment les jurés testent-ils la dimension** si l'accès demande l'End ? Monde de démo, accès plus précoce, ou les deux ?
 4. **Sortie de la dimension** : réglée le 26/10 par D15. Failles du Bloom, et la sortie au-dessus de Y 256 est gardée (§5.3).
 5. **Rôle du `spawner_receptacle`** : il existe dans le code, mais sa fonction n'est pas décrite.
-6. **Lecture de D3** : le chronomètre de 10 s suffit-il, ou veut-on aussi un seuil de profondeur ?
+6. **Lecture de D3** : le chronomètre de 5 s suffit-il, ou veut-on aussi un seuil de profondeur ?
 7. **Combinaison incomplète** : aucun effet (proposé), ou un bonus par pièce ?
 8. **Faut-il de nouveaux monstres** dans le Gloom, ou les monstres vanilla suffisent-ils pour la jam ? D12 en demande un, l'imitateur (§8 bis) ; la question reste ouverte pour les autres.
 9. **Hérisson** : simple animal, ou compagnon apprivoisable ?
@@ -1432,8 +1502,8 @@ Mis à jour le 26/10/2026. Les textures sont des placeholders, à redessiner. Ri
 |---|---|---|
 | A. Socle | Partiel | Template nettoyé (`ExampleMod`, `ExampleModClient`, `Config`), code de tutoriel commenté retiré des features, lang en_us et fr_fr complètes. Reste : mod_id et nom affiché (« Example Mod » dans la liste des mods, §17 question 1), versionner `src/generated/resources` (regénéré et à jour) |
 | B. Dimension | Fait | Noise settings, 3 fonctions de densité et un bruit (§4.3), biomes `gloom` et `bloom` à la place de `test_biome`, surface rules, arbre du vide et son `TreeGrower`, buissons morts, fleurs et végétation du Bloom, pot de fleur, tags et recettes du bois du vide, effets de dimension, brouillard, musique coupée dans le Gloom |
-| C. Accès et sortie | Fait | `ModEvents` réécrit : chrono de 200 ticks (config `voidSurvivalTicks`), transfert immédiat en créatif et en spectateur, arrivée sûre, sortie au-dessus de Y 256 vers le point de réapparition |
-| D. Santé mentale | Fait | Attachment synchronisé, calcul à 1 Hz, paliers, HUD, commande `/sanity`, type de dégât `insanity`. Depuis D25, l'overworld remet la jauge à 100 et retire les hallucinations (GameTest du 26/10 : 30 → 100) |
+| C. Accès et sortie | Fait | `ModEvents` réécrit : chrono de 100 ticks depuis D34, 200 avant (config `voidSurvivalTicks`), transfert immédiat en créatif et en spectateur, arrivée sûre, sortie au-dessus de Y 256 vers le point de réapparition |
+| D. Santé mentale | Fait | Attachment synchronisé, calcul à 1 Hz, paliers, HUD, commande `/sanity`, types de dégât `insanity` et `euphoria` (euphorie au-dessus de 95 depuis D27). Depuis D25, l'overworld remet la jauge à 100 et retire les hallucinations (GameTest du 26/10 : 30 → 100) |
 | E. Potions | Fait | Sérénité et Clarté (6 potions), alchimie, masque qui empêche de boire |
 | F. Hallucinations | Fait | Sons, caméra, champ de vision, vignette, ombre |
 | G. Hazmat | Fait (option A) | 4 pièces, tissu enduit, recettes, tags d'enchantabilité, tooltip, overlay du masque (Could) |
@@ -1441,7 +1511,7 @@ Mis à jour le 26/10/2026. Les textures sont des placeholders, à redessiner. Ri
 | I. Hérisson | Fait | Entité GeckoLib (modèle et 3 animations), boule, piquants, caresse (cooldown sauvegardé avec l'entité), reproduction, spawn en forêt et dans le Bloom. La règle vanilla des animaux (lumière forte ou herbe) l'empêchait d'apparaître sur la mousse sombre du Bloom : il préfère maintenant les blocs de `hedgehog_spawnable_on` |
 | J. Succès | Fait | 4 succès du Discord et les 3 optionnels du §12.4 |
 | K. Finitions | Partiel | Lang faite, sauf l'infobulle du `spawner_receptacle`. Relecture complète du code faite (voir plus bas). Restent les textures définitives, l'équilibrage en jeu, le monde de démo pour les jurés (§17 question 3) et les tests à plusieurs |
-| L. Imitateurs | Fait | Entité `mimic` (copie du skin, du pseudo et de l'équipement sans drop, gestes du joueur copié, suivi de la victime, révélation après 15 à 45 s ou au premier dégât), apparition à 1 Hz dans le Gloom sous 70 de santé mentale, en surface seulement depuis D23, rendu en joueur large ou fin, œuf, section de config `mimic`, lang. Respecte `doMobSpawning` et `spawn-monsters`. Vérifié par 11 GameTests et des captures en jeu (skin, armure, épée, pseudo, accroupi, révélation). Limite connue : la cape du joueur copié n'est pas dessinée |
+| L. Imitateurs | Fait | Entité `mimic` (copie du skin, du pseudo et de l'équipement sans drop, gestes du joueur copié, suivi de la victime, révélation après 15 à 45 s ou au premier dégât), apparition à 1 Hz dans le Gloom sous 70 de santé mentale, en surface seulement depuis D23, rendu en joueur large ou fin, œuf, section de config `mimic`, lang. Respecte `doMobSpawning` et `spawn-monsters`. Vérifié par 11 GameTests et des captures en jeu (skin, armure, épée, pseudo, accroupi, révélation). Depuis D39 (30/10) : joueur absent avec son skin, apparition dans le dos, approche en ami, révélation au contact, sur un joueur affaibli ou au bout de 20 à 60 s, rejeu des déplacements, départ au bout de 5 min, voix optionnelle avec Simple Voice Chat ; 10 GameTests et des captures. Limite connue : la cape du joueur copié n'est pas dessinée |
 | H bis. Katana renforcé (D14, D19, D20, D22) | Fait | Build et GameTests du 26/10 : mêlée à 8, dash à 8 et 20 (12 et 30 depuis D20, cooldowns de 1 et 2 s, 7 blocs pour un katana), dash dans la direction du regard (D19), sans dégâts de chute jusqu'au retour au sol (D26), durabilité 1500, enchantements sur le dash, recharge au kill (complète pour un joueur, de moitié pour un mob depuis D22, config `mobKillCooldown`), invulnérabilité pendant les 4 ticks du mouvement, parade (accroupi + clic droit), config `parryTicks` et `parryCooldown`, lang. Restent les tests en jeu et l'équilibrage (écart de DPS réduit avec Tranchant, §10.3 ; dégâts parés par la règle du coup direct, §10.5) |
 | C bis. Failles du Bloom (D15) | Fait | Build, GameTests et capture du 26/10 : bloc `bloom_rift` (portail vanilla vers l'overworld, mêmes X et Z), particules et son, texture animée, entrée de blockstate, features `bloom_rift` et `bloom_rift_placed` dans le Bloom, lang. La sortie au-dessus de Y 256 est gardée. Une faille tous les 110 chunks environ depuis D24 (10 avant, §5.3) |
 | B bis. Miasme (D16, D17) | Fait | Build, GameTests et captures du 26/10 : biome `miasma`, bruit `miasma` dans `noise_router.vegetation`, placement par plages de `humidity` et `depth`, surface rules, brouillard violet à 6 blocs (9 avec le masque), perte de 3 par seconde, demi-cœur toutes les 3 s sauf combinaison complète, type de dégât `miasma`, imitateurs, config `miasma`, lang. Seuil 0,35, octave −6 et `xz_scale` 1,5 réglés sur une génération réelle : 11 à 13 % de la surface, taches de 20 à 60 blocs (§4.9). Depuis D21, particule maison lumineuse et émetteur autour du joueur |
@@ -1456,7 +1526,33 @@ Entrées ajoutées à la datagen, sans réorganiser les providers :
 
 Tout le reste est en JSON écrit à la main dans `src/main/resources` : noise settings, fonctions de densité, bruits (`bloom_caverns`, `miasma`), modèles d'items, recettes, tags, succès, loot modifier, biome modifier, types de dégât (`insanity`, `miasma`). La texture animée de la faille est dessinée par un script Python (PIL), avec son `.mcmeta`.
 
-Les vérifications ci-dessous datent d'avant les demandes du 26/10 (D14 à D26), qui sont testées à part (voir les lignes « bis » du tableau).
+**Intégration du 30/10.** La branche a repris `main` (PR #1 fusionnée, puis les commits d'OeildeLynx31 : `void_stone`, `void_matter_ore`, matière instable, matière du vide, stabilisateur, boule du vide) et `dev-itzsuky` (10 fleurs et leurs pots, potions de Restauration, de Détresse et d'Érosion, onglet de potions, capture de spawner avec le réceptacle). L'Érosion multiplie les pertes de santé mentale (×2, ×3 en version forte) ; elle se cumule avec la Sérénité et ne joue pas avec la combinaison. Le masque à gaz bloque toutes les potions de santé mentale à boire : Sérénité, Clarté, Restauration, Détresse et Érosion (GameTest du 30/10 ; une potion vanilla reste buvable). Les potions instantanées (Restauration, Détresse) changent la jauge directement : elles ignorent les multiplicateurs (Sérénité, Clarté, Érosion), et n'ont aucun effet en créatif, en spectateur ou avec la combinaison complète (D4). Build, GameTests et client vérifiés le 30/10. Points ouverts :
+- `VoidBallItem` manquait dans le dépôt (`ModItems` l'utilise) : une version provisoire, sur le modèle de la boule de neige, lance `VoidBallProjectile` en attendant le vrai fichier.
+- Les textures des 10 fleurs d'ItzSuky manquaient au moment de la fusion ; elles ont été reprises telles quelles de `main` le 30/10, après leur ajout par ItzSuky.
+- Pierre sombre herbeuse (`examplemod:dirty_void_stone`, « Dark Grass Stone », D35) : le bloc existait seulement dans la version locale d'OeildeLynx31 (seule sa texture de côté était poussée). Recréé le 30/10 avec le même identifiant que sa texture. Depuis D35, il reprend telles quelles les textures qu'OeildeLynx31 a poussées ensuite : côtés `corrupted_grass_block_side`, dessus `corrupted_grass_block_top`, dessous `void_stone` ; son du nylium. `void_stone` s'appelle « Dark Stone » (« Pierre sombre »). C'est la couche du dessus en surface du Gloom et du miasme (au-dessus de Y 96), avec `void_stone` dessous. Elle est dans `minecraft:dirt`, donc les pousses du vide tiennent dessus et les arbres sont revenus ; recouverte d'un bloc plein, elle redevient `void_stone` ; cassée, elle donne `void_stone` (elle-même avec Toucher de soie). Mesuré le 30/10 sur 144 chunks neufs : 99,8 % de la surface en pierre sombre herbeuse, 361 blocs de bûche du vide (0 avant). OeildeLynx31 a poussé le 30/10 son propre `corrupted_grass_block` (sur `dark_dirt`) : à la prochaine fusion, garder une seule des deux herbes.
+
+**Ajouts du 30/10 (D29 à D33).**
+- Bois du vide [D29] : `void_stairs`, `void_slab`, `void_fence`, `void_fence_gate`, `void_door`, `void_trapdoor`, `void_button` (30 ticks), `void_pressure_plate`, sur le modèle du chêne (`BlockSetType.OAK`, `WoodType.OAK`). Modèles par la datagen avec la texture des planches ; textures dessinées pour la porte (haut à deux fenêtres, bas avec poignée), la trappe ajourée et l'icône de la porte. Recettes vanilla (4 escaliers, 6 dalles, 3 barrières, 1 portillon, 3 portes, 2 trappes, 1 bouton, 1 plaque), tags `wooden_*`, `fence_gates`, `mineable/axe`. La porte se ramasse en un exemplaire, la dalle double en deux.
+- Vitesse [D30] : +10 % de vitesse de marche avec un katana en main principale, +20 % avec deux (`katanaSpeed`, `dualKatanaSpeed`). Modificateur temporaire posé à chaque changement d'équipement (`LivingEquipmentChangeEvent`), pas de calcul par tick. Un katana seul en main gauche ne donne rien (§10.2).
+- Pousse du vide [D31] : `VoidSaplingBlock` ne pousse que dans l'Entre-monde ; ailleurs, ni croissance naturelle ni poudre d'os (elle n'est pas consommée).
+- Décors 3D [D32] : les modèles Blockbench du lot ont des rotations libres que les modèles de bloc vanilla refusent (seulement 0, ±22,5 et ±45° sur un axe) ; ils sont exportés en OBJ et chargés par `neoforge:obj`, donc rendus comme des blocs normaux. Blocs `pebbles`, `hanging_chain`, `bloom_mushroom`, `stone_skull`, `eye_nest`, `bone_pile`, `scattered_bone`, `eye_bloom` (classe `DecorBlock` : orientation aléatoire, forme qui suit la rotation, cassés si leur support disparaît), sans item au départ ; depuis D36, chacun a un objet dans l'onglet créatif (sans recette). Les crânes sont solides, les autres se traversent ; l'œil bloom éclaire à 5, le nid d'œil à 3 ; os et crânes donnent des os.
+  - Gloom et miasme (`gloom_decor`) : 2 essais par chunk en surface (tas d'os, os, cailloux, crânes de pierre, nids d'œil rares).
+  - Bloom (`bloom_decor`) : 10 essais par chunk sur le sol des cavernes (champignons, yeux bloom) ; chaînes de 2 blocs pendues aux plafonds (`bloom_chain`, 3 essais).
+  - Mesuré sur 144 chunks neufs : 95 tas d'os, 78 os, 65 cailloux, 36 crânes, 14 nids d'œil, 60 champignons, 31 yeux bloom, 44 chaînes.
+- Masque 3D [D33] : le modèle du masque est affiché sur la tête des joueurs et des imitateurs (`HazmatMaskLayer`, même placement que `CustomHeadLayer`, réglage `head` du modèle Blockbench) ; la tête a été retirée de `hazmat_layer_1.png`. Sur les autres entités (supports d'armure, monstres), le masque n'est pas dessiné.
+
+**Ajouts du 30/10, suite (D34 à D39).**
+- Vide [D34] : 5 s au lieu de 10 (`voidSurvivalTicks` à 100, §5.1).
+- Noms et herbe [D35] : `void_stone` s'appelle « Dark Stone » (« Pierre sombre ») et `dirty_void_stone` « Dark Grass Stone » (« Pierre sombre herbeuse »). Elle prend les textures d'OeildeLynx31 telles quelles (`corrupted_grass_block_side`, `corrupted_grass_block_top`), à la place de la frange éclaircie et du dessus en pierre.
+- Onglet créatif [D36] : les 8 décors 3D ont un objet (modèle d'objet qui reprend le modèle OBJ du bloc, avec les réglages d'affichage d'un bloc ; la chaîne est réduite pour tenir dans la case). La chaîne se pose aussi juste sous un plafond (le haut du modèle rentre alors dans le bloc). Ce qu'ils lâchent ne change pas.
+- Cailloux [D37] : la texture du modeleur était presque noire (gris de 15 à 36) et paraissait noire dans la pénombre du Gloom ; recolorée dans les tons de `void_stone`, même motif.
+- Hallucinations [D38] : vision double et mirages (§8.4 bis).
+- Imitateurs [D39] : §8 bis, réécrit.
+- Fleurs [D40] : les 10 fleurs d'ItzSuky partageaient la même image provisoire (celle de `bloom_flower`). Chacune a maintenant sa texture : lys blanc (`calm_lily`), clochettes violettes et baie noire (`nightshade_bloom`), coquelicot gris de cendre (`ashen_poppy`), tulipe crème (`pale_tulip`), marguerite de braise (`ember_daisy`), orchidée claire (`glass_orchid`), violettes sur de la mousse (`moss_violet`), fleur d'encre (`ink_blossom`), clochettes couleur crépuscule (`dusk_bell`), fougère pâle à fleur fantôme (`ghost_fern_bloom`).
+- Effondrement [D41] : 1 dégât toutes les 5 s au lieu de 2 (§6.5).
+- Les textures des fleurs d'ItzSuky sont reprises de `main` (voir plus haut).
+
+Les vérifications ci-dessous datent d'avant les demandes du 26/10 (D14 à D27), qui sont testées à part (voir les lignes « bis » du tableau).
 
 Vérifications faites :
 - build complet sans erreur ni warning ; `runData` sans erreur ;
