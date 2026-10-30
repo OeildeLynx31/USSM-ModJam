@@ -1,6 +1,8 @@
 {
+  "replace": false,
   "values": [
     "examplemod:bedrock_breaker",
-    "examplemod:dirty_void_stone"
+    "examplemod:dirty_void_stone",
+    "examplemod:dark_deepslate"
   ]
 }

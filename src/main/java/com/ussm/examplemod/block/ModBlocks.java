@@ -36,6 +36,19 @@ public class ModBlocks {
             () -> new DirtyVoidStone(BlockBehaviour.Properties.of().strength(1.5f)
                     .sound(SoundType.NYLIUM).randomTicks()));
 
+    public static final DeferredBlock<Block> DARK_DIRT = registerBlock("dark_dirt",
+            () -> new Block(BlockBehaviour.Properties.of().strength(1.5f)
+                    .sound(SoundType.GRASS)));
+
+    public static final DeferredBlock<Block> DARK_DEEPSLATE = registerBlock("dark_deepslate",
+            () -> new Block(BlockBehaviour.Properties.ofFullCopy(Blocks.DEEPSLATE)));
+
+    public static final DeferredBlock<Block> CORRUPTED_GRASS = registerBlock("corrupted_grass",
+            () -> new CorruptedGrassPlantBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.SHORT_GRASS)));
+
+    public static final DeferredBlock<Block> DEAD_SHRUB = registerBlock("dead_shrub",
+            () -> new DeadBushBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.DEAD_BUSH)));
+
     public static final DeferredBlock<Block> VOID_LOG = registerBlock(
             "void_log",
             () -> new ModFlammableRotatedPillarBlock(
@@ -97,7 +110,7 @@ public class ModBlocks {
             () -> new FlowerPotBlock(() -> (FlowerPotBlock) Blocks.FLOWER_POT, NIGHTSHADE_BLOOM,
                     BlockBehaviour.Properties.ofFullCopy(Blocks.POTTED_ALLIUM)));
 
-    public static final DeferredBlock<Block> ASHEN_POPPY = registerBlock("ashen_poppy",
+        public static final DeferredBlock<Block> ASHEN_POPPY = registerBlock("ashen_poppy",
             () -> new FlowerBlock(MobEffects.WITHER, 4f,
                     BlockBehaviour.Properties.ofFullCopy(Blocks.ALLIUM)));
     public static final DeferredBlock<Block> POTTED_ASHEN_POPPY = BLOCKS.register("potted_ashen_poppy",

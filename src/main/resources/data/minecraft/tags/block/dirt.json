@@ -1,5 +1,7 @@
 {
+  "replace": false,
   "values": [
-    "examplemod:dirty_void_stone"
+    "examplemod:dirty_void_stone",
+    "examplemod:dark_dirt"
   ]
 }

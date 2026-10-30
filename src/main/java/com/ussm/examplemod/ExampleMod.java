@@ -46,6 +46,11 @@ public class ExampleMod {
                 output.accept(ModItems.SPAWNER_RECEPTACLE.get()); // Add the example item to the tab. For your own tabs, this method is preferred over the event
                 output.accept(ModBlocks.VOID_STONE.asItem());
                 output.accept(ModBlocks.DIRTY_VOID_STONE.asItem());
+                output.accept(ModBlocks.DEAD_SHRUB.asItem());
+                output.accept(ModBlocks.MOSS_VIOLET.asItem());
+                output.accept(ModBlocks.DARK_DIRT.asItem());
+                output.accept(ModBlocks.DARK_DEEPSLATE.asItem());
+                output.accept(ModBlocks.CORRUPTED_GRASS.asItem());
                 output.accept(ModBlocks.VOID_MATTER_ORE.asItem());
                 output.accept(ModBlocks.BEDROCK_BREAKER.asItem());
                 output.accept(ModBlocks.VOID_SAPLING.asItem());
@@ -89,7 +94,6 @@ public class ExampleMod {
                 output.accept(ModBlocks.PALE_TULIP.asItem());
                 output.accept(ModBlocks.EMBER_DAISY.asItem());
                 output.accept(ModBlocks.GLASS_ORCHID.asItem());
-                output.accept(ModBlocks.MOSS_VIOLET.asItem());
                 output.accept(ModBlocks.INK_BLOSSOM.asItem());
                 output.accept(ModBlocks.DUSK_BELL.asItem());
                 output.accept(ModBlocks.GHOST_FERN_BLOOM.asItem());

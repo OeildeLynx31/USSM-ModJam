@@ -35,6 +35,10 @@ public class ModBlockStateProvider extends BlockStateProvider { // Juste ne TOUC
         blockWithItem(ModBlocks.VOID_MATTER_ORE);
         simpleBlockWithItem(ModBlocks.BEDROCK_BREAKER.get(), models().cubeColumn("bedrock_breaker",
                 modLoc("block/bedrock_breaker_side"), modLoc("block/bedrock_breaker_end")));
+        blockWithItem(ModBlocks.DARK_DIRT);
+        blockWithItem(ModBlocks.DARK_DEEPSLATE);
+        saplingBlock(ModBlocks.CORRUPTED_GRASS);
+        saplingBlock(ModBlocks.DEAD_SHRUB);
 
         logBlock(((RotatedPillarBlock) ModBlocks.VOID_LOG.get()));
         axisBlock(((RotatedPillarBlock) ModBlocks.VOID_WOOD.get()), blockTexture(ModBlocks.VOID_LOG.get()), blockTexture(ModBlocks.VOID_LOG.get()));
