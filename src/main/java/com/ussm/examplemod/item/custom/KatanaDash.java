@@ -1,9 +1,6 @@
 package com.ussm.examplemod.item.custom;
 
 import com.ussm.examplemod.Config;
-import com.ussm.examplemod.item.ModItems;
-import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
-import it.unimi.dsi.fastutil.ints.IntSet;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -25,50 +22,51 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 
+import java.util.HashSet;
+import java.util.Set;
+
 public class KatanaDash {
-    public static final int TICKS = 4;
-
-    private static final int HIT_TICKS = TICKS + 3;
-
+    private static final int TICKS = 4;
+    //ca part vite et ca freine sur la fin du dash
     private static final float[] PROGRESS = {0f, 0.3f, 0.6f, 0.85f, 1f};
-    private static final double HIT_RADIUS = 1.5;
 
     private final Level level;
-    private final Vec3 waist;
+    private final Vec3 start;
     private final Vec3 direction;
     private final Vec3 path;
     private final float damage;
     private final int cooldown;
-    private final ItemStack weapon;
-    private final IntSet hit = new IntOpenHashSet();
+    private final ItemStack katana;
+    private final Set<Integer> hitEntities = new HashSet<>();
     private int tick;
     private double reached;
-    private boolean reset;
-    private boolean shortened;
+    private boolean killedPlayer;
+    private boolean killedMob;
     private boolean finished;
 
-    private KatanaDash(Level level, Vec3 waist, Vec3 direction, Vec3 path, float damage, int cooldown, ItemStack weapon) {
-        this.level = level;
-        this.waist = waist;
+    public KatanaDash(Player player, Vec3 direction, boolean dual) {
+        this.level = player.level();
+        this.start = new Vec3(player.getX(), player.getY(0.5), player.getZ());
         this.direction = direction;
-        this.path = path;
-        this.damage = damage;
-        this.cooldown = cooldown;
-        this.weapon = weapon;
-    }
+        this.damage = (dual ? Config.DUAL_DASH_DAMAGE.get() : Config.DASH_DAMAGE.get()).floatValue();
+        this.cooldown = dual ? Config.DUAL_DASH_COOLDOWN.get() : Config.DASH_COOLDOWN.get();
+        this.katana = player.getMainHandItem().copy();
 
-    public static KatanaDash start(Player player, Vec3 direction, boolean dual) {
         double distance = dual ? Config.DUAL_DASH_DISTANCE.get() : Config.DASH_DISTANCE.get();
-        float damage = (dual ? Config.DUAL_DASH_DAMAGE.get() : Config.DASH_DAMAGE.get()).floatValue();
-        int cooldown = dual ? Config.DUAL_DASH_COOLDOWN.get() : Config.DASH_COOLDOWN.get();
-        Level level = player.level();
-        Vec3 waist = player.position().add(0, player.getBbHeight() * 0.5, 0);
-        BlockHitResult wall = level.clip(new ClipContext(waist, waist.add(direction.scale(distance)), ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, player));
-        double travel = wall.getType() == HitResult.Type.MISS ? distance : Math.max(0, wall.getLocation().distanceTo(waist) - 0.5);
-        return new KatanaDash(level, waist, direction, direction.scale(travel), damage, cooldown, player.getMainHandItem().copy());
+        BlockHitResult hitResult = level.clip(new ClipContext(
+                start,
+                start.add(direction.scale(distance)),
+                ClipContext.Block.COLLIDER,
+                ClipContext.Fluid.NONE,
+                player
+        ));
+        if (hitResult.getType() != HitResult.Type.MISS) {
+            distance = Math.max(0, hitResult.getLocation().distanceTo(start) - 0.5);
+        }
+        this.path = direction.scale(distance);
     }
 
-    public int cooldown() {
+    public int getCooldown() {
         return cooldown;
     }
 
@@ -77,57 +75,67 @@ public class KatanaDash {
     }
 
     public boolean tickMovement(Player player) {
-        Vec3 motion = player.getDeltaMovement();
         if (tick < TICKS) {
             player.setDeltaMovement(path.scale(PROGRESS[tick + 1] - PROGRESS[tick]));
         } else {
-            boolean hovering = tick < TICKS + Config.DASH_HOVER_TICKS.get() && canHover(player);
-            if (tick == TICKS) {
-                player.setDeltaMovement(Vec3.ZERO);
-            } else {
-                player.setDeltaMovement(motion.x, hovering ? 0 : motion.y, motion.z);
-            }
-            if (!hovering) {
-                return false;
-            }
+            if (tick == TICKS) player.setDeltaMovement(Vec3.ZERO);
+            // petite suspension en l'air a la fin (10 ticks c'etait trop long)
+            if (tick >= TICKS + Config.DASH_HOVER_TICKS.get()) return false;
+            if (player.isInLiquid() || player.getAbilities().flying || player.isFallFlying()) return false;
+            if (!player.level().noCollision(player, player.getBoundingBox().move(0, -0.1, 0))) return false;
+
+            Vec3 motion = player.getDeltaMovement();
+            player.setDeltaMovement(motion.x, 0, motion.z);
         }
         tick++;
         return true;
     }
 
     public boolean tickHits(ServerPlayer player) {
-        if (finished || player.level() != level) {
+        if (finished) return false;
+        //si on passe dans l'end en plein dash (sortie de l'undervoid par le haut)
+        if (player.level() != level) {
             finished = true;
             return false;
         }
+
         ServerLevel serverLevel = player.serverLevel();
-        Vec3 center = player.position().add(0, player.getBbHeight() * 0.5, 0);
-        double progress = Math.clamp(center.subtract(waist).dot(direction), reached, path.length());
-        Vec3 from = waist.add(direction.scale(reached));
-        Vec3 to = waist.add(direction.scale(progress));
+        Vec3 center = new Vec3(player.getX(), player.getY(0.5), player.getZ());
+        double progress = Mth.clamp(center.subtract(start).dot(direction), reached, path.length());
+        Vec3 from = start.add(direction.scale(reached));
+        Vec3 to = start.add(direction.scale(progress));
+
+        // on tape tout ce qui est a moins de 1.5 bloc du trajet
+        for (LivingEntity target : serverLevel.getEntitiesOfClass(LivingEntity.class, new AABB(from, to).inflate(1.5), e -> canHit(player, e))) {
+            Vec3 pos = target.getBoundingBox().getCenter();
+            double along = Mth.clamp(pos.subtract(start).dot(direction), reached, progress);
+            if (pos.distanceTo(start.add(direction.scale(along))) <= 1.5 && hitEntities.add(target.getId())) {
+                hurtTarget(serverLevel, player, target);
+            }
+        }
+
+        double length = from.distanceTo(to);
+        if (length > 0.01) {
+            int count = Math.max(1, (int) Math.round(length));
+            for (int i = 0; i < count; i++) {
+                Vec3 pos = from.lerp(to, (i + 0.5) / count);
+                serverLevel.sendParticles(ParticleTypes.SWEEP_ATTACK, pos.x, pos.y, pos.z, 1, 0, 0, 0, 0);
+            }
+        }
+
         reached = progress;
-        for (LivingEntity target : level.getEntitiesOfClass(LivingEntity.class, new AABB(from, to).inflate(HIT_RADIUS), target -> canHit(player, target))) {
-            if (distanceToSegment(target.getBoundingBox().getCenter(), from, to) <= HIT_RADIUS && hit.add(target.getId())) {
-                strike(serverLevel, player, target);
-            }
-        }
-        if (to.distanceToSqr(from) > 1.0E-4) {
-            int particles = Math.max(1, (int) Math.round(to.distanceTo(from)));
-            for (int i = 0; i < particles; i++) {
-                Vec3 point = from.lerp(to, (i + 0.5) / particles);
-                serverLevel.sendParticles(ParticleTypes.SWEEP_ATTACK, point.x, point.y, point.z, 1, 0, 0, 0, 0);
-            }
-        }
         tick++;
-        finished = tick >= HIT_TICKS || reached >= path.length();
+        finished = tick >= TICKS + 3 || reached >= path.length();
         return !finished;
     }
 
-    private void strike(ServerLevel serverLevel, ServerPlayer player, LivingEntity target) {
+    // copié de ThrownTrident#onHitEntity pour que les enchants marchent
+    private void hurtTarget(ServerLevel serverLevel, ServerPlayer player, LivingEntity target) {
         DamageSource source = player.damageSources().playerAttack(player);
-        float amount = EnchantmentHelper.modifyDamage(serverLevel, weapon, target, source, damage);
+        float amount = EnchantmentHelper.modifyDamage(serverLevel, katana, target, source, damage);
         if (target.hurt(source, amount)) {
-            EnchantmentHelper.doPostAttackEffectsWithItemSource(serverLevel, target, source, weapon);
+            //System.out.println("dash hit " + target + " " + amount);
+            EnchantmentHelper.doPostAttackEffectsWithItemSource(serverLevel, target, source, katana);
             if (target.isDeadOrDying()) {
                 onKill(player, target instanceof Player);
             }
@@ -135,45 +143,31 @@ public class KatanaDash {
         target.knockback(0.4, -direction.x, -direction.z);
     }
 
+    // kill de joueur = reset complet, kill de mob = juste la moitier du cooldown
     private void onKill(ServerPlayer player, boolean playerKill) {
-        if (reset || (shortened && !playerKill)) {
-            return;
-        }
-        Item katana = ModItems.KATANA.get();
+        if (killedPlayer || (killedMob && !playerKill)) return;
+
         ItemCooldowns cooldowns = player.getCooldowns();
-        int left = playerKill ? 0 : Mth.floor(cooldowns.getCooldownPercent(katana, 0) * cooldown * Config.MOB_KILL_COOLDOWN.get());
-        if (left > 0) {
-            cooldowns.addCooldown(katana, left);
+        Item item = katana.getItem();
+        if (playerKill) {
+            cooldowns.removeCooldown(item);
+            killedPlayer = true;
         } else {
-            cooldowns.removeCooldown(katana);
+            int left = Mth.floor(cooldowns.getCooldownPercent(item, 0) * cooldown * Config.MOB_KILL_COOLDOWN.get());
+            if (left > 0) {
+                cooldowns.addCooldown(item, left);
+            } else {
+                cooldowns.removeCooldown(item);
+            }
+            killedMob = true;
         }
-        reset = playerKill;
-        shortened = true;
         player.playNotifySound(SoundEvents.EXPERIENCE_ORB_PICKUP, SoundSource.PLAYERS, 0.6f, playerKill ? 1.6f : 1.1f);
     }
 
-    private static boolean canHover(Player player) {
-        return !player.isInLiquid() && !player.getAbilities().flying && !player.isFallFlying()
-                && player.level().noCollision(player, player.getBoundingBox().move(0, -0.1, 0));
-    }
-
     private static boolean canHit(Player player, LivingEntity target) {
-        if (target == player || !target.isAlive() || !target.isPickable()) {
-            return false;
-        }
-        if (target instanceof Player other && !player.canHarmPlayer(other)) {
-            return false;
-        }
-        return !(target instanceof OwnableEntity pet && player.equals(pet.getOwner()));
-    }
-
-    private static double distanceToSegment(Vec3 point, Vec3 from, Vec3 to) {
-        Vec3 segment = to.subtract(from);
-        double lengthSqr = segment.lengthSqr();
-        if (lengthSqr == 0) {
-            return point.distanceTo(from);
-        }
-        double t = Math.clamp(point.subtract(from).dot(segment) / lengthSqr, 0.0, 1.0);
-        return point.distanceTo(from.add(segment.scale(t)));
+        if (target == player || !target.isAlive() || !target.isPickable()) return false;
+        if (target instanceof Player other) return player.canHarmPlayer(other);
+        if (target instanceof OwnableEntity pet) return !player.equals(pet.getOwner());
+        return true;
     }
 }

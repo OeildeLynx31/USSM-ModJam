@@ -15,7 +15,6 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
-import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -46,26 +45,36 @@ import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.animation.AnimatableManager;
 import software.bernie.geckolib.animation.AnimationController;
+import software.bernie.geckolib.animation.AnimationState;
+import software.bernie.geckolib.animation.PlayState;
 import software.bernie.geckolib.animation.RawAnimation;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
 public class Hedgehog extends Animal implements GeoEntity {
-    private static final EntityDataAccessor<Boolean> CURLED = SynchedEntityData.defineId(Hedgehog.class, EntityDataSerializers.BOOLEAN);
+    private static final EntityDataAccessor<Boolean> CURLED =
+            SynchedEntityData.defineId(Hedgehog.class, EntityDataSerializers.BOOLEAN);
 
-    private static final RawAnimation IDLE = RawAnimation.begin().thenLoop("idle");
-    private static final RawAnimation WALK = RawAnimation.begin().thenLoop("walk");
-    private static final RawAnimation CURL = RawAnimation.begin().thenPlayAndHold("curl");
-
-    private static final int PET_COOLDOWN = 1200;
-    private static final int CURL_WHEN_HURT = 100;
-    private static final int CURL_WHEN_STARTLED = 60;
+    private static final RawAnimation IDLE_ANIM = RawAnimation.begin().thenLoop("idle");
+    private static final RawAnimation WALK_ANIM = RawAnimation.begin().thenLoop("walk");
+    private static final RawAnimation CURL_ANIM = RawAnimation.begin().thenPlayAndHold("curl");
 
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
     private int curlTicks;
-    private long lastPetTime = -PET_COOLDOWN;
+    private long lastPetTime;
 
     public Hedgehog(EntityType<? extends Animal> entityType, Level level) {
         super(entityType, level);
+    }
+
+    @Override
+    protected void registerGoals() {
+        this.goalSelector.addGoal(0, new FloatGoal(this));
+        this.goalSelector.addGoal(1, new BreedGoal(this, 1.0));
+        this.goalSelector.addGoal(2, new TemptGoal(this, 1.1, stack -> stack.is(ModTags.Items.HEDGEHOG_FOOD), false));
+        this.goalSelector.addGoal(3, new FollowParentGoal(this, 1.1));
+        this.goalSelector.addGoal(4, new WaterAvoidingRandomStrollGoal(this, 0.8));
+        this.goalSelector.addGoal(5, new LookAtPlayerGoal(this, Player.class, 6f));
+        this.goalSelector.addGoal(6, new RandomLookAroundGoal(this));
     }
 
     public static AttributeSupplier.Builder createAttributes() {
@@ -84,14 +93,14 @@ public class Hedgehog extends Animal implements GeoEntity {
     }
 
     @Override
-    protected void registerGoals() {
-        goalSelector.addGoal(0, new FloatGoal(this));
-        goalSelector.addGoal(1, new BreedGoal(this, 1.0));
-        goalSelector.addGoal(2, new TemptGoal(this, 1.1, stack -> stack.is(ModTags.Items.HEDGEHOG_FOOD), false));
-        goalSelector.addGoal(3, new FollowParentGoal(this, 1.1));
-        goalSelector.addGoal(4, new WaterAvoidingRandomStrollGoal(this, 0.8));
-        goalSelector.addGoal(5, new LookAtPlayerGoal(this, Player.class, 6f));
-        goalSelector.addGoal(6, new RandomLookAroundGoal(this));
+    public boolean isFood(ItemStack stack) {
+        return stack.is(ModTags.Items.HEDGEHOG_FOOD);
+    }
+
+    @Nullable
+    @Override
+    public AgeableMob getBreedOffspring(ServerLevel level, AgeableMob otherParent) {
+        return ModEntities.HEDGEHOG.get().create(level);
     }
 
     @Override
@@ -101,14 +110,15 @@ public class Hedgehog extends Animal implements GeoEntity {
     }
 
     public boolean isCurled() {
-        return entityData.get(CURLED);
+        return this.entityData.get(CURLED);
     }
 
-    private void curl(int ticks) {
+    // en boule il bouge plus
+    private void curlUp(int ticks) {
         curlTicks = Math.max(curlTicks, ticks);
         if (!isCurled()) {
             entityData.set(CURLED, true);
-            getNavigation().stop();
+            this.getNavigation().stop();
             playSound(SoundEvents.ARMADILLO_ROLL, 1f, 1.3f);
         }
     }
@@ -116,17 +126,22 @@ public class Hedgehog extends Animal implements GeoEntity {
     @Override
     public void aiStep() {
         super.aiStep();
-        if (level().isClientSide()) {
+        if (this.level().isClientSide()) {
             return;
         }
-        if (curlTicks > 0 && --curlTicks == 0) {
-            entityData.set(CURLED, false);
-            playSound(SoundEvents.ARMADILLO_UNROLL_FINISH, 1f, 1.3f);
+
+        if (this.curlTicks > 0) {
+            this.curlTicks--;
+            if (this.curlTicks == 0) {
+                this.entityData.set(CURLED, false);
+                playSound(SoundEvents.ARMADILLO_UNROLL_FINISH, 1f, 1.3f);
+            }
         }
-        if (tickCount % 10 == 0 && !isCurled()) {
+
+        if (this.tickCount % 10 == 0 && !isCurled()) {
             Player player = level().getNearestPlayer(this, 3.0);
             if (player != null && player.isSprinting()) {
-                curl(CURL_WHEN_STARTLED);
+                curlUp(60);
             }
         }
     }
@@ -138,66 +153,67 @@ public class Hedgehog extends Animal implements GeoEntity {
 
     @Override
     public boolean hurt(DamageSource source, float amount) {
-        boolean curled = isCurled();
-        if (curled && !source.is(DamageTypes.THORNS) && !source.is(DamageTypeTags.IS_PROJECTILE)
-                && source.getDirectEntity() instanceof LivingEntity attacker) {
-            attacker.hurt(damageSources().thorns(this), 2f);
+        if (isCurled()) {
+            //pas sur les degats d'epines sinon ca se renvoie en boucle
+            if (!source.is(DamageTypes.THORNS) && source.getDirectEntity() instanceof LivingEntity attacker) {
+                attacker.hurt(damageSources().thorns(this), 2f);
+            }
+            amount *= 0.25f;
         }
-        boolean hurt = super.hurt(source, curled ? amount * 0.25f : amount);
-        if (hurt && !level().isClientSide()) {
-            curl(CURL_WHEN_HURT);
+
+        boolean hurt = super.hurt(source, amount);
+        if (hurt) {
+            curlUp(100);
         }
         return hurt;
     }
 
     @Override
+    // caresse = un peu de santé mentale, avec un cooldown
     public InteractionResult mobInteract(Player player, InteractionHand hand) {
         if (hand != InteractionHand.MAIN_HAND || !player.getItemInHand(hand).isEmpty()) {
             return super.mobInteract(player, hand);
         }
-        if (level().isClientSide()) {
-            return InteractionResult.SUCCESS;
+
+        if (!this.level().isClientSide()) {
+            long time = this.level().getGameTime();
+            if (this.isCurled()) {
+                player.hurt(damageSources().thorns(this), 1f);
+            } else if (player instanceof ServerPlayer serverPlayer && (lastPetTime == 0 || time - lastPetTime >= 1200)) {
+                lastPetTime = time;
+                //System.out.println("caresse " + time);
+                Sanity.add(serverPlayer, Config.HEDGEHOG_PET_GAIN.get().floatValue());
+                ModAdvancements.award(serverPlayer, ModAdvancements.PRICKLY_FRIEND);
+                ((ServerLevel) this.level()).sendParticles(
+                        ParticleTypes.HEART,
+                        getX(),
+                        getY() + 0.5,
+                        getZ(),
+                        3,
+                        0.3,
+                        0.2,
+                        0.3,
+                        0
+                );
+                playSound(SoundEvents.ARMADILLO_AMBIENT, 1f, 1.6f);
+            }
         }
-        if (isCurled()) {
-            player.hurt(damageSources().thorns(this), 1f);
-            return InteractionResult.CONSUME;
-        }
-        long time = level().getGameTime();
-        if (time - lastPetTime >= PET_COOLDOWN && player instanceof ServerPlayer serverPlayer) {
-            lastPetTime = time;
-            Sanity.add(serverPlayer, Config.HEDGEHOG_PET_GAIN.get().floatValue());
-            ModAdvancements.award(serverPlayer, ModAdvancements.PRICKLY_FRIEND);
-            ((ServerLevel) level()).sendParticles(ParticleTypes.HEART, getX(), getY() + 0.5, getZ(), 3, 0.3, 0.2, 0.3, 0);
-            playSound(SoundEvents.ARMADILLO_AMBIENT, 1f, 1.6f);
-        }
-        return InteractionResult.CONSUME;
+        return InteractionResult.sidedSuccess(level().isClientSide());
     }
 
     @Override
-    public void addAdditionalSaveData(CompoundTag tag) {
-        super.addAdditionalSaveData(tag);
-        tag.putLong("LastPetTime", lastPetTime);
+    public void addAdditionalSaveData(CompoundTag compound) {
+        super.addAdditionalSaveData(compound);
+        compound.putLong("LastPetTime", this.lastPetTime);
     }
 
     @Override
-    public void readAdditionalSaveData(CompoundTag tag) {
-        super.readAdditionalSaveData(tag);
-        if (tag.contains("LastPetTime")) {
-            lastPetTime = tag.getLong("LastPetTime");
-        }
+    public void readAdditionalSaveData(CompoundTag compound) {
+        super.readAdditionalSaveData(compound);
+        this.lastPetTime = compound.getLong("LastPetTime");
     }
 
-    @Override
-    public boolean isFood(ItemStack stack) {
-        return stack.is(ModTags.Items.HEDGEHOG_FOOD);
-    }
-
-    @Nullable
-    @Override
-    public AgeableMob getBreedOffspring(ServerLevel level, AgeableMob otherParent) {
-        return ModEntities.HEDGEHOG.get().create(level);
-    }
-
+    // TODO mettre des vrais sons, la c ceux du tatou en plus aigu
     @Override
     protected SoundEvent getAmbientSound() {
         return SoundEvents.ARMADILLO_AMBIENT;
@@ -220,12 +236,17 @@ public class Hedgehog extends Animal implements GeoEntity {
 
     @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
-        controllers.add(new AnimationController<>(this, "main", 5, state -> {
-            if (isCurled()) {
-                return state.setAndContinue(CURL);
-            }
-            return state.setAndContinue(state.isMoving() ? WALK : IDLE);
-        }));
+        controllers.add(new AnimationController<>(this, "controller", 5, this::predicate));
+    }
+
+    private PlayState predicate(AnimationState<Hedgehog> event) {
+        if (isCurled())
+            return event.setAndContinue(CURL_ANIM);
+
+        if (event.isMoving())
+            return event.setAndContinue(WALK_ANIM);
+
+        return event.setAndContinue(IDLE_ANIM);
     }
 
     @Override

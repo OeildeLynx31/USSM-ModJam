@@ -25,28 +25,51 @@ import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import org.slf4j.Logger;
 
+import static com.ussm.examplemod.item.ModItems.SPAWNER_RECEPTACLE;
+
+// The value here should match an entry in the META-INF/neoforge.mods.toml file
 @Mod(ExampleMod.MODID)
 public class ExampleMod {
+    // Define mod id in a common place for everything to reference
     public static final String MODID = "examplemod";
 
-    public static final Logger LOGGER = LogUtils.getLogger();
+    public static final Logger LOGGER = LogUtils.getLogger(); // Directly reference a slf4j logger
 
     public static final DeferredRegister<CreativeModeTab> CREATIVE_MODE_TABS = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, MODID);
 
+    // Creates a creative tab with the id "examplemod:example_tab" for the example item, that is placed after the combat tab
     public static final DeferredHolder<CreativeModeTab, CreativeModeTab> EXAMPLE_TAB = CREATIVE_MODE_TABS.register("example_tab", () -> CreativeModeTab.builder()
-            .title(Component.translatable("itemGroup.examplemod"))
+            .title(Component.translatable("itemGroup.examplemod")) //The language key for the title of your CreativeModeTab
             .withTabsBefore(CreativeModeTabs.COMBAT)
-            .icon(() -> ModItems.SPAWNER_RECEPTACLE.get().getDefaultInstance())
+            .icon(() -> SPAWNER_RECEPTACLE.get().getDefaultInstance())
             .displayItems((parameters, output) -> {
-                output.accept(ModItems.SPAWNER_RECEPTACLE.get());
+                output.accept(ModItems.SPAWNER_RECEPTACLE.get()); // Add the example item to the tab. For your own tabs, this method is preferred over the event
                 output.accept(ModBlocks.VOID_STONE.asItem());
+                output.accept(ModBlocks.DIRTY_VOID_STONE.asItem());
                 output.accept(ModBlocks.VOID_MATTER_ORE.asItem());
+                output.accept(ModBlocks.BEDROCK_BREAKER.asItem());
                 output.accept(ModBlocks.VOID_SAPLING.asItem());
                 output.accept(ModBlocks.VOID_LOG.asItem());
                 output.accept(ModBlocks.VOID_WOOD.asItem());
                 output.accept(ModBlocks.VOID_PLANKS.asItem());
+                output.accept(ModBlocks.VOID_STAIRS.asItem());
+                output.accept(ModBlocks.VOID_SLAB.asItem());
+                output.accept(ModBlocks.VOID_FENCE.asItem());
+                output.accept(ModBlocks.VOID_FENCE_GATE.asItem());
+                output.accept(ModBlocks.VOID_DOOR.asItem());
+                output.accept(ModBlocks.VOID_TRAPDOOR.asItem());
+                output.accept(ModBlocks.VOID_BUTTON.asItem());
+                output.accept(ModBlocks.VOID_PRESSURE_PLATE.asItem());
                 output.accept(ModBlocks.VOID_LEAVES.asItem());
                 output.accept(ModBlocks.BLOOM_FLOWER.asItem());
+                output.accept(ModBlocks.PEBBLES.asItem());
+                output.accept(ModBlocks.HANGING_CHAIN.asItem());
+                output.accept(ModBlocks.BLOOM_MUSHROOM.asItem());
+                output.accept(ModBlocks.STONE_SKULL.asItem());
+                output.accept(ModBlocks.EYE_NEST.asItem());
+                output.accept(ModBlocks.BONE_PILE.asItem());
+                output.accept(ModBlocks.SCATTERED_BONE.asItem());
+                output.accept(ModBlocks.EYE_BLOOM.asItem());
                 output.accept(ModItems.HAZMAT_FABRIC.get());
                 output.accept(ModItems.HAZMAT_MASK.get());
                 output.accept(ModItems.HAZMAT_SUIT.get());
@@ -72,7 +95,15 @@ public class ExampleMod {
                 output.accept(ModBlocks.GHOST_FERN_BLOOM.asItem());
             }).build());
 
+    // The constructor for the mod class is the first code that is run when your mod is loaded.
+    // FML will recognize some parameter types like IEventBus or ModContainer and pass them in automatically.
     public ExampleMod(IEventBus modEventBus, ModContainer modContainer) {
+        // Register the commonSetup method for modloading
+        modEventBus.addListener(this::commonSetup);
+
+        // Register the Deferred Register to the mod event bus so tabs get registered
+        CREATIVE_MODE_TABS.register(modEventBus);
+
         ModItems.register(modEventBus);
         ModBlocks.register(modEventBus);
         ModEffects.register(modEventBus);
@@ -81,11 +112,9 @@ public class ExampleMod {
         ModEntities.register(modEventBus);
         ModAttachments.register(modEventBus);
         ModParticles.register(modEventBus);
-        CREATIVE_MODE_TABS.register(modEventBus);
         ModSanityTab.register(modEventBus);
 
-        modEventBus.addListener(this::commonSetup);
-
+        // Register our mod's ModConfigSpec so that FML can create and load the config file for us
         modContainer.registerConfig(ModConfig.Type.SERVER, Config.SERVER_SPEC);
         modContainer.registerConfig(ModConfig.Type.CLIENT, Config.CLIENT_SPEC);
     }

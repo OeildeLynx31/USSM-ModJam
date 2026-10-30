@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/cube_bottom_top",
+  "textures": {
+    "bottom": "examplemod:block/void_stone",
+    "side": "examplemod:block/corrupted_grass_block_side",
+    "top": "examplemod:block/corrupted_grass_block_top"
+  }
+}

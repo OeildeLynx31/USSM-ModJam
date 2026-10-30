@@ -19,18 +19,22 @@ public class GasMaskOverlay implements LayeredDraw.Layer {
     public void render(GuiGraphics guiGraphics, DeltaTracker deltaTracker) {
         Minecraft minecraft = Minecraft.getInstance();
         LocalPlayer player = minecraft.player;
-        if (player == null || minecraft.options.hideGui || !minecraft.options.getCameraType().isFirstPerson()
-                || player.isScoping() || !HazmatArmorItem.isWearingMask(player)) {
+        if (player == null || minecraft.options.hideGui) {
             return;
         }
-        int width = guiGraphics.guiWidth();
-        int height = guiGraphics.guiHeight();
-        RenderSystem.disableDepthTest();
-        RenderSystem.depthMask(false);
-        RenderSystem.enableBlend();
-        guiGraphics.blit(TEXTURE, 0, 0, -90, 0f, 0f, width, height, width, height);
-        RenderSystem.disableBlend();
-        RenderSystem.depthMask(true);
-        RenderSystem.enableDepthTest();
+        if (!minecraft.options.getCameraType().isFirstPerson() || player.isScoping()) {
+            return;
+        }
+
+        if (HazmatArmorItem.isWearingMask(player)) {
+            RenderSystem.disableDepthTest();
+            RenderSystem.depthMask(false);
+            RenderSystem.enableBlend();
+            //guiGraphics.setColor(1.0F, 1.0F, 1.0F, 0.8F);
+            guiGraphics.blit(TEXTURE, 0, 0, -90, 0.0F, 0.0F, guiGraphics.guiWidth(), guiGraphics.guiHeight(), guiGraphics.guiWidth(), guiGraphics.guiHeight());
+            RenderSystem.disableBlend();
+            RenderSystem.depthMask(true);
+            RenderSystem.enableDepthTest();
+        }
     }
 }

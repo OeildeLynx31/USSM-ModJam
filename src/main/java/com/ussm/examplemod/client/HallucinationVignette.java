@@ -11,16 +11,16 @@ public class HallucinationVignette implements LayeredDraw.Layer {
     public static final ResourceLocation ID = ResourceLocation.fromNamespaceAndPath(ExampleMod.MODID, "hallucination_vignette");
 
     private static final ResourceLocation TEXTURE = ResourceLocation.fromNamespaceAndPath(ExampleMod.MODID, "textures/gui/hallucination_vignette.png");
-    private static final float MAX_ALPHA = 0.45f;
 
     @Override
     public void render(GuiGraphics guiGraphics, DeltaTracker deltaTracker) {
-        float alpha = Hallucinations.strength() * MAX_ALPHA;
+        float alpha = Hallucinations.strength() * 0.45f;
         if (alpha < 0.01f) {
             return;
         }
         int width = guiGraphics.guiWidth();
         int height = guiGraphics.guiHeight();
+        // copié du truc de la citrouille dans Gui
         RenderSystem.disableDepthTest();
         RenderSystem.depthMask(false);
         RenderSystem.enableBlend();

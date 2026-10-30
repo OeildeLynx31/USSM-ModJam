@@ -1,6 +1,7 @@
 package com.ussm.examplemod.datagen;
 
 import com.ussm.examplemod.ExampleMod;
+import com.ussm.examplemod.block.ModBlocks;
 import com.ussm.examplemod.item.ModItems;
 import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceKey;
@@ -40,6 +41,10 @@ public class ModItemModelProvider extends ItemModelProvider {
         basicItem(ModItems.UNSTABLE_MATTER.get());
         basicItem(ModItems.VOID_STABILIZER.get());
         basicItem(ModItems.VOID_BALL.get());
+
+        basicItem(ModBlocks.VOID_DOOR.asItem());
+        withExistingParent("void_fence", mcLoc("block/fence_inventory")).texture("texture", modLoc("block/void_planks"));
+        withExistingParent("void_button", mcLoc("block/button_inventory")).texture("texture", modLoc("block/void_planks"));
     }
 
     private void trimmedArmorItem(DeferredItem<ArmorItem> itemDeferredItem) {

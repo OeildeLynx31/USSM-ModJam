@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "powered=false": {
+      "model": "examplemod:block/void_pressure_plate"
+    },
+    "powered=true": {
+      "model": "examplemod:block/void_pressure_plate_down"
+    }
+  }
+}

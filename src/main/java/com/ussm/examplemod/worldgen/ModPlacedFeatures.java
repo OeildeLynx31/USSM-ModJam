@@ -14,6 +14,7 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.valueproviders.ConstantInt;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.levelgen.VerticalAnchor;
 import net.minecraft.world.level.levelgen.blockpredicates.BlockPredicate;
 import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
@@ -22,6 +23,7 @@ import net.minecraft.world.level.levelgen.placement.BlockPredicateFilter;
 import net.minecraft.world.level.levelgen.placement.CountPlacement;
 import net.minecraft.world.level.levelgen.placement.EnvironmentScanPlacement;
 import net.minecraft.world.level.levelgen.placement.HeightRangePlacement;
+import net.minecraft.world.level.levelgen.placement.HeightmapPlacement;
 import net.minecraft.world.level.levelgen.placement.InSquarePlacement;
 import net.minecraft.world.level.levelgen.placement.PlacedFeature;
 import net.minecraft.world.level.levelgen.placement.PlacementModifier;
@@ -34,6 +36,9 @@ public class ModPlacedFeatures {
     public static final ResourceKey<PlacedFeature> VOID_TREE_PLACED_KEY = registerKey("void_tree_placed");
     public static final ResourceKey<PlacedFeature> BLOOM_FLOWER_PATCH_PLACED_KEY = registerKey("bloom_flower_patch_placed");
     public static final ResourceKey<PlacedFeature> BLOOM_RIFT_PLACED_KEY = registerKey("bloom_rift_placed");
+    public static final ResourceKey<PlacedFeature> GLOOM_DECOR_PLACED_KEY = registerKey("gloom_decor_placed");
+    public static final ResourceKey<PlacedFeature> BLOOM_DECOR_PLACED_KEY = registerKey("bloom_decor_placed");
+    public static final ResourceKey<PlacedFeature> BLOOM_CHAIN_PLACED_KEY = registerKey("bloom_chain_placed");
 
     public static void bootstrap(BootstrapContext<PlacedFeature> context) {
         HolderGetter<ConfiguredFeature<?, ?>> configuredFeatures = context.lookup(Registries.CONFIGURED_FEATURE);
@@ -61,6 +66,31 @@ public class ModPlacedFeatures {
                                 BlockPredicate.matchesBlocks(new Vec3i(0, 1, 0), Blocks.AIR),
                                 BlockPredicate.matchesBlocks(new Vec3i(0, 2, 0), Blocks.AIR),
                                 BlockPredicate.matchesBlocks(new Vec3i(0, 3, 0), Blocks.AIR))),
+                        BiomeFilter.biome()));
+
+        register(context, GLOOM_DECOR_PLACED_KEY, configuredFeatures.getOrThrow(ModConfiguredFeatures.GLOOM_DECOR_KEY),
+                List.of(CountPlacement.of(2), InSquarePlacement.spread(),
+                        HeightmapPlacement.onHeightmap(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES),
+                        BiomeFilter.biome()));
+
+        register(context, BLOOM_DECOR_PLACED_KEY, configuredFeatures.getOrThrow(ModConfiguredFeatures.BLOOM_DECOR_KEY),
+                List.of(CountPlacement.of(10), InSquarePlacement.spread(),
+                        HeightRangePlacement.uniform(VerticalAnchor.absolute(16), VerticalAnchor.absolute(68)),
+                        EnvironmentScanPlacement.scanningFor(Direction.DOWN, BlockPredicate.hasSturdyFace(Direction.UP),
+                                BlockPredicate.ONLY_IN_AIR_PREDICATE, 32),
+                        RandomOffsetPlacement.vertical(ConstantInt.of(1)),
+                        BiomeFilter.biome()));
+
+        // les chaines font 2 blocs : on les pose 2 blocs sous le plafond
+        register(context, BLOOM_CHAIN_PLACED_KEY, configuredFeatures.getOrThrow(ModConfiguredFeatures.BLOOM_CHAIN_KEY),
+                List.of(CountPlacement.of(3), InSquarePlacement.spread(),
+                        HeightRangePlacement.uniform(VerticalAnchor.absolute(24), VerticalAnchor.absolute(76)),
+                        EnvironmentScanPlacement.scanningFor(Direction.UP, BlockPredicate.hasSturdyFace(Direction.DOWN),
+                                BlockPredicate.ONLY_IN_AIR_PREDICATE, 16),
+                        RandomOffsetPlacement.vertical(ConstantInt.of(-2)),
+                        BlockPredicateFilter.forPredicate(BlockPredicate.allOf(
+                                BlockPredicate.ONLY_IN_AIR_PREDICATE,
+                                BlockPredicate.matchesBlocks(new Vec3i(0, 1, 0), Blocks.AIR))),
                         BiomeFilter.biome()));
     }
 

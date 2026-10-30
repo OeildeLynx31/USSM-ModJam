@@ -1,0 +1,190 @@
+{
+  "type": "minecraft:simple_block",
+  "config": {
+    "to_place": {
+      "type": "minecraft:weighted_state_provider",
+      "entries": [
+        {
+          "data": {
+            "Name": "examplemod:bone_pile",
+            "Properties": {
+              "facing": "north"
+            }
+          },
+          "weight": 8
+        },
+        {
+          "data": {
+            "Name": "examplemod:bone_pile",
+            "Properties": {
+              "facing": "east"
+            }
+          },
+          "weight": 8
+        },
+        {
+          "data": {
+            "Name": "examplemod:bone_pile",
+            "Properties": {
+              "facing": "south"
+            }
+          },
+          "weight": 8
+        },
+        {
+          "data": {
+            "Name": "examplemod:bone_pile",
+            "Properties": {
+              "facing": "west"
+            }
+          },
+          "weight": 8
+        },
+        {
+          "data": {
+            "Name": "examplemod:scattered_bone",
+            "Properties": {
+              "facing": "north"
+            }
+          },
+          "weight": 8
+        },
+        {
+          "data": {
+            "Name": "examplemod:scattered_bone",
+            "Properties": {
+              "facing": "east"
+            }
+          },
+          "weight": 8
+        },
+        {
+          "data": {
+            "Name": "examplemod:scattered_bone",
+            "Properties": {
+              "facing": "south"
+            }
+          },
+          "weight": 8
+        },
+        {
+          "data": {
+            "Name": "examplemod:scattered_bone",
+            "Properties": {
+              "facing": "west"
+            }
+          },
+          "weight": 8
+        },
+        {
+          "data": {
+            "Name": "examplemod:pebbles",
+            "Properties": {
+              "facing": "north"
+            }
+          },
+          "weight": 6
+        },
+        {
+          "data": {
+            "Name": "examplemod:pebbles",
+            "Properties": {
+              "facing": "east"
+            }
+          },
+          "weight": 6
+        },
+        {
+          "data": {
+            "Name": "examplemod:pebbles",
+            "Properties": {
+              "facing": "south"
+            }
+          },
+          "weight": 6
+        },
+        {
+          "data": {
+            "Name": "examplemod:pebbles",
+            "Properties": {
+              "facing": "west"
+            }
+          },
+          "weight": 6
+        },
+        {
+          "data": {
+            "Name": "examplemod:stone_skull",
+            "Properties": {
+              "facing": "north"
+            }
+          },
+          "weight": 3
+        },
+        {
+          "data": {
+            "Name": "examplemod:stone_skull",
+            "Properties": {
+              "facing": "east"
+            }
+          },
+          "weight": 3
+        },
+        {
+          "data": {
+            "Name": "examplemod:stone_skull",
+            "Properties": {
+              "facing": "south"
+            }
+          },
+          "weight": 3
+        },
+        {
+          "data": {
+            "Name": "examplemod:stone_skull",
+            "Properties": {
+              "facing": "west"
+            }
+          },
+          "weight": 3
+        },
+        {
+          "data": {
+            "Name": "examplemod:eye_nest",
+            "Properties": {
+              "facing": "north"
+            }
+          },
+          "weight": 1
+        },
+        {
+          "data": {
+            "Name": "examplemod:eye_nest",
+            "Properties": {
+              "facing": "east"
+            }
+          },
+          "weight": 1
+        },
+        {
+          "data": {
+            "Name": "examplemod:eye_nest",
+            "Properties": {
+              "facing": "south"
+            }
+          },
+          "weight": 1
+        },
+        {
+          "data": {
+            "Name": "examplemod:eye_nest",
+            "Properties": {
+              "facing": "west"
+            }
+          },
+          "weight": 1
+        }
+      ]
+    }
+  }
+}

@@ -38,6 +38,13 @@ repositories {
             includeGroup("software.bernie.geckolib")
         }
     }
+    maven {
+        name = "henkelmax"
+        url = "https://maven.maxhenkel.de/repository/public"
+        content {
+            includeGroup("de.maxhenkel.voicechat")
+        }
+    }
 }
 
 base {
@@ -146,6 +153,8 @@ dependencies {
 
     compileOnly "top.theillusivec4.curios:curios-neoforge:${curios_version}:api"
     implementation "software.bernie.geckolib:geckolib-neoforge-${minecraft_version}:${geckolib_version}"
+    // voix des imitateurs, simple voice chat est optionnel (le mod est fourni par le joueur)
+    compileOnly "de.maxhenkel.voicechat:voicechat-api:${voicechat_api_version}"
 
     // For more info:
     // http://www.gradle.org/docs/current/userguide/artifact_dependencies_tutorial.html

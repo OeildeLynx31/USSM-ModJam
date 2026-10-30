@@ -19,17 +19,22 @@ public class ModAttachments {
     public static final Supplier<AttachmentType<Float>> SANITY = ATTACHMENT_TYPES.register("sanity",
             () -> AttachmentType.builder(() -> Sanity.MAX)
                     .serialize(Codec.FLOAT)
+                    //.copyOnDeath()
                     .sync((holder, player) -> holder == player, ByteBufCodecs.FLOAT)
                     .build());
 
     public static final Supplier<AttachmentType<Integer>> VOID_TICKS = ATTACHMENT_TYPES.register("void_ticks",
             () -> AttachmentType.builder(() -> 0).build());
 
-    public static final Supplier<AttachmentType<KatanaDash>> KATANA_DASH = ATTACHMENT_TYPES.register("katana_dash",
-            () -> AttachmentType.<KatanaDash>builder(() -> null).build());
+    public static final Supplier<AttachmentType<KatanaDash>> KATANA_DASH = ATTACHMENT_TYPES.register(
+            "katana_dash",
+            () -> AttachmentType.<KatanaDash>builder(() -> null).build()
+    );
 
-    public static final Supplier<AttachmentType<Long>> KATANA_PARRY = ATTACHMENT_TYPES.register("katana_parry",
-            () -> AttachmentType.builder(() -> 0L).build());
+    public static final Supplier<AttachmentType<Long>> KATANA_PARRY = ATTACHMENT_TYPES.register(
+            "katana_parry",
+            () -> AttachmentType.builder(() -> 0L).build()
+    );
 
     public static void register(IEventBus eventBus) {
         ATTACHMENT_TYPES.register(eventBus);

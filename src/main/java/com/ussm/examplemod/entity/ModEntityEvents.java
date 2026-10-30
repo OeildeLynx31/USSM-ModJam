@@ -20,13 +20,13 @@ import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 @EventBusSubscriber(modid = ExampleMod.MODID)
 public class ModEntityEvents {
     @SubscribeEvent
-    public static void onRegisterAttributes(EntityAttributeCreationEvent event) {
+    public static void registerAttributes(EntityAttributeCreationEvent event) {
         event.put(ModEntities.HEDGEHOG.get(), Hedgehog.createAttributes().build());
         event.put(ModEntities.MIMIC.get(), Mimic.createAttributes().build());
     }
 
     @SubscribeEvent
-    public static void onRegisterSpawnPlacements(RegisterSpawnPlacementsEvent event) {
+    public static void registerSpawnPlacements(RegisterSpawnPlacementsEvent event) {
         event.register(ModEntities.HEDGEHOG.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
                 Hedgehog::checkHedgehogSpawnRules, RegisterSpawnPlacementsEvent.Operation.REPLACE);
     }
@@ -38,13 +38,18 @@ public class ModEntityEvents {
         }
     }
 
+    // pas de monstres sous la surface dans l'undervoid
     @SubscribeEvent
     public static void onPotentialSpawns(LevelEvent.PotentialSpawns event) {
-        BlockPos pos = event.getPos();
-        if (event.getMobCategory() == MobCategory.MONSTER && event.getLevel() instanceof ServerLevel level
-                && level.dimension().equals(ModDimensions.UNDERVOID_DIM_LEVEL_KEY)
-                && pos.getY() < level.getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, pos.getX(), pos.getZ())) {
-            event.setCanceled(true);
+        if (event.getMobCategory() != MobCategory.MONSTER) return;
+        if (!(event.getLevel() instanceof ServerLevel level)) return;
+
+        if (level.dimension().equals(ModDimensions.UNDERVOID_DIM_LEVEL_KEY)) {
+            BlockPos pos = event.getPos();
+            if (pos.getY() < level.getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, pos.getX(), pos.getZ())) {
+                //ExampleMod.LOGGER.info("spawn annulé en " + pos);
+                event.setCanceled(true);
+            }
         }
     }
 }

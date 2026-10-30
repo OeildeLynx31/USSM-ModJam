@@ -2,7 +2,6 @@ package com.ussm.examplemod.client;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.ussm.examplemod.ExampleMod;
-import com.ussm.examplemod.attachment.ModAttachments;
 import com.ussm.examplemod.sanity.Sanity;
 import com.ussm.examplemod.worldgen.dimension.ModDimensions;
 import net.minecraft.client.DeltaTracker;
@@ -27,10 +26,12 @@ public class SanityHudLayer implements LayeredDraw.Layer {
     public void render(GuiGraphics guiGraphics, DeltaTracker deltaTracker) {
         Minecraft minecraft = Minecraft.getInstance();
         LocalPlayer player = minecraft.player;
-        if (player == null || minecraft.options.hideGui || minecraft.gameMode == null || !minecraft.gameMode.canHurtPlayer()) {
+        if (player == null || minecraft.options.hideGui
+                || minecraft.gameMode == null || !minecraft.gameMode.canHurtPlayer()) {
             return;
         }
-        float sanity = player.getData(ModAttachments.SANITY);
+
+        float sanity = Sanity.get(player);
         if (sanity >= Sanity.MAX && !player.level().dimension().equals(ModDimensions.UNDERVOID_DIM_LEVEL_KEY)) {
             return;
         }
@@ -40,13 +41,23 @@ public class SanityHudLayer implements LayeredDraw.Layer {
         minecraft.gui.rightHeight += 10;
 
         int halves = Mth.ceil(sanity / 5f);
-        boolean shaking = sanity <= Sanity.TROUBLED;
+        // meme random que pour les coeurs, comme ca ca tremble pareil
         random.setSeed(player.tickCount * 312871L);
         RenderSystem.enableBlend();
         for (int i = 0; i < 10; i++) {
-            int y = shaking ? top + random.nextInt(3) - 1 : top;
-            ResourceLocation sprite = halves >= i * 2 + 2 ? FULL : halves == i * 2 + 1 ? HALF : EMPTY;
-            guiGraphics.blitSprite(sprite, right - i * 8 - 9, y, 9, 9);
+            int x = right - i * 8 - 9;
+            int y = top;
+            if (sanity <= Sanity.TROUBLED) {
+                y += random.nextInt(3) - 1;
+            }
+
+            if (i * 2 + 1 < halves) {
+                guiGraphics.blitSprite(FULL, x, y, 9, 9);
+            } else if (i * 2 + 1 == halves) {
+                guiGraphics.blitSprite(HALF, x, y, 9, 9);
+            } else {
+                guiGraphics.blitSprite(EMPTY, x, y, 9, 9);
+            }
         }
         RenderSystem.disableBlend();
     }

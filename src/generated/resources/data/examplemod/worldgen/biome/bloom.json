@@ -36,7 +36,8 @@
     [],
     [],
     [
-      "examplemod:bloom_rift_placed"
+      "examplemod:bloom_rift_placed",
+      "examplemod:bloom_chain_placed"
     ],
     [],
     [
@@ -46,7 +47,8 @@
       "minecraft:cave_vines",
       "minecraft:lush_caves_vegetation",
       "minecraft:spore_blossom",
-      "minecraft:classic_vines_cave_feature"
+      "minecraft:classic_vines_cave_feature",
+      "examplemod:bloom_decor_placed"
     ]
   ],
   "has_precipitation": false,

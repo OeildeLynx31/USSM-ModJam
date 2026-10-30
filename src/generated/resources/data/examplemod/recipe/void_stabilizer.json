@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "B": {
+      "item": "minecraft:netherite_scrap"
+    },
+    "V": {
+      "item": "minecraft:echo_shard"
+    }
+  },
+  "pattern": [
+    " B ",
+    "BVB",
+    " B "
+  ],
+  "result": {
+    "count": 1,
+    "id": "examplemod:void_stabilizer"
+  }
+}

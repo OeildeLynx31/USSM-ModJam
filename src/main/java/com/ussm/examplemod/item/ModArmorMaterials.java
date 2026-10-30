@@ -20,19 +20,21 @@ public class ModArmorMaterials {
             DeferredRegister.create(Registries.ARMOR_MATERIAL, ExampleMod.MODID);
 
     public static final Holder<ArmorMaterial> HAZMAT = ARMOR_MATERIALS.register("hazmat", () -> new ArmorMaterial(
-            Util.make(new EnumMap<>(ArmorItem.Type.class), defense -> {
-                defense.put(ArmorItem.Type.BOOTS, 1);
-                defense.put(ArmorItem.Type.LEGGINGS, 2);
-                defense.put(ArmorItem.Type.CHESTPLATE, 3);
-                defense.put(ArmorItem.Type.HELMET, 1);
-                defense.put(ArmorItem.Type.BODY, 3);
+            //comme le cuir
+            Util.make(new EnumMap<>(ArmorItem.Type.class), map -> {
+                map.put(ArmorItem.Type.BOOTS, 1);
+                map.put(ArmorItem.Type.LEGGINGS, 2);
+                map.put(ArmorItem.Type.CHESTPLATE, 3);
+                map.put(ArmorItem.Type.HELMET, 1);
+                map.put(ArmorItem.Type.BODY, 3);
             }),
             12,
             SoundEvents.ARMOR_EQUIP_LEATHER,
             () -> Ingredient.of(ModItems.HAZMAT_FABRIC.get()),
             List.of(new ArmorMaterial.Layer(ResourceLocation.fromNamespaceAndPath(ExampleMod.MODID, "hazmat"))),
-            0f,
-            0f));
+            // Only diamond and netherite have values greater than 0 here, so we just return 0.
+            0,
+            0));
 
     public static void register(IEventBus eventBus) {
         ARMOR_MATERIALS.register(eventBus);

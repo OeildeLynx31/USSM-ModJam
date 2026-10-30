@@ -6,7 +6,15 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.ButtonBlock;
+import net.minecraft.world.level.block.DoorBlock;
+import net.minecraft.world.level.block.FenceBlock;
+import net.minecraft.world.level.block.FenceGateBlock;
+import net.minecraft.world.level.block.PressurePlateBlock;
 import net.minecraft.world.level.block.RotatedPillarBlock;
+import net.minecraft.world.level.block.SlabBlock;
+import net.minecraft.world.level.block.StairBlock;
+import net.minecraft.world.level.block.TrapDoorBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.client.model.generators.BlockStateProvider;
 import net.neoforged.neoforge.client.model.generators.ConfiguredModel;
@@ -22,7 +30,11 @@ public class ModBlockStateProvider extends BlockStateProvider { // Juste ne TOUC
     @Override
     protected void registerStatesAndModels() {
         blockWithItem(ModBlocks.VOID_STONE);
+        simpleBlockWithItem(ModBlocks.DIRTY_VOID_STONE.get(), models().cubeBottomTop("dirty_void_stone",
+                modLoc("block/corrupted_grass_block_side"), modLoc("block/void_stone"), modLoc("block/corrupted_grass_block_top")));
         blockWithItem(ModBlocks.VOID_MATTER_ORE);
+        simpleBlockWithItem(ModBlocks.BEDROCK_BREAKER.get(), models().cubeColumn("bedrock_breaker",
+                modLoc("block/bedrock_breaker_side"), modLoc("block/bedrock_breaker_end")));
 
         logBlock(((RotatedPillarBlock) ModBlocks.VOID_LOG.get()));
         axisBlock(((RotatedPillarBlock) ModBlocks.VOID_WOOD.get()), blockTexture(ModBlocks.VOID_LOG.get()), blockTexture(ModBlocks.VOID_LOG.get()));
@@ -31,6 +43,21 @@ public class ModBlockStateProvider extends BlockStateProvider { // Juste ne TOUC
         blockItem(ModBlocks.VOID_WOOD);
 
         blockWithItem(ModBlocks.VOID_PLANKS);
+
+        stairsBlock(((StairBlock) ModBlocks.VOID_STAIRS.get()), blockTexture(ModBlocks.VOID_PLANKS.get()));
+        slabBlock(((SlabBlock) ModBlocks.VOID_SLAB.get()), blockTexture(ModBlocks.VOID_PLANKS.get()), blockTexture(ModBlocks.VOID_PLANKS.get()));
+        fenceBlock(((FenceBlock) ModBlocks.VOID_FENCE.get()), blockTexture(ModBlocks.VOID_PLANKS.get()));
+        fenceGateBlock(((FenceGateBlock) ModBlocks.VOID_FENCE_GATE.get()), blockTexture(ModBlocks.VOID_PLANKS.get()));
+        doorBlockWithRenderType(((DoorBlock) ModBlocks.VOID_DOOR.get()), modLoc("block/void_door_bottom"), modLoc("block/void_door_top"), "cutout");
+        trapdoorBlockWithRenderType(((TrapDoorBlock) ModBlocks.VOID_TRAPDOOR.get()), modLoc("block/void_trapdoor"), true, "cutout");
+        buttonBlock(((ButtonBlock) ModBlocks.VOID_BUTTON.get()), blockTexture(ModBlocks.VOID_PLANKS.get()));
+        pressurePlateBlock(((PressurePlateBlock) ModBlocks.VOID_PRESSURE_PLATE.get()), blockTexture(ModBlocks.VOID_PLANKS.get()));
+
+        blockItem(ModBlocks.VOID_STAIRS);
+        blockItem(ModBlocks.VOID_SLAB);
+        blockItem(ModBlocks.VOID_FENCE_GATE);
+        blockItem(ModBlocks.VOID_PRESSURE_PLATE);
+        simpleBlockItem(ModBlocks.VOID_TRAPDOOR.get(), new ModelFile.UncheckedModelFile(modLoc("block/void_trapdoor_bottom")));
 
         leavesBlock(ModBlocks.VOID_LEAVES);
 

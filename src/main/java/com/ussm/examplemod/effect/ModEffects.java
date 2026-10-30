@@ -13,13 +13,13 @@ public class ModEffects {
             DeferredRegister.create(BuiltInRegistries.MOB_EFFECT, ExampleMod.MODID);
 
     public static final Holder<MobEffect> HALLUCINATIONS = MOB_EFFECTS.register("hallucinations",
-            () -> new MobEffect(MobEffectCategory.HARMFUL, 0x6A3D9A) {});
+            () -> new MobEffect(MobEffectCategory.HARMFUL, 0x6a3d9a) {});
 
     public static final Holder<MobEffect> SERENITY = MOB_EFFECTS.register("serenity",
-            () -> new MobEffect(MobEffectCategory.BENEFICIAL, 0x7FD1C7) {});
+            () -> new MobEffect(MobEffectCategory.BENEFICIAL, 0x7fd1c7) {});
 
     public static final Holder<MobEffect> CLARITY = MOB_EFFECTS.register("clarity",
-            () -> new MobEffect(MobEffectCategory.BENEFICIAL, 0xF2E28C) {});
+            () -> new MobEffect(MobEffectCategory.BENEFICIAL, 0xf2e28c) {});
 
     public static final Holder<MobEffect> RESTORATION = MOB_EFFECTS.register("restoration",
             () -> new SanityInstantEffect(MobEffectCategory.BENEFICIAL, 0x4FC3F7, 30f));

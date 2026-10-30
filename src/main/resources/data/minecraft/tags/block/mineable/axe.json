@@ -1,0 +1,13 @@
+{
+  "replace": false,
+  "values": [
+    "examplemod:void_stairs",
+    "examplemod:void_slab",
+    "examplemod:void_fence",
+    "examplemod:void_fence_gate",
+    "examplemod:void_door",
+    "examplemod:void_trapdoor",
+    "examplemod:void_button",
+    "examplemod:void_pressure_plate"
+  ]
+}

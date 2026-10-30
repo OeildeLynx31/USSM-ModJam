@@ -53,9 +53,11 @@ public class ModItems {
 
 
     public static final DeferredItem<Item> HEDGEHOG_SPAWN_EGG = ITEMS.register("hedgehog_spawn_egg",
-            () -> new DeferredSpawnEggItem(ModEntities.HEDGEHOG, 0x6B4F3A, 0xD9C7A6, new Item.Properties()));
+            () -> new DeferredSpawnEggItem(ModEntities.HEDGEHOG, 0x6b4f3a, 0xd9c7a6,
+                    new Item.Properties()));
     public static final DeferredItem<Item> MIMIC_SPAWN_EGG = ITEMS.register("mimic_spawn_egg",
-            () -> new DeferredSpawnEggItem(ModEntities.MIMIC, 0x2E2836, 0x8E8A99, new Item.Properties()));
+            () -> new DeferredSpawnEggItem(ModEntities.MIMIC, 0x2e2836, 0x8e8a99,
+                    new Item.Properties()));
 
     //>-------------------------------------------------------
     public static void register(IEventBus eventBus){

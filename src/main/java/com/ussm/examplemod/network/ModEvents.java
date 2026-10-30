@@ -4,7 +4,6 @@ import com.ussm.examplemod.Config;
 import com.ussm.examplemod.ExampleMod;
 import com.ussm.examplemod.attachment.ModAttachments;
 import com.ussm.examplemod.worldgen.dimension.ModDimensions;
-import net.minecraft.core.SectionPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -18,64 +17,52 @@ import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 
 @EventBusSubscriber(modid = ExampleMod.MODID)
 public class ModEvents {
-    private static final int VOID_DAMAGE_DEPTH = 64;
-    private static final double FALLBACK_ARRIVAL_Y = 120;
-
     @SubscribeEvent
     public static void onPlayerTick(PlayerTickEvent.Post event) {
-        if (!(event.getEntity() instanceof ServerPlayer player) || !player.isAlive()) {
-            return;
-        }
-        ServerLevel level = player.serverLevel();
-        double y = player.getY();
-        if (y < level.getMinBuildHeight() - VOID_DAMAGE_DEPTH) {
-            if (!isUndervoid(level)) {
-                tickInVoid(player);
+        if (!(event.getEntity() instanceof ServerPlayer player) || !player.isAlive()) return;
+
+        ServerLevel serverLevel = player.serverLevel();
+
+        // dans le vide de l'end : faut tenir 10s pour passer dans l'entre-monde
+        if (player.getY() < serverLevel.getMinBuildHeight() - 64) {
+            if (serverLevel.dimension().equals(ModDimensions.UNDERVOID_DIM_LEVEL_KEY)) return;
+
+            int voidTicks = player.getData(ModAttachments.VOID_TICKS) + 1;
+            //ExampleMod.LOGGER.info("void ticks {}", voidTicks);
+            if (voidTicks >= Config.VOID_SURVIVAL_TICKS.get() || player.isCreative() || player.isSpectator()) {
+                sendToUndervoid(player);
+            } else {
+                player.setData(ModAttachments.VOID_TICKS, voidTicks);
             }
-        } else if (y > level.getMaxBuildHeight() && isUndervoid(level)) {
-            leaveUndervoid(player);
+        } else if (player.getY() > serverLevel.getMaxBuildHeight()
+                && serverLevel.dimension().equals(ModDimensions.UNDERVOID_DIM_LEVEL_KEY)) {
+            teleportPlayer(player, player.findRespawnPositionAndUseSpawnBlock(false, DimensionTransition.DO_NOTHING));
         } else if (player.hasData(ModAttachments.VOID_TICKS)) {
             player.removeData(ModAttachments.VOID_TICKS);
         }
     }
 
-    private static boolean isUndervoid(ServerLevel level) {
-        return level.dimension().equals(ModDimensions.UNDERVOID_DIM_LEVEL_KEY);
-    }
+    private static void sendToUndervoid(ServerPlayer player) {
+        ServerLevel undervoidLevel = player.server.getLevel(ModDimensions.UNDERVOID_DIM_LEVEL_KEY);
+        if (undervoidLevel == null) return;
 
-    private static void tickInVoid(ServerPlayer player) {
-        int ticks = player.getData(ModAttachments.VOID_TICKS) + 1;
-        if (ticks >= Config.VOID_SURVIVAL_TICKS.get() || player.isCreative() || player.isSpectator()) {
-            enterUndervoid(player);
-        } else {
-            player.setData(ModAttachments.VOID_TICKS, ticks);
-        }
-    }
-
-    private static void enterUndervoid(ServerPlayer player) {
-        ServerLevel undervoid = player.server.getLevel(ModDimensions.UNDERVOID_DIM_LEVEL_KEY);
-        if (undervoid == null) {
-            return;
-        }
         player.removeData(ModAttachments.VOID_TICKS);
 
         int x = player.getBlockX();
         int z = player.getBlockZ();
-        undervoid.getChunk(SectionPos.blockToSectionCoord(x), SectionPos.blockToSectionCoord(z));
-        int surface = undervoid.getHeight(Heightmap.Types.MOTION_BLOCKING, x, z);
-        double y = surface > undervoid.getMinBuildHeight() ? surface : FALLBACK_ARRIVAL_Y;
+        undervoidLevel.getChunk(x >> 4, z >> 4);
+        int y = undervoidLevel.getHeight(Heightmap.Types.MOTION_BLOCKING, x, z);
+        if (y <= undervoidLevel.getMinBuildHeight()) {
+            y = 120;
+        }
 
-        player.setCamera(player);
-        player.stopRiding();
-        player.changeDimension(new DimensionTransition(undervoid, new Vec3(x + 0.5, y, z + 0.5), Vec3.ZERO,
+        teleportPlayer(player, new DimensionTransition(undervoidLevel, new Vec3(x + 0.5, y, z + 0.5), Vec3.ZERO,
                 player.getYRot(), player.getXRot(), DimensionTransition.PLAY_PORTAL_SOUND));
-        player.resetFallDistance();
         player.addEffect(new MobEffectInstance(MobEffects.DARKNESS, 60));
         player.addEffect(new MobEffectInstance(MobEffects.REGENERATION, 100));
     }
 
-    private static void leaveUndervoid(ServerPlayer player) {
-        DimensionTransition transition = player.findRespawnPositionAndUseSpawnBlock(false, DimensionTransition.DO_NOTHING);
+    private static void teleportPlayer(ServerPlayer player, DimensionTransition transition) {
         player.setCamera(player);
         player.stopRiding();
         player.changeDimension(transition);

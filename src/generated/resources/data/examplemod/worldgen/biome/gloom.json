@@ -33,7 +33,8 @@
     [],
     [
       "examplemod:void_tree_placed",
-      "minecraft:patch_dead_bush_2"
+      "minecraft:patch_dead_bush_2",
+      "examplemod:gloom_decor_placed"
     ]
   ],
   "has_precipitation": false,

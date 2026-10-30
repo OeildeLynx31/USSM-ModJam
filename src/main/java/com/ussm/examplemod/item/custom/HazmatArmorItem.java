@@ -13,15 +13,13 @@ import net.minecraft.world.item.TooltipFlag;
 import java.util.List;
 
 public class HazmatArmorItem extends ArmorItem {
-    private static final EquipmentSlot[] SUIT_SLOTS = {EquipmentSlot.HEAD, EquipmentSlot.CHEST, EquipmentSlot.LEGS, EquipmentSlot.FEET};
-
     public HazmatArmorItem(Type type, Properties properties) {
         super(ModArmorMaterials.HAZMAT, type, properties.durability(type.getDurability(10)));
     }
 
     public static boolean isWearingFullSuit(LivingEntity entity) {
-        for (EquipmentSlot slot : SUIT_SLOTS) {
-            if (!(entity.getItemBySlot(slot).getItem() instanceof HazmatArmorItem)) {
+        for(ItemStack armorStack : entity.getArmorSlots()) {
+            if(!(armorStack.getItem() instanceof HazmatArmorItem)) {
                 return false;
             }
         }

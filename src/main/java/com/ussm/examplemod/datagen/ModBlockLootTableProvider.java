@@ -7,6 +7,7 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.data.loot.BlockLootSubProvider;
 import net.minecraft.world.flag.FeatureFlags;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.block.Block;
@@ -28,6 +29,12 @@ public class ModBlockLootTableProvider extends BlockLootSubProvider {
     @Override
     protected void generate() {
         dropSelf(ModBlocks.VOID_STONE.get());
+        add(ModBlocks.BONE_PILE.get(), block -> createSingleItemTable(Items.BONE, UniformGenerator.between(1, 3)));
+        add(ModBlocks.SCATTERED_BONE.get(), block -> createSingleItemTable(Items.BONE));
+        add(ModBlocks.STONE_SKULL.get(), block -> createSingleItemTable(Items.BONE, UniformGenerator.between(1, 2)));
+        add(ModBlocks.EYE_NEST.get(), block -> createSingleItemTable(Items.BONE, UniformGenerator.between(2, 4)));
+        add(ModBlocks.DIRTY_VOID_STONE.get(), block -> createSingleItemTableWithSilkTouch(block, ModBlocks.VOID_STONE.get()));
+        dropSelf(ModBlocks.BEDROCK_BREAKER.get());
         this.add(ModBlocks.VOID_MATTER_ORE.get(),
                 block -> createOreDrops(
                         ModBlocks.VOID_MATTER_ORE.get(),
@@ -38,6 +45,14 @@ public class ModBlockLootTableProvider extends BlockLootSubProvider {
         dropSelf(ModBlocks.VOID_LOG.get());
         dropSelf(ModBlocks.VOID_WOOD.get());
         dropSelf(ModBlocks.VOID_PLANKS.get());
+        dropSelf(ModBlocks.VOID_STAIRS.get());
+        add(ModBlocks.VOID_SLAB.get(), block -> createSlabItemTable(ModBlocks.VOID_SLAB.get()));
+        dropSelf(ModBlocks.VOID_FENCE.get());
+        dropSelf(ModBlocks.VOID_FENCE_GATE.get());
+        add(ModBlocks.VOID_DOOR.get(), block -> createDoorTable(ModBlocks.VOID_DOOR.get()));
+        dropSelf(ModBlocks.VOID_TRAPDOOR.get());
+        dropSelf(ModBlocks.VOID_BUTTON.get());
+        dropSelf(ModBlocks.VOID_PRESSURE_PLATE.get());
         add(ModBlocks.VOID_LEAVES.get(), createLeavesDrops(ModBlocks.VOID_LEAVES.get(), ModBlocks.VOID_SAPLING.get(), 0.2f));
         dropSelf(ModBlocks.VOID_SAPLING.get());
         dropSelf(ModBlocks.BLOOM_FLOWER.get());

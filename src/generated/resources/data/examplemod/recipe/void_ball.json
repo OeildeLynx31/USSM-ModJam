@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "examplemod:void_matter"
+    }
+  ],
+  "result": {
+    "count": 8,
+    "id": "examplemod:void_ball"
+  }
+}

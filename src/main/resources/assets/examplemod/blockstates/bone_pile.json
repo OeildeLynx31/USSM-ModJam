@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "examplemod:block/decor/bone_pile"
+    },
+    "facing=east": {
+      "model": "examplemod:block/decor/bone_pile",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "examplemod:block/decor/bone_pile",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "examplemod:block/decor/bone_pile",
+      "y": 270
+    }
+  }
+}

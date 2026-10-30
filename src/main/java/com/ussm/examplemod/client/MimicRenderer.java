@@ -24,92 +24,122 @@ import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.item.CrossbowItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.InteractionHand;
 
 import java.util.UUID;
 
-public class MimicRenderer extends EntityRenderer<Mimic> {
-    private static final PlayerSkin DEFAULT_SKIN = new PlayerSkin(DefaultPlayerSkin.getDefaultTexture(), null, null, null, PlayerSkin.Model.SLIM, true);
-    private static final Vec3 CROUCH_OFFSET = new Vec3(0.0, -0.125, 0.0);
+public class MimicRenderer extends EntityRenderer<Mimic> { // pas mal de trucs repris de PlayerRenderer
+    private static final PlayerSkin DEFAULT_SKIN =
+            new PlayerSkin(DefaultPlayerSkin.getDefaultTexture(), null, null, null, PlayerSkin.Model.SLIM, true);
 
-    private final Body wide;
-    private final Body slim;
+    private final BodyRenderer wideRenderer;
+    private final BodyRenderer slimRenderer;
 
     public MimicRenderer(EntityRendererProvider.Context context) {
         super(context);
-        shadowRadius = 0.5f;
-        wide = new Body(context, false);
-        slim = new Body(context, true);
+        this.shadowRadius = 0.5f;
+        this.wideRenderer = new BodyRenderer(context, false);
+        this.slimRenderer = new BodyRenderer(context, true);
     }
 
     @Override
-    public void render(Mimic mimic, float yaw, float partialTick, PoseStack poseStack, MultiBufferSource buffer, int light) {
-        PlayerSkin skin = skin(mimic);
-        (skin.model() == PlayerSkin.Model.SLIM ? slim : wide).render(mimic, yaw, partialTick, poseStack, buffer, light);
+    public ResourceLocation getTextureLocation(Mimic entity) {
+        return getSkin(entity).texture();
     }
 
     @Override
-    public ResourceLocation getTextureLocation(Mimic mimic) {
-        return skin(mimic).texture();
+    public void render(Mimic entity, float entityYaw, float partialTicks, PoseStack poseStack, MultiBufferSource buffer, int packedLight) {
+        if (getSkin(entity).model() == PlayerSkin.Model.SLIM) {
+            this.slimRenderer.render(entity, entityYaw, partialTicks, poseStack, buffer, packedLight);
+        } else {
+            this.wideRenderer.render(entity, entityYaw, partialTicks, poseStack, buffer, packedLight);
+        }
     }
 
     @Override
-    public Vec3 getRenderOffset(Mimic mimic, float partialTick) {
-        return mimic.isCrouching() ? CROUCH_OFFSET : Vec3.ZERO;
+    public Vec3 getRenderOffset(Mimic entity, float partialTicks) {
+        if(entity.isCrouching()) {
+            return new Vec3(0.0, -0.125, 0.0);
+        }
+        return super.getRenderOffset(entity, partialTicks);
     }
 
-    private static PlayerSkin skin(Mimic mimic) {
-        UUID id = mimic.getCopiedId();
-        if (id == null) {
+    private static PlayerSkin getSkin(Mimic mimic) {
+        UUID uuid = mimic.getCopiedId();
+        if (uuid == null) {
             return DEFAULT_SKIN;
         }
         ClientPacketListener connection = Minecraft.getInstance().getConnection();
-        PlayerInfo info = connection == null ? null : connection.getPlayerInfo(id);
-        return info != null ? info.getSkin() : DefaultPlayerSkin.get(id);
+        PlayerInfo info = connection == null ? null : connection.getPlayerInfo(uuid);
+        if (info != null) {
+            return info.getSkin();
+        }
+        // joueur deco : son skin depuis les textures que le serveur a gardé (skin par defaut tant que c'est pas chargé)
+        return Minecraft.getInstance().getSkinManager().getInsecureSkin(mimic.getGameProfile());
     }
 
-    private static class Body extends LivingEntityRenderer<Mimic, PlayerModel<Mimic>> {
-        Body(EntityRendererProvider.Context context, boolean slim) {
+    private static class BodyRenderer extends LivingEntityRenderer<Mimic, PlayerModel<Mimic>> {
+        public BodyRenderer(EntityRendererProvider.Context context, boolean slim) {
             super(context, new PlayerModel<>(context.bakeLayer(slim ? ModelLayers.PLAYER_SLIM : ModelLayers.PLAYER), slim), 0.5f);
-            addLayer(new HumanoidArmorLayer<>(this,
+            this.addLayer(new HumanoidArmorLayer<>(this,
                     new HumanoidArmorModel<>(context.bakeLayer(slim ? ModelLayers.PLAYER_SLIM_INNER_ARMOR : ModelLayers.PLAYER_INNER_ARMOR)),
                     new HumanoidArmorModel<>(context.bakeLayer(slim ? ModelLayers.PLAYER_SLIM_OUTER_ARMOR : ModelLayers.PLAYER_OUTER_ARMOR)),
                     context.getModelManager()));
-            addLayer(new ItemInHandLayer<>(this, context.getItemInHandRenderer()));
-            addLayer(new CustomHeadLayer<>(this, context.getModelSet(), context.getItemInHandRenderer()));
-            addLayer(new ElytraLayer<>(this, context.getModelSet()));
+            this.addLayer(new ItemInHandLayer<>(this, context.getItemInHandRenderer()));
+            this.addLayer(new HazmatMaskLayer<>(this));
+            this.addLayer(new CustomHeadLayer<>(this, context.getModelSet(), context.getItemInHandRenderer()));
+            this.addLayer(new ElytraLayer<>(this, context.getModelSet()));
+            // TODO la cape du joueur copié s'affiche pas, CapeLayer marche qu'avec un AbstractClientPlayer
+            //this.addLayer(new CapeLayer(this));
         }
 
         @Override
-        public void render(Mimic mimic, float yaw, float partialTick, PoseStack poseStack, MultiBufferSource buffer, int light) {
-            model.setAllVisible(true);
-            model.crouching = mimic.isCrouching();
-            HumanoidModel.ArmPose main = armPose(mimic, mimic.getMainHandItem());
-            HumanoidModel.ArmPose off = main.isTwoHanded() ? itemPose(mimic.getOffhandItem()) : armPose(mimic, mimic.getOffhandItem());
-            boolean right = mimic.getMainArm() == HumanoidArm.RIGHT;
-            model.rightArmPose = right ? main : off;
-            model.leftArmPose = right ? off : main;
-            super.render(mimic, yaw, partialTick, poseStack, buffer, light);
+        public ResourceLocation getTextureLocation(Mimic entity) {
+            return getSkin(entity).texture();
         }
 
         @Override
-        public ResourceLocation getTextureLocation(Mimic mimic) {
-            return skin(mimic).texture();
+        public void render(Mimic entity, float entityYaw, float partialTicks, PoseStack poseStack, MultiBufferSource buffer, int packedLight) {
+            this.setModelProperties(entity);
+            super.render(entity, entityYaw, partialTicks, poseStack, buffer, packedLight);
         }
 
-        private static HumanoidModel.ArmPose armPose(Mimic mimic, ItemStack stack) {
-            if (!mimic.swinging && stack.getItem() instanceof CrossbowItem && CrossbowItem.isCharged(stack)) {
-                return HumanoidModel.ArmPose.CROSSBOW_HOLD;
+        @Override
+        protected void scale(Mimic entity, PoseStack poseStack, float partialTicks) {
+            float f = 0.9375F;
+            poseStack.scale(0.9375F, 0.9375F, 0.9375F);
+        }
+
+        private void setModelProperties(Mimic entity) {
+            PlayerModel<Mimic> playermodel = this.getModel();
+            playermodel.setAllVisible(true);
+            playermodel.crouching = entity.isCrouching();
+
+            HumanoidModel.ArmPose mainHandPose = getArmPose(entity, InteractionHand.MAIN_HAND);
+            HumanoidModel.ArmPose offHandPose = getArmPose(entity, InteractionHand.OFF_HAND);
+            if (mainHandPose.isTwoHanded()) {
+                offHandPose = entity.getOffhandItem().isEmpty() ? HumanoidModel.ArmPose.EMPTY : HumanoidModel.ArmPose.ITEM;
             }
-            return itemPose(stack);
+
+            if (entity.getMainArm() == HumanoidArm.RIGHT) {
+                playermodel.rightArmPose = mainHandPose;
+                playermodel.leftArmPose = offHandPose;
+            } else {
+                playermodel.rightArmPose = offHandPose;
+                playermodel.leftArmPose = mainHandPose;
+            }
         }
 
-        private static HumanoidModel.ArmPose itemPose(ItemStack stack) {
-            return stack.isEmpty() ? HumanoidModel.ArmPose.EMPTY : HumanoidModel.ArmPose.ITEM;
-        }
-
-        @Override
-        protected void scale(Mimic mimic, PoseStack poseStack, float partialTick) {
-            poseStack.scale(0.9375f, 0.9375f, 0.9375f);
+        private static HumanoidModel.ArmPose getArmPose(Mimic mimic, InteractionHand hand) {
+            ItemStack itemstack = mimic.getItemInHand(hand);
+            if (itemstack.isEmpty()) {
+                return HumanoidModel.ArmPose.EMPTY;
+            } else {
+                if (!mimic.swinging && itemstack.getItem() instanceof CrossbowItem && CrossbowItem.isCharged(itemstack)) {
+                    return HumanoidModel.ArmPose.CROSSBOW_HOLD;
+                }
+                return HumanoidModel.ArmPose.ITEM;
+            }
         }
     }
 }

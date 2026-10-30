@@ -10,6 +10,8 @@ import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.BlockSetType;
+import net.minecraft.world.level.block.state.properties.WoodType;
 import net.minecraft.world.level.material.PushReaction;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredBlock;
@@ -30,6 +32,10 @@ public class ModBlocks {
             () -> new VoidStone(BlockBehaviour.Properties.of().strength(1.5f)
                     .sound(SoundType.STONE)));
 
+    public static final DeferredBlock<Block> DIRTY_VOID_STONE = registerBlock("dirty_void_stone",
+            () -> new DirtyVoidStone(BlockBehaviour.Properties.of().strength(1.5f)
+                    .sound(SoundType.NYLIUM).randomTicks()));
+
     public static final DeferredBlock<Block> VOID_LOG = registerBlock(
             "void_log",
             () -> new ModFlammableRotatedPillarBlock(
@@ -48,7 +54,7 @@ public class ModBlocks {
 
     public static final DeferredBlock<Block> VOID_SAPLING = registerBlock(
             "void_sapling",
-            () -> new SaplingBlock(
+            () -> new VoidSaplingBlock(
                     ModTreeGrowers.VOID,
                     BlockBehaviour.Properties.ofFullCopy(Blocks.OAK_SAPLING)
             )
@@ -69,11 +75,11 @@ public class ModBlocks {
                     BlockBehaviour.Properties.ofFullCopy(Blocks.STRIPPED_OAK_WOOD));*/
     
     public static final DeferredBlock<Block> BLOOM_FLOWER = registerBlock("bloom_flower",
-            () -> new FlowerBlock(ModEffects.SERENITY, 8f,
-                    BlockBehaviour.Properties.ofFullCopy(Blocks.ALLIUM).lightLevel(state -> 7)));
+            () -> new FlowerBlock(ModEffects.SERENITY, 8, BlockBehaviour.Properties.ofFullCopy(Blocks.ALLIUM)
+                    .lightLevel(state -> 7)));
 
     public static final DeferredBlock<Block> POTTED_BLOOM_FLOWER = BLOCKS.register("potted_bloom_flower",
-            () -> new FlowerPotBlock(() -> (FlowerPotBlock) Blocks.FLOWER_POT, BLOOM_FLOWER,
+            () -> new FlowerPotBlock(() -> ((FlowerPotBlock) Blocks.FLOWER_POT), BLOOM_FLOWER,
                     BlockBehaviour.Properties.ofFullCopy(Blocks.POTTED_ALLIUM).lightLevel(state -> 7)));
 
     // --- Les Fleurs utilisées pour lezs potions ---
@@ -148,17 +154,36 @@ public class ModBlocks {
             () -> new FlowerPotBlock(() -> (FlowerPotBlock) Blocks.FLOWER_POT, GHOST_FERN_BLOOM,
                     BlockBehaviour.Properties.ofFullCopy(Blocks.POTTED_ALLIUM)));
 
+    //---------------- decos (modeles 3D), seulement generées dans le monde ----------------
+    public static final DeferredBlock<Block> PEBBLES = registerBlock("pebbles",
+            () -> new DecorBlock(3.2, 0, 3.1, 14.9, 5, 14.6, false, false,
+                    BlockBehaviour.Properties.of().sound(SoundType.STONE).instabreak().noLootTable().noCollission().noOcclusion().pushReaction(PushReaction.DESTROY)));
+    public static final DeferredBlock<Block> HANGING_CHAIN = registerBlock("hanging_chain",
+            () -> new DecorBlock(4, 0, 4, 12, 16, 12, false, true,
+                    BlockBehaviour.Properties.of().sound(SoundType.CHAIN).instabreak().noLootTable().noCollission().noOcclusion().pushReaction(PushReaction.DESTROY)));
+    public static final DeferredBlock<Block> BLOOM_MUSHROOM = registerBlock("bloom_mushroom",
+            () -> new DecorBlock(1, 0, 2, 15, 3, 15, false, false,
+                    BlockBehaviour.Properties.of().sound(SoundType.FUNGUS).instabreak().noLootTable().noCollission().noOcclusion().pushReaction(PushReaction.DESTROY)));
+    public static final DeferredBlock<Block> STONE_SKULL = registerBlock("stone_skull",
+            () -> new DecorBlock(3.5, 0, 2.4, 12, 12.1, 12.2, true, false,
+                    BlockBehaviour.Properties.of().sound(SoundType.BONE_BLOCK).strength(1f).noOcclusion().pushReaction(PushReaction.DESTROY)));
+    public static final DeferredBlock<Block> EYE_NEST = registerBlock("eye_nest",
+            () -> new DecorBlock(0, 0, 0, 16, 16, 15.9, true, false,
+                    BlockBehaviour.Properties.of().sound(SoundType.BONE_BLOCK).strength(1.5f).lightLevel(state -> 3).noOcclusion().pushReaction(PushReaction.DESTROY)));
+    public static final DeferredBlock<Block> BONE_PILE = registerBlock("bone_pile",
+            () -> new DecorBlock(0.6, 0, 1, 15.4, 6.7, 15, false, false,
+                    BlockBehaviour.Properties.of().sound(SoundType.BONE_BLOCK).instabreak().noCollission().noOcclusion().pushReaction(PushReaction.DESTROY)));
+    public static final DeferredBlock<Block> SCATTERED_BONE = registerBlock("scattered_bone",
+            () -> new DecorBlock(7, 0, 7, 9, 11.8, 14.2, false, false,
+                    BlockBehaviour.Properties.of().sound(SoundType.BONE_BLOCK).instabreak().noCollission().noOcclusion().pushReaction(PushReaction.DESTROY)));
+    public static final DeferredBlock<Block> EYE_BLOOM = registerBlock("eye_bloom",
+            () -> new DecorBlock(0, 0, 0, 16, 8.6, 16, false, false,
+                    BlockBehaviour.Properties.of().sound(SoundType.SPORE_BLOSSOM).instabreak().noLootTable().lightLevel(state -> 5).noCollission().noOcclusion().pushReaction(PushReaction.DESTROY)));
+
     public static final DeferredBlock<Block> BLOOM_RIFT = BLOCKS.register("bloom_rift",
-            () -> new BloomRiftBlock(BlockBehaviour.Properties.of()
-                    .noCollission()
-                    .forceSolidOn()
-                    .strength(-1.0f, 3600000.0f)
-                    .lightLevel(state -> 12)
-                    .noLootTable()
-                    .noOcclusion()
-                    .pushReaction(PushReaction.BLOCK)
-                    .isValidSpawn(Blocks::never)
-                    .sound(SoundType.AMETHYST)));
+            () -> new BloomRiftBlock(BlockBehaviour.Properties.of().strength(-1f, 3600000f).noLootTable()
+                    .noCollission().forceSolidOn().lightLevel(state -> 12).sound(SoundType.AMETHYST)
+                    .pushReaction(PushReaction.BLOCK).isValidSpawn(Blocks::never)));
 
     public static final DeferredBlock<Block> VOID_PLANKS = registerBlock("void_planks",
             () -> new Block(BlockBehaviour.Properties.ofFullCopy(Blocks.OAK_PLANKS)) {
@@ -177,6 +202,28 @@ public class ModBlocks {
                     return 5;
                 }
             });
+    //-------------------------------- bois du vide --------------------------------
+    public static final DeferredBlock<Block> VOID_STAIRS = registerBlock("void_stairs",
+            () -> new StairBlock(ModBlocks.VOID_PLANKS.get().defaultBlockState(),
+                    BlockBehaviour.Properties.ofFullCopy(Blocks.OAK_STAIRS)));
+    public static final DeferredBlock<Block> VOID_SLAB = registerBlock("void_slab",
+            () -> new SlabBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.OAK_SLAB)));
+
+    public static final DeferredBlock<Block> VOID_FENCE = registerBlock("void_fence",
+            () -> new FenceBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.OAK_FENCE)));
+    public static final DeferredBlock<Block> VOID_FENCE_GATE = registerBlock("void_fence_gate",
+            () -> new FenceGateBlock(WoodType.OAK, BlockBehaviour.Properties.ofFullCopy(Blocks.OAK_FENCE_GATE)));
+
+    public static final DeferredBlock<Block> VOID_DOOR = registerBlock("void_door",
+            () -> new DoorBlock(BlockSetType.OAK, BlockBehaviour.Properties.ofFullCopy(Blocks.OAK_DOOR)));
+    public static final DeferredBlock<Block> VOID_TRAPDOOR = registerBlock("void_trapdoor",
+            () -> new TrapDoorBlock(BlockSetType.OAK, BlockBehaviour.Properties.ofFullCopy(Blocks.OAK_TRAPDOOR)));
+
+    public static final DeferredBlock<Block> VOID_BUTTON = registerBlock("void_button",
+            () -> new ButtonBlock(BlockSetType.OAK, 30, BlockBehaviour.Properties.ofFullCopy(Blocks.OAK_BUTTON)));
+    public static final DeferredBlock<Block> VOID_PRESSURE_PLATE = registerBlock("void_pressure_plate",
+            () -> new PressurePlateBlock(BlockSetType.OAK, BlockBehaviour.Properties.ofFullCopy(Blocks.OAK_PRESSURE_PLATE)));
+
     public static final DeferredBlock<Block> VOID_LEAVES = registerBlock("void_leaves",
             () -> new LeavesBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.OAK_LEAVES)){
                 @Override
@@ -197,6 +244,11 @@ public class ModBlocks {
 
     public static final DeferredBlock<Block> VOID_MATTER_ORE = registerBlock("void_matter_ore",
             () -> new Block(BlockBehaviour.Properties.ofFullCopy(Blocks.ANCIENT_DEBRIS)));
+
+    public static final DeferredBlock<Block> BEDROCK_BREAKER = registerBlock("bedrock_breaker",
+            () -> new BedrockBreakerBlock(BlockBehaviour.Properties.of().strength(5f, 1200f)
+                    .requiresCorrectToolForDrops().sound(SoundType.NETHERITE_BLOCK).pushReaction(PushReaction.BLOCK)
+                    .lightLevel(state -> state.getValue(BedrockBreakerBlock.CHARGING) ? 12 : 0)));
 
 
     // <-_-_-_-_-_-_-_--_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_->
