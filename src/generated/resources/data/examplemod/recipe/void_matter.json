@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "B": {
+      "item": "examplemod:unstable_matter"
+    },
+    "V": {
+      "item": "examplemod:void_stabilizer"
+    }
+  },
+  "pattern": [
+    "BBB",
+    "BVB",
+    "BBB"
+  ],
+  "result": {
+    "count": 1,
+    "id": "examplemod:void_matter"
+  }
+}

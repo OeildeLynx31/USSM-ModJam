@@ -1,0 +1,27 @@
+{
+  "parent": "examplemod:undervoid/root",
+  "criteria": {
+    "has_katana": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "examplemod:katana"
+          }
+        ]
+      }
+    }
+  },
+  "display": {
+    "icon": {
+      "id": "examplemod:katana"
+    },
+    "title": {
+      "translate": "advancements.examplemod.undervoid.fast_and_sharp.title"
+    },
+    "description": {
+      "translate": "advancements.examplemod.undervoid.fast_and_sharp.description"
+    },
+    "frame": "goal"
+  }
+}

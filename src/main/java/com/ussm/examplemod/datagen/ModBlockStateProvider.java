@@ -1,0 +1,153 @@
+package com.ussm.examplemod.datagen;
+
+import com.ussm.examplemod.ExampleMod;
+import com.ussm.examplemod.block.ModBlocks;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.data.PackOutput;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.RotatedPillarBlock;
+import net.minecraft.world.level.block.state.BlockState;
+import net.neoforged.neoforge.client.model.generators.BlockStateProvider;
+import net.neoforged.neoforge.client.model.generators.ConfiguredModel;
+import net.neoforged.neoforge.client.model.generators.ModelFile;
+import net.neoforged.neoforge.common.data.ExistingFileHelper;
+import net.neoforged.neoforge.registries.DeferredBlock;
+
+public class ModBlockStateProvider extends BlockStateProvider { // Juste ne TOUCHES PAS à la datagen, sinon ban
+    public ModBlockStateProvider(PackOutput output, ExistingFileHelper exFileHelper) {
+        super(output, ExampleMod.MODID, exFileHelper);
+    }
+
+    @Override
+    protected void registerStatesAndModels() {
+        blockWithItem(ModBlocks.VOID_STONE);
+        blockWithItem(ModBlocks.VOID_MATTER_ORE);
+        blockWithItem(ModBlocks.DARK_DIRT);
+        blockWithItem(ModBlocks.DARK_DEEPSLATE);
+        saplingBlock(ModBlocks.CORRUPTED_GRASS);
+        saplingBlock(ModBlocks.DEAD_SHRUB);
+        simpleBlockWithItem(ModBlocks.CORRUPTED_GRASS_BLOCK.get(),
+                models().cubeBottomTop("corrupted_grass_block",
+                        modLoc("block/corrupted_grass_block_side"),
+                        modLoc("block/dark_dirt"),
+                        modLoc("block/corrupted_grass_block_top")));
+
+        logBlock(((RotatedPillarBlock) ModBlocks.VOID_LOG.get()));
+        axisBlock(((RotatedPillarBlock) ModBlocks.VOID_WOOD.get()), blockTexture(ModBlocks.VOID_LOG.get()), blockTexture(ModBlocks.VOID_LOG.get()));
+
+        blockItem(ModBlocks.VOID_LOG);
+        blockItem(ModBlocks.VOID_WOOD);
+
+        blockWithItem(ModBlocks.VOID_PLANKS);
+
+        leavesBlock(ModBlocks.VOID_LEAVES);
+
+        saplingBlock(ModBlocks.VOID_SAPLING);
+        saplingBlock(ModBlocks.BLOOM_FLOWER);
+        simpleBlock(ModBlocks.POTTED_BLOOM_FLOWER.get(), models().singleTexture("potted_bloom_flower",
+                ResourceLocation.withDefaultNamespace("block/flower_pot_cross"), "plant",
+                blockTexture(ModBlocks.BLOOM_FLOWER.get())).renderType("cutout"));
+        simpleBlock(ModBlocks.BLOOM_RIFT.get(), models().cross("bloom_rift", blockTexture(ModBlocks.BLOOM_RIFT.get())).renderType("translucent"));
+
+        flowerBlock(ModBlocks.CALM_LILY, ModBlocks.POTTED_CALM_LILY);
+        flowerBlock(ModBlocks.NIGHTSHADE_BLOOM, ModBlocks.POTTED_NIGHTSHADE_BLOOM);
+        flowerBlock(ModBlocks.ASHEN_POPPY, ModBlocks.POTTED_ASHEN_POPPY);
+        flowerBlock(ModBlocks.PALE_TULIP, ModBlocks.POTTED_PALE_TULIP);
+        flowerBlock(ModBlocks.EMBER_DAISY, ModBlocks.POTTED_EMBER_DAISY);
+        flowerBlock(ModBlocks.GLASS_ORCHID, ModBlocks.POTTED_GLASS_ORCHID);
+        flowerBlock(ModBlocks.MOSS_VIOLET, ModBlocks.POTTED_MOSS_VIOLET);
+        flowerBlock(ModBlocks.INK_BLOSSOM, ModBlocks.POTTED_INK_BLOSSOM);
+        flowerBlock(ModBlocks.DUSK_BELL, ModBlocks.POTTED_DUSK_BELL);
+        flowerBlock(ModBlocks.GHOST_FERN_BLOOM, ModBlocks.POTTED_GHOST_FERN_BLOOM);
+    }
+
+    private void blockWithItem(DeferredBlock<?> deferredBlock){
+        simpleBlockWithItem(deferredBlock.get(), cubeAll(deferredBlock.get()));
+    }
+
+    private void leavesBlock(DeferredBlock<Block> blockRegistryObject) {
+        simpleBlockWithItem(
+                blockRegistryObject.get(),
+                models().singleTexture(
+                        BuiltInRegistries.BLOCK.getKey(blockRegistryObject.get()).getPath(),
+                        ResourceLocation.withDefaultNamespace("block/leaves"),
+                        "all",
+                        blockTexture(blockRegistryObject.get())
+                ).renderType("cutout")
+        );
+    }
+
+    private void saplingBlock(DeferredBlock<Block> block) {
+        simpleBlock(
+                block.get(),
+                models().cross(
+                        block.getId().getPath(),
+                        blockTexture(block.get())
+                ).renderType("cutout")
+        );
+
+        itemModels().withExistingParent(
+                block.getId().getPath(),
+                mcLoc("item/generated")
+        ).texture("layer0", blockTexture(block.get()));
+    }
+
+    private void flowerBlock(DeferredBlock<Block> flower, DeferredBlock<Block> pottedFlower) {
+        saplingBlock(flower);
+        simpleBlock(pottedFlower.get(), models().singleTexture(
+                pottedFlower.getId().getPath(),
+                ResourceLocation.withDefaultNamespace("block/flower_pot_cross"), "plant",
+                blockTexture(flower.get())).renderType("cutout"));
+    }
+
+    private ConfiguredModel[] states(BlockState state, String modelName, String textureName) {
+        ConfiguredModel[] models = new ConfiguredModel[1];
+        // on fait ce qu'on veut
+
+        return models;
+    }
+    private ConfiguredModel[] cutout() {
+        ConfiguredModel[] models = new ConfiguredModel[1];
+        models[0] = new ConfiguredModel(models().cubeAll("cave_block",
+                ResourceLocation.fromNamespaceAndPath(ExampleMod.MODID, "block/cave_block")).renderType("cutout"));
+
+        return models;
+    }
+
+
+    private void blockItem(DeferredBlock<Block> block) {
+        simpleBlockItem(
+                block.get(),
+                new ModelFile.UncheckedModelFile(
+                        modLoc("block/" + block.getId().getPath())
+                )
+        );
+    }
+
+    private void simpleSidedBlock(DeferredBlock<?> deferredBlock) {
+        simpleBlockWithItem(
+                deferredBlock.get(),
+                models().cubeBottomTop(
+                        deferredBlock.getId().getPath(),
+                        modLoc("block/" + deferredBlock.getId().getPath() + "_side"),
+                        modLoc("block/" + deferredBlock.getId().getPath() + "_bottom"),
+                        modLoc("block/" + deferredBlock.getId().getPath() + "_top")
+                )
+        );
+    }
+    private void simpleSpawnerBlock(DeferredBlock<?> deferredBlock) {
+        simpleBlockWithItem(
+                deferredBlock.get(),
+                models().cubeBottomTop(
+                        deferredBlock.getId().getPath(),
+                        modLoc("block/" + deferredBlock.getId().getPath() + "_side"),
+                        modLoc("block/spawner_bottom"),
+                        modLoc("block/" + deferredBlock.getId().getPath() + "_top")
+                ).renderType("cutout")
+        );
+    }
+
+
+}
+

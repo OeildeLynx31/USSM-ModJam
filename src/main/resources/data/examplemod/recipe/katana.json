@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "B": {
+      "item": "examplemod:blade_fragment"
+    },
+    "P": {
+      "item": "examplemod:void_planks"
+    }
+  },
+  "pattern": [
+    "  B",
+    " B ",
+    "P  "
+  ],
+  "result": {
+    "count": 1,
+    "id": "examplemod:katana"
+  }
+}
