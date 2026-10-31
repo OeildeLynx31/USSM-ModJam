@@ -40,7 +40,20 @@
   "has_precipitation": false,
   "spawn_costs": {},
   "spawners": {
-    "ambient": [],
+    "ambient": [
+      {
+        "type": "examplemod:cockroach",
+        "maxCount": 4,
+        "minCount": 2,
+        "weight": 10
+      },
+      {
+        "type": "examplemod:gloom_bird",
+        "maxCount": 2,
+        "minCount": 1,
+        "weight": 5
+      }
+    ],
     "axolotls": [],
     "creature": [],
     "misc": [],
@@ -68,6 +81,12 @@
         "maxCount": 4,
         "minCount": 1,
         "weight": 20
+      },
+      {
+        "type": "examplemod:carnivorous_plant",
+        "maxCount": 1,
+        "minCount": 1,
+        "weight": 30
       }
     ],
     "underground_water_creature": [],

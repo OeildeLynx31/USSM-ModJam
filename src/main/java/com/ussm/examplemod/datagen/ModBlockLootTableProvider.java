@@ -40,6 +40,13 @@ public class ModBlockLootTableProvider extends BlockLootSubProvider {
         add(ModBlocks.SCATTERED_BONE.get(), block -> createSingleItemTable(Items.BONE));
         add(ModBlocks.STONE_SKULL.get(), block -> createSingleItemTable(Items.BONE, UniformGenerator.between(1, 2)));
         add(ModBlocks.EYE_NEST.get(), block -> createSingleItemTable(Items.BONE, UniformGenerator.between(2, 4)));
+        dropSelf(ModBlocks.VOID_ASTER.get());
+        dropSelf(ModBlocks.CAVE_MARIGOLD.get());
+        dropSelf(ModBlocks.GLIMMER_CLUSTER.get());
+        dropSelf(ModBlocks.GLOOM_STAR.get());
+        dropSelf(ModBlocks.CLAW_STALK.get());
+        dropSelf(ModBlocks.VENOM_DART_FLOWER.get());
+        dropSelf(ModBlocks.SPORETHORN.get());
         add(ModBlocks.DIRTY_VOID_STONE.get(), block -> createSingleItemTableWithSilkTouch(block, ModBlocks.VOID_STONE.get()));
         dropSelf(ModBlocks.BEDROCK_BREAKER.get());
         this.add(ModBlocks.VOID_MATTER_ORE.get(),

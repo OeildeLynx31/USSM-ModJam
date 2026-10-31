@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "examplemod:block/decor/venom_dart_flower"
+    },
+    "facing=east": {
+      "model": "examplemod:block/decor/venom_dart_flower",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "examplemod:block/decor/venom_dart_flower",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "examplemod:block/decor/venom_dart_flower",
+      "y": 270
+    }
+  }
+}

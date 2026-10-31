@@ -65,6 +65,8 @@ public class ExampleMod {
                 output.accept(ModBlocks.VOID_TRAPDOOR.asItem());
                 output.accept(ModBlocks.VOID_BUTTON.asItem());
                 output.accept(ModBlocks.VOID_PRESSURE_PLATE.asItem());
+                output.accept(ModItems.VOID_BOAT.get());
+                output.accept(ModItems.VOID_CHEST_BOAT.get());
                 output.accept(ModBlocks.VOID_LEAVES.asItem());
                 output.accept(ModBlocks.BLOOM_FLOWER.asItem());
                 output.accept(ModBlocks.PEBBLES.asItem());
@@ -75,6 +77,15 @@ public class ExampleMod {
                 output.accept(ModBlocks.BONE_PILE.asItem());
                 output.accept(ModBlocks.SCATTERED_BONE.asItem());
                 output.accept(ModBlocks.EYE_BLOOM.asItem());
+                output.accept(ModBlocks.VOID_ASTER.asItem());
+                output.accept(ModBlocks.CAVE_MARIGOLD.asItem());
+                output.accept(ModBlocks.GLIMMER_CLUSTER.asItem());
+                output.accept(ModBlocks.GLOOM_STAR.asItem());
+                output.accept(ModBlocks.EYEGRASS.asItem());
+                output.accept(ModBlocks.PALE_TUFT.asItem());
+                output.accept(ModBlocks.CLAW_STALK.asItem());
+                output.accept(ModBlocks.VENOM_DART_FLOWER.asItem());
+                output.accept(ModBlocks.SPORETHORN.asItem());
                 output.accept(ModItems.HAZMAT_FABRIC.get());
                 output.accept(ModItems.HAZMAT_MASK.get());
                 output.accept(ModItems.HAZMAT_SUIT.get());
@@ -89,6 +100,11 @@ public class ExampleMod {
                 output.accept(ModItems.HEDGEHOG_SPAWN_EGG.get());
                 output.accept(ModItems.MIMIC_SPAWN_EGG.get());
                 output.accept(ModItems.SMOKE_BOSS_SPAWN_EGG.get());
+                output.accept(ModItems.COCKROACH_SPAWN_EGG.get());
+                output.accept(ModItems.GLOOM_BIRD_SPAWN_EGG.get());
+                output.accept(ModItems.BLOOM_BUTTERFLY_SPAWN_EGG.get());
+                output.accept(ModItems.FLOATING_LIGHT_SPAWN_EGG.get());
+                output.accept(ModItems.CARNIVOROUS_PLANT_SPAWN_EGG.get());
                 output.accept(ModBlocks.CALM_LILY.asItem());
                 output.accept(ModBlocks.NIGHTSHADE_BLOOM.asItem());
                 output.accept(ModBlocks.ASHEN_POPPY.asItem());

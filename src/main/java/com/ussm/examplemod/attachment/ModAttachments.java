@@ -22,6 +22,12 @@ public class ModAttachments {
     public static final Supplier<AttachmentType<Integer>> VOID_TICKS = ATTACHMENT_TYPES.register("void_ticks",
             () -> AttachmentType.builder(() -> 0).build());
 
+    // pommes dorees mangees pour le vide (combien + quand la derniere)
+    public static final Supplier<AttachmentType<Integer>> VOID_APPLES = ATTACHMENT_TYPES.register("void_apples",
+            () -> AttachmentType.builder(() -> 0).build());
+    public static final Supplier<AttachmentType<Long>> VOID_APPLE_TIME = ATTACHMENT_TYPES.register("void_apple_time",
+            () -> AttachmentType.builder(() -> 0L).build());
+
     public static final Supplier<AttachmentType<KatanaDash>> KATANA_DASH = ATTACHMENT_TYPES.register(
             "katana_dash",
             () -> AttachmentType.<KatanaDash>builder(() -> null).build()

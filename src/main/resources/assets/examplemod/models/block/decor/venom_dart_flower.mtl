@@ -1,0 +1,4 @@
+# Made in Blockbench 4.12.5
+newmtl m_plant
+map_Kd examplemod:block/decor/venom_dart_flower
+newmtl none

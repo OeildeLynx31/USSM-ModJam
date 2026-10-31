@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "examplemod:block/decor/claw_stalk"
+    },
+    "facing=east": {
+      "model": "examplemod:block/decor/claw_stalk",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "examplemod:block/decor/claw_stalk",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "examplemod:block/decor/claw_stalk",
+      "y": 270
+    }
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "loader": "neoforge:obj",
+  "model": "examplemod:models/block/decor/void_aster.obj",
+  "flip_v": true,
+  "render_type": "minecraft:cutout",
+  "textures": {
+    "particle": "examplemod:block/decor/void_aster"
+  }
+}

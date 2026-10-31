@@ -7,6 +7,8 @@ public class Config {
     public static final ModConfigSpec CLIENT_SPEC;
 
     public static final ModConfigSpec.IntValue VOID_SURVIVAL_TICKS;
+    public static final ModConfigSpec.IntValue VOID_GOLDEN_APPLES;
+    public static final ModConfigSpec.DoubleValue VOID_APPLE_DAMAGE;
 
     public static final ModConfigSpec.DoubleValue GLOOM_SURFACE_LOSS;
     public static final ModConfigSpec.DoubleValue GLOOM_UNDERGROUND_LOSS;
@@ -54,6 +56,8 @@ public class Config {
 
         server.push("void");
         VOID_SURVIVAL_TICKS = server.defineInRange("voidSurvivalTicks", 100, 1, 6000); // 5s
+        VOID_GOLDEN_APPLES = server.defineInRange("voidGoldenApples", 3, 1, 64);
+        VOID_APPLE_DAMAGE = server.defineInRange("voidAppleDamage", 0.25, 0.0, 1.0);
         server.pop();
 
         //TODO mettre les seuils des paliers ici aussi

@@ -15,6 +15,9 @@ public class ModParticles {
     public static final DeferredHolder<ParticleType<?>, SimpleParticleType> MIASMA =
             PARTICLE_TYPES.register("miasma", () -> new SimpleParticleType(false));
 
+    public static final DeferredHolder<ParticleType<?>, SimpleParticleType> FALLING_VOID_LEAF =
+            PARTICLE_TYPES.register("falling_void_leaf", () -> new SimpleParticleType(false));
+
     public static void register(IEventBus eventBus) {
         PARTICLE_TYPES.register(eventBus);
     }

@@ -39,7 +39,14 @@
   "has_precipitation": false,
   "spawn_costs": {},
   "spawners": {
-    "ambient": [],
+    "ambient": [
+      {
+        "type": "examplemod:cockroach",
+        "maxCount": 4,
+        "minCount": 2,
+        "weight": 10
+      }
+    ],
     "axolotls": [],
     "creature": [],
     "misc": [],

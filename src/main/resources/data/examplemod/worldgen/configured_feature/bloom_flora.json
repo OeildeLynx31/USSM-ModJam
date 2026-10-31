@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:simple_block",
+  "config": {
+    "to_place": {
+      "type": "minecraft:weighted_state_provider",
+      "entries": [
+        { "data": { "Name": "examplemod:void_aster", "Properties": { "facing": "north" } }, "weight": 4 },
+        { "data": { "Name": "examplemod:void_aster", "Properties": { "facing": "east" } }, "weight": 4 },
+        { "data": { "Name": "examplemod:void_aster", "Properties": { "facing": "south" } }, "weight": 4 },
+        { "data": { "Name": "examplemod:void_aster", "Properties": { "facing": "west" } }, "weight": 4 },
+        { "data": { "Name": "examplemod:cave_marigold", "Properties": { "facing": "north" } }, "weight": 4 },
+        { "data": { "Name": "examplemod:cave_marigold", "Properties": { "facing": "east" } }, "weight": 4 },
+        { "data": { "Name": "examplemod:cave_marigold", "Properties": { "facing": "south" } }, "weight": 4 },
+        { "data": { "Name": "examplemod:cave_marigold", "Properties": { "facing": "west" } }, "weight": 4 },
+        { "data": { "Name": "examplemod:glimmer_cluster", "Properties": { "facing": "north" } }, "weight": 2 },
+        { "data": { "Name": "examplemod:glimmer_cluster", "Properties": { "facing": "east" } }, "weight": 2 },
+        { "data": { "Name": "examplemod:glimmer_cluster", "Properties": { "facing": "south" } }, "weight": 2 },
+        { "data": { "Name": "examplemod:glimmer_cluster", "Properties": { "facing": "west" } }, "weight": 2 }
+      ]
+    }
+  }
+}

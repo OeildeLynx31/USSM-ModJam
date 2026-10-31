@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "examplemod:block/decor/sporethorn"
+    },
+    "facing=east": {
+      "model": "examplemod:block/decor/sporethorn",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "examplemod:block/decor/sporethorn",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "examplemod:block/decor/sporethorn",
+      "y": 270
+    }
+  }
+}

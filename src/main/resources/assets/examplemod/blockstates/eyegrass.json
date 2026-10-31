@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "examplemod:block/decor/eyegrass"
+    },
+    "facing=east": {
+      "model": "examplemod:block/decor/eyegrass",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "examplemod:block/decor/eyegrass",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "examplemod:block/decor/eyegrass",
+      "y": 270
+    }
+  }
+}

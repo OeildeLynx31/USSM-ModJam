@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "examplemod:block/decor/pale_tuft"
+    },
+    "facing=east": {
+      "model": "examplemod:block/decor/pale_tuft",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "examplemod:block/decor/pale_tuft",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "examplemod:block/decor/pale_tuft",
+      "y": 270
+    }
+  }
+}

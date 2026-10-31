@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:simple_block",
+  "config": {
+    "to_place": {
+      "type": "minecraft:weighted_state_provider",
+      "entries": [
+        { "data": { "Name": "examplemod:venom_dart_flower", "Properties": { "facing": "north" } }, "weight": 3 },
+        { "data": { "Name": "examplemod:venom_dart_flower", "Properties": { "facing": "east" } }, "weight": 3 },
+        { "data": { "Name": "examplemod:venom_dart_flower", "Properties": { "facing": "south" } }, "weight": 3 },
+        { "data": { "Name": "examplemod:venom_dart_flower", "Properties": { "facing": "west" } }, "weight": 3 },
+        { "data": { "Name": "examplemod:sporethorn", "Properties": { "facing": "north" } }, "weight": 2 },
+        { "data": { "Name": "examplemod:sporethorn", "Properties": { "facing": "east" } }, "weight": 2 },
+        { "data": { "Name": "examplemod:sporethorn", "Properties": { "facing": "south" } }, "weight": 2 },
+        { "data": { "Name": "examplemod:sporethorn", "Properties": { "facing": "west" } }, "weight": 2 }
+      ]
+    }
+  }
+}

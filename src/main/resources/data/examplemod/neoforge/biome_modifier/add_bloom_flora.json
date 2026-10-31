@@ -1,0 +1,8 @@
+{
+  "type": "neoforge:add_features",
+  "biomes": [
+    "examplemod:bloom"
+  ],
+  "features": "examplemod:bloom_flora",
+  "step": "vegetal_decoration"
+}

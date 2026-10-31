@@ -1,0 +1,39 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "examplemod:void_boat"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    },
+    "has_planks": {
+      "conditions": {
+        "items": [
+          {
+            "items": "examplemod:void_planks"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "in_water": {
+      "conditions": {
+        "block": "minecraft:water"
+      },
+      "trigger": "minecraft:enter_block"
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_planks",
+      "in_water"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "examplemod:void_boat"
+    ]
+  }
+}

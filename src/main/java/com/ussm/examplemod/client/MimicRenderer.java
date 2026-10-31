@@ -20,11 +20,11 @@ import net.minecraft.client.renderer.entity.layers.ItemInHandLayer;
 import net.minecraft.client.resources.DefaultPlayerSkin;
 import net.minecraft.client.resources.PlayerSkin;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.item.CrossbowItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
-import net.minecraft.world.InteractionHand;
 
 import java.util.UUID;
 
@@ -33,26 +33,44 @@ public class MimicRenderer extends EntityRenderer<Mimic> { // pompé en grande p
             new PlayerSkin(DefaultPlayerSkin.getDefaultTexture(), null, null, null, PlayerSkin.Model.SLIM, true);
 
     private final BodyRenderer steve;
-    private final BodyRenderer alex;
+    private final BodyRenderer alex; // team alex
+    private final TrueFormRenderer trueFormRenderer;
 
     public MimicRenderer(EntityRendererProvider.Context context) {
         super(context);
         this.shadowRadius = 0.5f;
         this.steve = new BodyRenderer(context, false);
         this.alex = new BodyRenderer(context, true);
+        this.trueFormRenderer = new TrueFormRenderer(context);
     }
 
     @Override
     public ResourceLocation getTextureLocation(Mimic entity) {
-        return getSkin(entity).texture();
+        return entity.isRevealed() ? TrueFormRenderer.TEXTURE : getSkin(entity).texture();
     }
 
     @Override
     public void render(Mimic entity, float entityYaw, float partialTicks, PoseStack poseStack, MultiBufferSource buffer, int packedLight) {
-        if(getSkin(entity).model() == PlayerSkin.Model.SLIM) {
-            this.alex.render(entity, entityYaw, partialTicks, poseStack, buffer, packedLight);
+        BodyRenderer body = this.steve;
+        if (getSkin(entity).model() == PlayerSkin.Model.SLIM) {
+            body = this.alex;
+        }
+
+        if (entity.isRevealed()) {
+            this.trueFormRenderer.render(entity, entityYaw, partialTicks, poseStack, buffer, packedLight);
+
+            // le faux joueur rentre dans le sol pdt que la bete sort
+            float sink = entity.getEmergeTime(partialTicks) / 12f;
+            if (sink < 1f) {
+                poseStack.pushPose();
+                poseStack.translate(0.0, -sink * 1.9f, 0.0);
+                body.showName = false;
+                body.render(entity, entityYaw, partialTicks, poseStack, buffer, packedLight);
+                body.showName = true;
+                poseStack.popPose();
+            }
         } else {
-            this.steve.render(entity, entityYaw, partialTicks, poseStack, buffer, packedLight);
+            body.render(entity, entityYaw, partialTicks, poseStack, buffer, packedLight);
         }
     }
 
@@ -75,6 +93,8 @@ public class MimicRenderer extends EntityRenderer<Mimic> { // pompé en grande p
     }
 
     private static class BodyRenderer extends LivingEntityRenderer<Mimic, PlayerModel<Mimic>> {
+        boolean showName = true;
+
         public BodyRenderer(EntityRendererProvider.Context context, boolean slim) {
             super(context, new PlayerModel<>(context.bakeLayer(slim ? ModelLayers.PLAYER_SLIM : ModelLayers.PLAYER), slim), 0.5f);
             this.addLayer(new HumanoidArmorLayer<>(this,
@@ -85,7 +105,7 @@ public class MimicRenderer extends EntityRenderer<Mimic> { // pompé en grande p
             this.addLayer(new HazmatMaskLayer<>(this));
             this.addLayer(new CustomHeadLayer<>(this, context.getModelSet(), context.getItemInHandRenderer()));
             this.addLayer(new ElytraLayer<>(this, context.getModelSet()));
-            // TODO la cape du joueur copié s'affiche pas, CapeLayer marche qu'avec un AbstractClientPlayer
+            // TODO cape
             //this.addLayer(new CapeLayer(this));
         }
 
@@ -104,6 +124,11 @@ public class MimicRenderer extends EntityRenderer<Mimic> { // pompé en grande p
         protected void scale(Mimic entity, PoseStack poseStack, float partialTicks) {
             float f = 0.9375F;
             poseStack.scale(f, f, f);
+        }
+
+        @Override
+        protected boolean shouldShowName(Mimic entity) {
+            return this.showName && super.shouldShowName(entity);
         }
 
         private void setModelProperties(Mimic entity) {
@@ -136,6 +161,25 @@ public class MimicRenderer extends EntityRenderer<Mimic> { // pompé en grande p
                 }
                 return HumanoidModel.ArmPose.ITEM;
             }
+        }
+    }
+
+    private static class TrueFormRenderer extends LivingEntityRenderer<Mimic, MimicTrueFormModel> {
+        private static final ResourceLocation TEXTURE =
+                ResourceLocation.fromNamespaceAndPath("examplemod", "textures/entity/mimic_true_form.png");
+
+        public TrueFormRenderer(EntityRendererProvider.Context context) {
+            super(context, new MimicTrueFormModel(context.bakeLayer(MimicTrueFormModel.LAYER_LOCATION)), 0.6f);
+        }
+
+        @Override
+        public ResourceLocation getTextureLocation(Mimic entity) {
+            return TEXTURE;
+        }
+
+        @Override
+        protected void scale(Mimic entity, PoseStack poseStack, float partialTicks) {
+            poseStack.scale(1.1f, 1.1f, 1.1f); // a peu pres la taille du joueur
         }
     }
 }

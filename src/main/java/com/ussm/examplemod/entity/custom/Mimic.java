@@ -14,6 +14,8 @@ import com.ussm.examplemod.entity.mimic.voice.VoiceBank;
 import com.ussm.examplemod.entity.mimic.voice.VoiceClip;
 import com.ussm.examplemod.entity.mimic.voice.VoiceRecorder;
 import net.minecraft.ChatFormatting;
+import net.minecraft.core.particles.BlockParticleOption;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.syncher.EntityDataAccessor;
@@ -27,6 +29,7 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.DifficultyInstance;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
@@ -42,6 +45,9 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.ServerLevelAccessor;
+import net.minecraft.world.level.block.RenderShape;
+import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
@@ -73,6 +79,14 @@ public class Mimic extends Monster {
     private int lureLimit = -1;
     private int lifeTicks;
     private boolean replaying;
+
+    // vraie forme : il sort du sol a la revelation (meme duree que l'anim emerge en x2)
+    public static final int EMERGE_TICKS = 68;
+    private int emergeTicks;
+    public final AnimationState emergeAnimationState = new AnimationState();
+    public final AnimationState attackAnimationState = new AnimationState();
+    private int emergeAge, attackTicks;
+    private float runTime, runTimeO;
 
     public Mimic(EntityType<? extends Monster> entityType, Level level) {
         super(entityType, level);
@@ -170,6 +184,77 @@ public class Mimic extends Monster {
     }
 
     @Override
+    protected boolean isImmobile() {
+        return super.isImmobile() || this.getPose() == Pose.EMERGING;
+    }
+
+    @Override
+    public void tick() {
+        super.tick();
+        if (this.level().isClientSide()) {
+            this.tickTrueForm();
+        } else if (this.emergeTicks > 0 && --this.emergeTicks == 0 && this.getPose() == Pose.EMERGING) {
+            this.setPose(Pose.STANDING);
+        }
+    }
+
+    @Override
+    public void onSyncedDataUpdated(EntityDataAccessor<?> key) {
+        if (DATA_POSE.equals(key)) {
+            if (this.getPose() == Pose.EMERGING) {
+                this.emergeAnimationState.start(this.tickCount);
+                this.emergeAge = 0;
+            } else {
+                this.emergeAnimationState.stop();
+            }
+        }
+        super.onSyncedDataUpdated(key);
+    }
+
+    @Override
+    public void swing(InteractionHand hand, boolean updateSelf) {
+        super.swing(hand, updateSelf);
+        // cote client le coup du MeleeAttackGoal arrive par ici
+        if (this.level().isClientSide() && this.isRevealed()) {
+            this.attackAnimationState.start(this.tickCount);
+            this.attackTicks = 8;
+        }
+    }
+
+    private void tickTrueForm() {
+        this.runTimeO = this.runTime;
+        boolean running = this.isRevealed() && this.getPose() != Pose.EMERGING && this.walkAnimation.speed() > 0.15F;
+        this.runTime = running ? Math.min(1.2F, this.runTime + 0.05F) : Math.max(0F, this.runTime - 0.15F);
+        if (this.attackTicks > 0 && --this.attackTicks == 0) {
+            this.attackAnimationState.stop();
+        }
+
+        if (this.getPose() == Pose.EMERGING && ++this.emergeAge < 36) {
+            // il creuse pour sortir, comme le warden
+            BlockState state = this.getBlockStateOn();
+            if (state.getRenderShape() != RenderShape.INVISIBLE) {
+                for (int i = 0; i < 6; i++) {
+                    this.level().addParticle(new BlockParticleOption(ParticleTypes.BLOCK, state),
+                            this.getX() + Mth.randomBetween(this.random, -0.6F, 0.6F), this.getY(),
+                            this.getZ() + Mth.randomBetween(this.random, -0.6F, 0.6F), 0.0, 0.0, 0.0);
+                }
+                if (this.emergeAge % 4 == 1) {
+                    SoundType sound = state.getSoundType(this.level(), this.getOnPos(), this);
+                    this.level().playLocalSound(this.getX(), this.getY(), this.getZ(), sound.getHitSound(), SoundSource.HOSTILE, 0.7F, sound.getPitch() * 0.7F, false);
+                }
+            }
+        }
+    }
+
+    public float getRunTime(float partialTick) {
+        return Mth.lerp(partialTick, this.runTimeO, this.runTime);
+    }
+
+    public float getEmergeTime(float partialTick) {
+        return this.getPose() == Pose.EMERGING ? this.emergeAge + partialTick : EMERGE_TICKS;
+    }
+
+    @Override
     protected void customServerAiStep() {
         super.customServerAiStep();
 
@@ -248,6 +333,9 @@ public class Mimic extends Monster {
     private void reveal(Player target) {
         this.entityData.set(REVEALED, true);
         this.setShiftKeyDown(false);
+        this.setPose(Pose.EMERGING);
+        this.emergeTicks = EMERGE_TICKS;
+        this.getNavigation().stop();
         if (target == null) {
             target = level().getNearestPlayer(getX(), getY(), getZ(), 32, e -> e instanceof Player p && canHunt(p));
         }

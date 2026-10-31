@@ -5,6 +5,8 @@ import com.ussm.examplemod.entity.ModEntities;
 import com.ussm.examplemod.particle.ModParticles;
 import com.ussm.examplemod.worldgen.dimension.ModDimensions;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.model.BoatModel;
+import net.minecraft.client.model.ChestBoatModel;
 import net.minecraft.client.renderer.entity.player.PlayerRenderer;
 import net.minecraft.client.resources.PlayerSkin;
 import net.minecraft.commands.Commands;
@@ -29,6 +31,25 @@ public class ModClientEvents {
     public static void registerRenderers(EntityRenderersEvent.RegisterRenderers event) {
         event.registerEntityRenderer(ModEntities.HEDGEHOG.get(), HedgehogRenderer::new);
         event.registerEntityRenderer(ModEntities.MIMIC.get(), MimicRenderer::new);
+        event.registerEntityRenderer(ModEntities.VOID_BOAT.get(), context -> new ModBoatRenderer(context, false));
+        event.registerEntityRenderer(ModEntities.VOID_CHEST_BOAT.get(), context -> new ModBoatRenderer(context, true));
+        event.registerEntityRenderer(ModEntities.COCKROACH.get(), CockroachRenderer::new);
+        event.registerEntityRenderer(ModEntities.GLOOM_BIRD.get(), GloomBirdRenderer::new);
+        event.registerEntityRenderer(ModEntities.BLOOM_BUTTERFLY.get(), BloomButterflyRenderer::new);
+        event.registerEntityRenderer(ModEntities.FLOATING_LIGHT.get(), FloatingLightRenderer::new);
+        event.registerEntityRenderer(ModEntities.CARNIVOROUS_PLANT.get(), CarnivorousPlantRenderer::new);
+    }
+
+    @SubscribeEvent
+    public static void registerLayerDefinitions(EntityRenderersEvent.RegisterLayerDefinitions event) {
+        event.registerLayerDefinition(ModBoatRenderer.VOID_BOAT_LAYER, BoatModel::createBodyModel);
+        event.registerLayerDefinition(ModBoatRenderer.VOID_CHEST_BOAT_LAYER, ChestBoatModel::createBodyModel);
+        event.registerLayerDefinition(CockroachModel.LAYER_LOCATION, CockroachModel::createBodyLayer);
+        event.registerLayerDefinition(GloomBirdModel.LAYER_LOCATION, GloomBirdModel::createBodyLayer);
+        event.registerLayerDefinition(BloomButterflyModel.LAYER_LOCATION, BloomButterflyModel::createBodyLayer);
+        event.registerLayerDefinition(FloatingLightModel.LAYER_LOCATION, FloatingLightModel::createBodyLayer);
+        event.registerLayerDefinition(CarnivorousPlantModel.LAYER_LOCATION, CarnivorousPlantModel::createBodyLayer);
+        event.registerLayerDefinition(MimicTrueFormModel.LAYER_LOCATION, MimicTrueFormModel::createBodyLayer);
     }
 
     @SubscribeEvent
@@ -56,6 +77,7 @@ public class ModClientEvents {
     @SubscribeEvent
     public static void registerParticleFactories(RegisterParticleProvidersEvent event) {
         event.registerSpriteSet(ModParticles.MIASMA.get(), MiasmaParticle.Provider::new);
+        event.registerSpriteSet(ModParticles.FALLING_VOID_LEAF.get(), FallingVoidLeafParticle.Provider::new);
     }
 
     @SubscribeEvent

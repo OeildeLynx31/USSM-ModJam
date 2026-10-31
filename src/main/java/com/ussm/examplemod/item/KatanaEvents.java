@@ -29,7 +29,7 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.living.LivingEquipmentChangeEvent;
 import net.neoforged.neoforge.event.entity.living.LivingFallEvent;
 import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
-import net.neoforged.neoforge.event.entity.living.LivingUseTotemEvent;
+import net.minecraft.world.item.Items;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 import net.neoforged.neoforge.event.entity.EntityInvulnerabilityCheckEvent;
@@ -154,25 +154,18 @@ public class KatanaEvents {
         }
     }
 
-    //main gauche bloquée sauf si y'a un 2eme katana
+    //main gauche bloquée sauf si y'a un 2eme katana (ou un totem)
     private static boolean isOffhandLocked(Player player, InteractionHand hand) {
         if(hand != InteractionHand.OFF_HAND || !KatanaItem.isKatana(player.getMainHandItem())) return false;
 
         ItemStack offhand = player.getOffhandItem();
-        return !offhand.isEmpty() && !KatanaItem.isKatana(offhand);
+        return !offhand.isEmpty() && !KatanaItem.isKatana(offhand) && !offhand.is(Items.TOTEM_OF_UNDYING);
     }
 
     // TODO limiter a 1 msg par seconde, la ca spam quand on reste appuyé
     private static void warn(Player player) {
         if(player.level().isClientSide()) {
             player.displayClientMessage(Component.translatable("message.examplemod.offhand_locked"), true);
-        }
-    }
-
-    @SubscribeEvent
-    public static void onUseTotem(LivingUseTotemEvent event) {
-        if(event.getEntity() instanceof Player player && isOffhandLocked(player, event.getHandHolding())) {
-            event.setCanceled(true);
         }
     }
 }

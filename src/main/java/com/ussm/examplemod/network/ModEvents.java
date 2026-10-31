@@ -7,12 +7,16 @@ import com.ussm.examplemod.worldgen.dimension.ModDimensions;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.portal.DimensionTransition;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.event.entity.living.LivingEntityUseItemEvent;
+import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 
 @EventBusSubscriber(modid = ExampleMod.MODID)
@@ -42,11 +46,37 @@ public class ModEvents {
         }
     }
 
+    private static final int APPLE_WINDOW = 20 * 60; // les pommes comptent pendant 1 min
+
+    // 3 pommes dorees avant de sauter et le vide fait 4x moins mal
+    @SubscribeEvent
+    public static void onEatApple(LivingEntityUseItemEvent.Finish event) {
+        if (!(event.getEntity() instanceof ServerPlayer player) || !event.getItem().is(Items.GOLDEN_APPLE)) return;
+
+        long time = player.level().getGameTime();
+        int apples = player.getData(ModAttachments.VOID_APPLES);
+        if (time - player.getData(ModAttachments.VOID_APPLE_TIME) > APPLE_WINDOW) apples = 0;
+        player.setData(ModAttachments.VOID_APPLES, apples + 1);
+        player.setData(ModAttachments.VOID_APPLE_TIME, time);
+    }
+
+    @SubscribeEvent
+    public static void onVoidDamage(LivingIncomingDamageEvent event) {
+        if (!(event.getEntity() instanceof ServerPlayer player) || !event.getSource().is(DamageTypes.FELL_OUT_OF_WORLD)) return;
+        if (player.level().dimension().equals(ModDimensions.UNDERVOID_DIM_LEVEL_KEY)) return;
+
+        boolean recent = player.level().getGameTime() - player.getData(ModAttachments.VOID_APPLE_TIME) <= APPLE_WINDOW;
+        if (recent && player.getData(ModAttachments.VOID_APPLES) >= Config.VOID_GOLDEN_APPLES.get()) {
+            event.setAmount((float) (event.getAmount() * Config.VOID_APPLE_DAMAGE.get()));
+        }
+    }
+
     private static void sendToUndervoid(ServerPlayer player) {
         ServerLevel undervoidLevel = player.server.getLevel(ModDimensions.UNDERVOID_DIM_LEVEL_KEY);
         if (undervoidLevel == null) return;
 
         player.removeData(ModAttachments.VOID_TICKS);
+        player.removeData(ModAttachments.VOID_APPLES); // faut en remanger pour le prochain saut
 
         int x = player.getBlockX();
         int z = player.getBlockZ();

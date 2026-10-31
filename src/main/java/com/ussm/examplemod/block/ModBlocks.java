@@ -193,6 +193,38 @@ public class ModBlocks {
             () -> new DecorBlock(0, 0, 0, 16, 8.6, 16, false, false,
                     BlockBehaviour.Properties.of().sound(SoundType.SPORE_BLOSSOM).instabreak().noLootTable().lightLevel(state -> 5).noCollission().noOcclusion().pushReaction(PushReaction.DESTROY)));
 
+    //---------------- plantes du modeleur (modeles 3D aussi) ----------------
+    // bloom
+    public static final DeferredBlock<Block> VOID_ASTER = registerBlock("void_aster",
+            () -> new UndervoidPlantBlock(4, 0, 4, 12, 7, 12, false,
+                    BlockBehaviour.Properties.of().sound(SoundType.GRASS).instabreak().noCollission().noOcclusion().pushReaction(PushReaction.DESTROY)));
+    public static final DeferredBlock<Block> CAVE_MARIGOLD = registerBlock("cave_marigold",
+            () -> new UndervoidPlantBlock(5, 0, 5, 11, 15, 11, false,
+                    BlockBehaviour.Properties.of().sound(SoundType.GRASS).instabreak().noCollission().noOcclusion().pushReaction(PushReaction.DESTROY)));
+    public static final DeferredBlock<Block> GLIMMER_CLUSTER = registerBlock("glimmer_cluster",
+            () -> new UndervoidPlantBlock(2.2, 0, 3.2, 13.8, 6.7, 14.8, false,
+                    BlockBehaviour.Properties.of().sound(SoundType.CAVE_VINES).instabreak().lightLevel(state -> 9).noCollission().noOcclusion().pushReaction(PushReaction.DESTROY)));
+    // surface du gloom
+    public static final DeferredBlock<Block> GLOOM_STAR = registerBlock("gloom_star",
+            () -> new UndervoidPlantBlock(1, 0, 1, 15, 7.8, 15, false,
+                    BlockBehaviour.Properties.of().sound(SoundType.GRASS).instabreak().noCollission().noOcclusion().pushReaction(PushReaction.DESTROY)));
+    public static final DeferredBlock<Block> EYEGRASS = registerBlock("eyegrass",
+            () -> new UndervoidPlantBlock(2, 0, 2, 14, 15, 14, false,
+                    BlockBehaviour.Properties.of().sound(SoundType.GRASS).instabreak().noLootTable().replaceable().noCollission().noOcclusion().pushReaction(PushReaction.DESTROY)));
+    public static final DeferredBlock<Block> PALE_TUFT = registerBlock("pale_tuft",
+            () -> new UndervoidPlantBlock(4, 0, 4, 12, 12, 12, false,
+                    BlockBehaviour.Properties.of().sound(SoundType.GRASS).instabreak().noLootTable().replaceable().noCollission().noOcclusion().pushReaction(PushReaction.DESTROY)));
+    public static final DeferredBlock<Block> CLAW_STALK = registerBlock("claw_stalk",
+            () -> new UndervoidPlantBlock(3.2, 0, 2.4, 11.8, 16, 9, false,
+                    BlockBehaviour.Properties.of().sound(SoundType.GRASS).instabreak().noCollission().noOcclusion().pushReaction(PushReaction.DESTROY)));
+    // miasme
+    public static final DeferredBlock<Block> VENOM_DART_FLOWER = registerBlock("venom_dart_flower",
+            () -> new VenomDartFlowerBlock(1, 0, 1, 14, 16, 15,
+                    BlockBehaviour.Properties.of().sound(SoundType.GRASS).instabreak().noCollission().noOcclusion().pushReaction(PushReaction.DESTROY)));
+    public static final DeferredBlock<Block> SPORETHORN = registerBlock("sporethorn",
+            () -> new SporethornBlock(3, 0, 3, 13, 16, 13,
+                    BlockBehaviour.Properties.of().sound(SoundType.SPORE_BLOSSOM).strength(0.4f).noOcclusion().pushReaction(PushReaction.DESTROY)));
+
     public static final DeferredBlock<Block> BLOOM_RIFT = BLOCKS.register("bloom_rift",
             () -> new BloomRiftBlock(BlockBehaviour.Properties.of().strength(-1f, 3600000f).noLootTable()
                     .noCollission().forceSolidOn().lightLevel(state -> 12).sound(SoundType.AMETHYST)
@@ -238,7 +270,7 @@ public class ModBlocks {
             () -> new PressurePlateBlock(BlockSetType.OAK, BlockBehaviour.Properties.ofFullCopy(Blocks.OAK_PRESSURE_PLATE)));
 
     public static final DeferredBlock<Block> VOID_LEAVES = registerBlock("void_leaves",
-            () -> new LeavesBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.OAK_LEAVES)){
+            () -> new VoidLeavesBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.OAK_LEAVES)){
                 @Override
                 public boolean isFlammable(BlockState state, BlockGetter level, BlockPos pos, Direction direction) {
                     return true;

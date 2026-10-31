@@ -51,6 +51,11 @@ public class ModItems {
     public static final DeferredItem<Item> VOID_BALL = ITEMS.register("void_ball",
             () -> new VoidBallItem(new Item.Properties()));
 
+    public static final DeferredItem<Item> VOID_BOAT = ITEMS.register("void_boat",
+            () -> new ModBoatItem(false, new Item.Properties().stacksTo(1)));
+    public static final DeferredItem<Item> VOID_CHEST_BOAT = ITEMS.register("void_chest_boat",
+            () -> new ModBoatItem(true, new Item.Properties().stacksTo(1)));
+
 
     public static final DeferredItem<Item> HEDGEHOG_SPAWN_EGG = ITEMS.register("hedgehog_spawn_egg",
             () -> new DeferredSpawnEggItem(ModEntities.HEDGEHOG, 0x6b4f3a, 0xd9c7a6,
@@ -61,6 +66,17 @@ public class ModItems {
 
     public static final DeferredItem<Item> SMOKE_BOSS_SPAWN_EGG = ITEMS.register("smoke_boss_spawn_egg",
             () -> new DeferredSpawnEggItem(ModEntities.SMOKE_BOSS, 0x1B1B22, 0x6B6B7A, new Item.Properties()));
+
+    public static final DeferredItem<Item> COCKROACH_SPAWN_EGG = ITEMS.register("cockroach_spawn_egg",
+            () -> new DeferredSpawnEggItem(ModEntities.COCKROACH, 0x3a2a06, 0x614400, new Item.Properties()));
+    public static final DeferredItem<Item> GLOOM_BIRD_SPAWN_EGG = ITEMS.register("gloom_bird_spawn_egg",
+            () -> new DeferredSpawnEggItem(ModEntities.GLOOM_BIRD, 0xd3d3d3, 0xe08a00, new Item.Properties()));
+    public static final DeferredItem<Item> BLOOM_BUTTERFLY_SPAWN_EGG = ITEMS.register("bloom_butterfly_spawn_egg",
+            () -> new DeferredSpawnEggItem(ModEntities.BLOOM_BUTTERFLY, 0xeef4fa, 0xd01010, new Item.Properties()));
+    public static final DeferredItem<Item> FLOATING_LIGHT_SPAWN_EGG = ITEMS.register("floating_light_spawn_egg",
+            () -> new DeferredSpawnEggItem(ModEntities.FLOATING_LIGHT, 0xf5ef10, 0x2a2a2a, new Item.Properties()));
+    public static final DeferredItem<Item> CARNIVOROUS_PLANT_SPAWN_EGG = ITEMS.register("carnivorous_plant_spawn_egg",
+            () -> new DeferredSpawnEggItem(ModEntities.CARNIVOROUS_PLANT, 0x1fae1f, 0xff5a10, new Item.Properties()));
     //>-------------------------------------------------------
     public static void register(IEventBus eventBus){
         ITEMS.register(eventBus);

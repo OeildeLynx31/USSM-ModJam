@@ -95,6 +95,9 @@ Sous le vide, il y a l'Entre-monde. En surface, le Gloom : une plaine corrompue,
 | D38 | 30/10 | « Avec hallucination on voit des mobs en double, des mirages, etc. » |
 | D40 | 30/10 | « Il manque des textures de fleurs » : les 10 fleurs d'ItzSuky avaient toutes la même image provisoire |
 | D41 | 30/10 | « On prend trop de dégâts quand on a 0 santé mentale » |
+| D45 | 31/10 | « Fais en sorte que pour survivre au void il suffit de manger 3 golden apples » |
+| D44 | 31/10 | « Autorise les totems dans la main gauche avec le katana » |
+| D43 | 31/10 | « Vérifie que c'est humainement possible de jeter 3 potions de soin sur soi en tombant » : non, voir §5.1 |
 | D42 | 30/10 | Fusion avec `main` : pour le sol, « on garde juste le nôtre, enlève le sien de l'inventaire créatif aussi, enlève le tout court » |
 | D39 | 30/10 | Imitateurs repris du mod `mimic` de tgkowski : apparition et joueur copié, approche en ami et révélation, rejeu des déplacements, voix avec Simple Voice Chat en optionnel |
 | D28 | 30/10 | « Un truc appelé bedrock breaker » : « un bloc que tu poses et avec un contact redstone il tire un giga rayon qui troue tout au-dessus de lui et en dessous ». Choix retenus : consommable, toute la bedrock, recette de fin de partie |
@@ -449,8 +452,10 @@ Sans musique de biome, le jeu retombe sur `Musics.GAME`. `UndervoidFog` coupe do
 - Le vide inflige 4 dégâts par coup. Le tag `bypasses_cooldown` est vide, donc les frames d'invulnérabilité s'appliquent : environ 1 coup toutes les 10 ticks, soit **8 PV/s**.
 - `out_of_world` ignore l'armure, la Résistance et l'invulnérabilité. Le totem ne sauve pas.
 - Sur 5 s, le joueur prend environ 11 coups, soit **44 PV**, dont 20 couverts par sa vie de départ. Il faut donc environ 24 PV de soin ou d'absorption. Exemples de préparation :
-  - 3 potions jetables de Soin instantané II (8 PV chacune) ;
-  - ou une pomme de Notch (Absorption IV : 16 PV ; Régénération II : environ 4 PV sur 5 s) et 1 potion jetable de Soin II.
+  - une pomme de Notch mangée au bord (Absorption IV : 16 PV ; Régénération II : 1 PV toutes les 25 ticks, perdu tant que la vie est pleine), puis 2 potions de Soin II **à boire** (8 PV chacune, 1,6 s par potion) une fois l'absorption partie, vers 1,5 s après les premiers dégâts ; boire plus tôt ne soigne rien.
+- [Demande, D45] **3 pommes dorées suffisent** : chaque pomme dorée mangée compte (le compteur repart à 0 s'il s'écoule plus de 60 s entre deux pommes). Avec 3 pommes (config `voidGoldenApples`), les dégâts `out_of_world` hors de l'Entre-monde sont multipliés par 0,25 (config `voidAppleDamage`) tant que la dernière pomme date de moins de 60 s : environ 10 PV sur les 5 s, couverts par la vie et l'Absorption de la pomme. Le compteur est remis à 0 à l'arrivée dans l'Entre-monde. Code : `network/ModEvents` (`onEatApple`, `onVoidDamage`), attachements `void_apples` et `void_apple_time`. La pomme de Notch ne compte pas.
+- Les potions jetables ne marchent pas (vérifié le 31/10 dans `ThrownPotion` et `ThrowablePotionItem`) : dans le vide, aucun bloc ne casse la fiole, qui n'éclate qu'en touchant une entité. Lancée vers le bas, elle part plus vite que le joueur et ne le retouche jamais. Lancée vers le haut, elle ne revient sur lui qu'après plusieurs secondes. Trois potions en 5 s, ce n'est pas faisable.
+- Les potions bues seules ne suffisent pas non plus : sans absorption, la vie tombe à 0 vers 3 s, avant la fin de la troisième potion.
 
 **Brise-bedrock** [Demande, D28]
 1. Bloc `examplemod:bedrock_breaker` (« Brise-bedrock »), à poser. Recette de fin de partie : un lingot de netherite au centre, 2 TNT sur les côtés, un bloc de redstone au-dessus, 5 obsidiennes autour (`ORO` / `TNT` / `OOO`). Se mine à la pioche et se ramasse tant qu'il n'a pas tiré.
@@ -1085,14 +1090,13 @@ Il n'y a ni paquet réseau custom ni entité custom : le paquet vanilla d'utilis
 
 ### 10.6 Main gauche verrouillée
 
-Condition : katana en main principale, et main gauche non vide qui ne tient pas un katana. Ces événements sont communs aux deux côtés, pour éviter les désynchronisations (animation de nourriture lancée côté client, par exemple).
+Condition : katana en main principale, et main gauche non vide qui ne tient ni un katana ni un totem d'immortalité [Demande, D44]. Ces événements sont communs aux deux côtés, pour éviter les désynchronisations (animation de nourriture lancée côté client, par exemple).
 
 | Usage de la main gauche | Événement | Action |
 |---|---|---|
 | Manger, boire, lever le bouclier, lancer (perle, potion), feu d'artifice, arc | `PlayerInteractEvent.RightClickItem` avec `getHand() == OFF_HAND` | `setCanceled(true)` et `setCancellationResult(InteractionResult.FAIL)` |
 | Poser un bloc, utiliser un seau, de la poudre d'os | `PlayerInteractEvent.RightClickBlock` (main gauche) | annuler |
 | Laisse, étiquette, nourrir un animal | `PlayerInteractEvent.EntityInteract` et `EntityInteractSpecific` (main gauche) | annuler |
-| Totem d'immortalité | `LivingUseTotemEvent#getHandHolding() == OFF_HAND` | annuler : le totem ne sauve pas |
 
 Retour au joueur : « Votre main gauche est occupée par le katana », dans la barre d'action, une fois par seconde au plus.
 
@@ -1128,7 +1132,7 @@ On a écarté l'idée de vider automatiquement la main gauche : l'objet serait p
 - [x] Le mouvement est continu (4 ticks), et un dash qui finit en l'air laisse le joueur suspendu 0,2 s (0,5 s avant D19) ; au sol, on peut sauter tout de suite.
 - [x] Le dash suit le regard (haut, bas, côtés) ; au sol, regarder vers le bas dashe à l'horizontale. Mesuré dans le client le 26/10 : 7,00 blocs à l'horizontale, au sol en regardant à 30° vers le bas aussi ; 4,95 en avant et 4,95 en haut à 45° ; 7,00 tout droit vers le haut ; suspension de 4 ticks à chaque fois ; positions identiques côté client et côté serveur. Dégâts de chute ensuite : 2 après le dash à 45°, 4 après le dash vertical, supprimés depuis D26 (GameTest du 26/10 : chute de 12 blocs après un dash, aucun dégât ; la même chute sans dash, 6 dégâts ; protection retirée au sol). Vérifié dans le client le 28/10 : aucun dégât de chute dans les 5 cas (au sol à plat, regard vers le bas, 45° vers le haut, tout droit vers le haut, en l'air vers le bas).
 - [ ] Le cooldown s'affiche sur les deux katanas.
-- [ ] Un totem en main gauche ne sauve pas.
+- [ ] Un totem en main gauche sauve, katana en main principale ou non (D44).
 - [ ] Les fragments ne tombent que dans l'Entre-monde, et seulement quand c'est un joueur qui tue.
 - [x] Mêlée à 8 dégâts et vitesse 1,8 ; durabilité de 1500 (GameTest du 26/10).
 - [ ] Le dash fait 8 dégâts (20 à deux katanas), 11 (23) avec Tranchant V ; Châtiment compte contre les morts-vivants ; Aura de feu enflamme les cibles. GameTest du 26/10 : 7,9 puis 10,8 avec Tranchant V sur un husk (2 d'armure), et Aura de feu enflamme ; restent le double katana et Châtiment.

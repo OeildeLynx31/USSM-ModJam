@@ -1,0 +1,26 @@
+{
+  "type": "minecraft:simple_block",
+  "config": {
+    "to_place": {
+      "type": "minecraft:weighted_state_provider",
+      "entries": [
+        { "data": { "Name": "examplemod:pale_tuft", "Properties": { "facing": "north" } }, "weight": 8 },
+        { "data": { "Name": "examplemod:pale_tuft", "Properties": { "facing": "east" } }, "weight": 8 },
+        { "data": { "Name": "examplemod:pale_tuft", "Properties": { "facing": "south" } }, "weight": 8 },
+        { "data": { "Name": "examplemod:pale_tuft", "Properties": { "facing": "west" } }, "weight": 8 },
+        { "data": { "Name": "examplemod:eyegrass", "Properties": { "facing": "north" } }, "weight": 5 },
+        { "data": { "Name": "examplemod:eyegrass", "Properties": { "facing": "east" } }, "weight": 5 },
+        { "data": { "Name": "examplemod:eyegrass", "Properties": { "facing": "south" } }, "weight": 5 },
+        { "data": { "Name": "examplemod:eyegrass", "Properties": { "facing": "west" } }, "weight": 5 },
+        { "data": { "Name": "examplemod:claw_stalk", "Properties": { "facing": "north" } }, "weight": 3 },
+        { "data": { "Name": "examplemod:claw_stalk", "Properties": { "facing": "east" } }, "weight": 3 },
+        { "data": { "Name": "examplemod:claw_stalk", "Properties": { "facing": "south" } }, "weight": 3 },
+        { "data": { "Name": "examplemod:claw_stalk", "Properties": { "facing": "west" } }, "weight": 3 },
+        { "data": { "Name": "examplemod:gloom_star", "Properties": { "facing": "north" } }, "weight": 2 },
+        { "data": { "Name": "examplemod:gloom_star", "Properties": { "facing": "east" } }, "weight": 2 },
+        { "data": { "Name": "examplemod:gloom_star", "Properties": { "facing": "south" } }, "weight": 2 },
+        { "data": { "Name": "examplemod:gloom_star", "Properties": { "facing": "west" } }, "weight": 2 }
+      ]
+    }
+  }
+}

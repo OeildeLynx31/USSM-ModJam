@@ -8,6 +8,11 @@ import com.ussm.examplemod.worldgen.dimension.ModDimensions;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import com.ussm.examplemod.entity.custom.SmokeBossEntity;
+import com.ussm.examplemod.entity.custom.Cockroach;
+import com.ussm.examplemod.entity.custom.GloomBird;
+import com.ussm.examplemod.entity.custom.BloomButterfly;
+import com.ussm.examplemod.entity.custom.FloatingLight;
+import com.ussm.examplemod.entity.custom.CarnivorousPlant;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.entity.SpawnPlacementTypes;
@@ -27,12 +32,28 @@ public class ModEntityEvents {
         event.put(ModEntities.MIMIC.get(), Mimic.createAttributes().build());
         event.put(ModEntities.HEROBRINE.get(), HerobrineEntity.createAttributes().build());
         event.put(ModEntities.SMOKE_BOSS.get(), SmokeBossEntity.createAttributes().build());
+        event.put(ModEntities.COCKROACH.get(), Cockroach.createAttributes().build());
+        event.put(ModEntities.GLOOM_BIRD.get(), GloomBird.createAttributes().build());
+        event.put(ModEntities.BLOOM_BUTTERFLY.get(), BloomButterfly.createAttributes().build());
+        event.put(ModEntities.FLOATING_LIGHT.get(), FloatingLight.createAttributes().build());
+        event.put(ModEntities.CARNIVOROUS_PLANT.get(), CarnivorousPlant.createAttributes().build());
     }
 
     @SubscribeEvent
     public static void registerSpawnPlacements(RegisterSpawnPlacementsEvent event) {
         event.register(ModEntities.HEDGEHOG.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
                 Hedgehog::checkHedgehogSpawnRules, RegisterSpawnPlacementsEvent.Operation.REPLACE);
+        event.register(ModEntities.COCKROACH.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
+                Cockroach::checkCockroachSpawnRules, RegisterSpawnPlacementsEvent.Operation.REPLACE);
+        event.register(ModEntities.GLOOM_BIRD.get(), SpawnPlacementTypes.NO_RESTRICTIONS, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
+                GloomBird::checkGloomBirdSpawnRules, RegisterSpawnPlacementsEvent.Operation.REPLACE);
+        // les volants du bloom peuvent naitre en l'air dans les grottes
+        event.register(ModEntities.BLOOM_BUTTERFLY.get(), SpawnPlacementTypes.NO_RESTRICTIONS, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
+                BloomButterfly::checkButterflySpawnRules, RegisterSpawnPlacementsEvent.Operation.REPLACE);
+        event.register(ModEntities.FLOATING_LIGHT.get(), SpawnPlacementTypes.NO_RESTRICTIONS, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
+                FloatingLight::checkFloatingLightSpawnRules, RegisterSpawnPlacementsEvent.Operation.REPLACE);
+        event.register(ModEntities.CARNIVOROUS_PLANT.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
+                CarnivorousPlant::checkPlantSpawnRules, RegisterSpawnPlacementsEvent.Operation.REPLACE);
     }
 
     @SubscribeEvent

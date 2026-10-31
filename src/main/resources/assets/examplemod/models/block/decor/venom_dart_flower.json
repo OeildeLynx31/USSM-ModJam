@@ -1,0 +1,9 @@
+{
+  "loader": "neoforge:obj",
+  "model": "examplemod:models/block/decor/venom_dart_flower.obj",
+  "flip_v": true,
+  "render_type": "minecraft:cutout",
+  "textures": {
+    "particle": "examplemod:block/decor/venom_dart_flower"
+  }
+}

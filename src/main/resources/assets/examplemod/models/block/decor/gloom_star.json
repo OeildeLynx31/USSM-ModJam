@@ -1,0 +1,9 @@
+{
+  "loader": "neoforge:obj",
+  "model": "examplemod:models/block/decor/gloom_star.obj",
+  "flip_v": true,
+  "render_type": "minecraft:cutout",
+  "textures": {
+    "particle": "examplemod:block/decor/gloom_star"
+  }
+}
