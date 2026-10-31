@@ -3,6 +3,7 @@ package com.ussm.examplemod.item;
 import com.ussm.examplemod.ExampleMod;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.component.DataComponents;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -46,7 +47,22 @@ public class SpawnerReceptacleEvents {
         }
 
         ItemStack stack = new ItemStack(ModItems.CAPTURED_SPAWNER.get());
-        stack.set(DataComponents.BLOCK_ENTITY_DATA, CustomData.of(spawner.saveCustomOnly(level.registryAccess())));
+        CompoundTag tag = new CompoundTag();
+
+        // ID obligatoire du block entity
+        tag.putString("id", "minecraft:mob_spawner");
+
+        // Données du mob
+        CompoundTag entityTag = new CompoundTag();
+        entityTag.putString("id", "minecraft:armadillo");
+
+        CompoundTag spawnData = new CompoundTag();
+        spawnData.put("entity", entityTag);
+
+        tag.put("SpawnData", spawnData);
+
+        // Ajoute les données au composant
+        stack.set(DataComponents.BLOCK_ENTITY_DATA, CustomData.of(tag));
         Block.popResource(level, pos, stack);
     }
 }

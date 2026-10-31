@@ -1,11 +1,13 @@
 package com.ussm.examplemod.entity;
 
 import com.ussm.examplemod.ExampleMod;
+import com.ussm.examplemod.entity.custom.HerobrineEntity;
 import com.ussm.examplemod.entity.custom.Hedgehog;
 import com.ussm.examplemod.entity.custom.Mimic;
 import com.ussm.examplemod.worldgen.dimension.ModDimensions;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
+import com.ussm.examplemod.entity.custom.SmokeBossEntity;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.entity.SpawnPlacementTypes;
@@ -23,6 +25,8 @@ public class ModEntityEvents {
     public static void registerAttributes(EntityAttributeCreationEvent event) {
         event.put(ModEntities.HEDGEHOG.get(), Hedgehog.createAttributes().build());
         event.put(ModEntities.MIMIC.get(), Mimic.createAttributes().build());
+        event.put(ModEntities.HEROBRINE.get(), HerobrineEntity.createAttributes().build());
+        event.put(ModEntities.SMOKE_BOSS.get(), SmokeBossEntity.createAttributes().build());
     }
 
     @SubscribeEvent

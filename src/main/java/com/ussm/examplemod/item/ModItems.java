@@ -59,6 +59,8 @@ public class ModItems {
             () -> new DeferredSpawnEggItem(ModEntities.MIMIC, 0x2e2836, 0x8e8a99,
                     new Item.Properties()));
 
+    public static final DeferredItem<Item> SMOKE_BOSS_SPAWN_EGG = ITEMS.register("smoke_boss_spawn_egg",
+            () -> new DeferredSpawnEggItem(ModEntities.SMOKE_BOSS, 0x1B1B22, 0x6B6B7A, new Item.Properties()));
     //>-------------------------------------------------------
     public static void register(IEventBus eventBus){
         ITEMS.register(eventBus);
