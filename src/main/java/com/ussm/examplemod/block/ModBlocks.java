@@ -182,7 +182,7 @@ public class ModBlocks {
                     BlockBehaviour.Properties.of().sound(SoundType.BONE_BLOCK).strength(1f).noOcclusion().pushReaction(PushReaction.DESTROY)));
     public static final DeferredBlock<Block> EYE_NEST = registerBlock("eye_nest",
             () -> new DecorBlock(0, 0, 0, 16, 16, 15.9, true, false,
-                    BlockBehaviour.Properties.of().sound(SoundType.BONE_BLOCK).strength(1.5f).lightLevel(state -> 3).noOcclusion().pushReaction(PushReaction.DESTROY)));
+                    BlockBehaviour.Properties.of().sound(SoundType.WOOD).strength(1.5f).lightLevel(state -> 3).noOcclusion().pushReaction(PushReaction.DESTROY)));
     public static final DeferredBlock<Block> BONE_PILE = registerBlock("bone_pile",
             () -> new DecorBlock(0.6, 0, 1, 15.4, 6.7, 15, false, false,
                     BlockBehaviour.Properties.of().sound(SoundType.BONE_BLOCK).instabreak().noCollission().noOcclusion().pushReaction(PushReaction.DESTROY)));

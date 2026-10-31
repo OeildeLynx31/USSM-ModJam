@@ -39,7 +39,7 @@ public class ModBlockLootTableProvider extends BlockLootSubProvider {
         add(ModBlocks.BONE_PILE.get(), block -> createSingleItemTable(Items.BONE, UniformGenerator.between(1, 3)));
         add(ModBlocks.SCATTERED_BONE.get(), block -> createSingleItemTable(Items.BONE));
         add(ModBlocks.STONE_SKULL.get(), block -> createSingleItemTable(Items.BONE, UniformGenerator.between(1, 2)));
-        add(ModBlocks.EYE_NEST.get(), block -> createSingleItemTable(Items.BONE, UniformGenerator.between(2, 4)));
+        add(ModBlocks.EYE_NEST.get(), block -> createSingleItemTable(ModBlocks.VOID_LOG.get()));
         dropSelf(ModBlocks.VOID_ASTER.get());
         dropSelf(ModBlocks.CAVE_MARIGOLD.get());
         dropSelf(ModBlocks.GLIMMER_CLUSTER.get());
