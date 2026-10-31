@@ -1,6 +1,7 @@
 package com.ussm.examplemod.entity;
 
 import com.ussm.examplemod.ExampleMod;
+import com.ussm.examplemod.entity.custom.HerobrineEntity;
 import com.ussm.examplemod.entity.custom.Hedgehog;
 import com.ussm.examplemod.entity.custom.Mimic;
 import com.ussm.examplemod.worldgen.dimension.ModDimensions;
@@ -23,6 +24,7 @@ public class ModEntityEvents {
     public static void onRegisterAttributes(EntityAttributeCreationEvent event) {
         event.put(ModEntities.HEDGEHOG.get(), Hedgehog.createAttributes().build());
         event.put(ModEntities.MIMIC.get(), Mimic.createAttributes().build());
+        event.put(ModEntities.HEROBRINE.get(), HerobrineEntity.createAttributes().build());
     }
 
     @SubscribeEvent

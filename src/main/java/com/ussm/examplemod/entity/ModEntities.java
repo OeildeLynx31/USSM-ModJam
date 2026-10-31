@@ -1,6 +1,7 @@
 package com.ussm.examplemod.entity;
 
 import com.ussm.examplemod.ExampleMod;
+import com.ussm.examplemod.entity.custom.HerobrineEntity;
 import com.ussm.examplemod.entity.custom.Hedgehog;
 import com.ussm.examplemod.entity.custom.Mimic;
 import com.ussm.examplemod.item.custom.VoidBallProjectile;
@@ -27,6 +28,13 @@ public class ModEntities {
                     .eyeHeight(1.62f)
                     .clientTrackingRange(10)
                     .build("mimic"));
+
+    public static final Supplier<EntityType<HerobrineEntity>> HEROBRINE = ENTITY_TYPES.register("herobrine",
+            () -> EntityType.Builder.of(HerobrineEntity::new, MobCategory.MISC)
+                    .sized(0.6f, 1.8f)
+                    .eyeHeight(1.62f)
+                    .clientTrackingRange(8)
+                    .build("herobrine"));
 
     public static final Supplier<EntityType<VoidBallProjectile>> VOID_BALL =
             ENTITY_TYPES.register("void_ball",

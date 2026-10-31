@@ -2,6 +2,7 @@ package com.ussm.examplemod.entity;
 
 import com.ussm.examplemod.ExampleMod;
 import com.ussm.examplemod.entity.ModEntities;
+import com.ussm.examplemod.client.HerobrineRenderer;
 
 import net.minecraft.client.renderer.entity.ThrownItemRenderer;
 
@@ -22,5 +23,6 @@ public class ModEntityRenderers {
                 ModEntities.VOID_BALL.get(),
                 ThrownItemRenderer::new
         );
+        event.registerEntityRenderer(ModEntities.HEROBRINE.get(), HerobrineRenderer::new);
     }
 }
