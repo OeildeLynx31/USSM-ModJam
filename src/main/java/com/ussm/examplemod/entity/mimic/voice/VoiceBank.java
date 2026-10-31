@@ -11,12 +11,9 @@ import net.minecraft.world.level.saveddata.SavedData;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
 
-// les phrases gardées d'un joueur, un fichier par joueur (data/examplemod_voice_<uuid>.dat) parce que ca pese
 public class VoiceBank extends SavedData {
     private final List<VoiceClip> clips = new ArrayList<>();
 
@@ -25,20 +22,18 @@ public class VoiceBank extends SavedData {
     }
 
     public List<VoiceClip> clips() {
-        return Collections.unmodifiableList(clips);
+        return clips;
     }
 
-    // rentre si y'a de la place ou si elle est meilleure que la moins bonne
     public boolean offer(MinecraftServer server, UUID player, VoiceClip clip, int max) {
-        if (max <= 0) {
-            return false;
-        }
+        if(max <= 0) return false;
         long now = System.currentTimeMillis();
-        while (clips.size() >= max) {
-            VoiceClip worst = Collections.min(clips, Comparator.comparingDouble(c -> c.effectiveScore(now)));
-            if (worst.effectiveScore(now) >= clip.effectiveScore(now)) {
-                return false;
+        while(clips.size() >= max) {
+            VoiceClip worst = clips.get(0);
+            for(VoiceClip c : clips) {
+                if(c.effectiveScore(now) < worst.effectiveScore(now)) worst = c;
             }
+            if (worst.effectiveScore(now) >= clip.effectiveScore(now)) return false;
             clips.remove(worst);
         }
         clips.add(clip);
@@ -47,11 +42,10 @@ public class VoiceBank extends SavedData {
         return true;
     }
 
-    // un truc vient d'arriver (coup, mort, kill...) : les phrases dites juste avant gagnent un bonus
     public void boostRecent(long since, float bonus, String tag) {
-        for (int i = 0; i < clips.size(); i++) {
+        for(int i = 0; i < clips.size(); i++) {
             VoiceClip clip = clips.get(i);
-            if (clip.createdAt >= since && !clip.tags.contains(tag)) {
+            if(clip.createdAt >= since && !clip.tags.contains(tag)) {
                 clips.set(i, clip.withBonus(bonus, tag));
                 setDirty();
             }
@@ -71,10 +65,10 @@ public class VoiceBank extends SavedData {
     public static VoiceBank load(CompoundTag tag, HolderLookup.Provider registries) {
         VoiceBank bank = new VoiceBank();
         ListTag list = tag.getList("Clips", Tag.TAG_COMPOUND);
-        for (int i = 0; i < list.size(); i++) {
+        for(int i = 0; i < list.size(); i++) {
             try {
                 bank.clips.add(VoiceClip.load(list.getCompound(i)));
-            } catch (IOException e) {
+            } catch(IOException e) {
                 ExampleMod.LOGGER.warn("extrait de voix illisible", e);
             }
         }

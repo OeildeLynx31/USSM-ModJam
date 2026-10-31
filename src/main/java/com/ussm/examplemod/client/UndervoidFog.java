@@ -30,19 +30,16 @@ import net.neoforged.neoforge.client.event.ViewportEvent;
 public class UndervoidFog {
     private static final float UNDERGROUND_FAR = 56f;
 
-    private static boolean inUndervoid;
-    private static boolean inGloom;
-    private static float surfaceFog;
-    private static float oldSurfaceFog;
-    private static float miasmaFog;
-    private static float oldMiasmaFog;
-    private static float surfaceFar;
-    private static float miasmaFar;
+    private static boolean inUndervoid, inGloom;
+    // 0 = sous terre, 1 = surface du gloom
+    private static float surfaceFog, lastSurfaceFog;
+    private static float miasmaFog, lastMiasmaFog;
+    private static float surfaceFar, miasmaFar;
 
     @SubscribeEvent
     public static void onClientTick(ClientTickEvent.Post event) {
-        Minecraft minecraft = Minecraft.getInstance();
-        LocalPlayer player = minecraft.player;
+        Minecraft mc = Minecraft.getInstance();
+        LocalPlayer player = mc.player;
         if (player == null || !player.level().dimension().equals(ModDimensions.UNDERVOID_DIM_LEVEL_KEY)) {
             inUndervoid = false;
             inGloom = false;
@@ -55,13 +52,15 @@ public class UndervoidFog {
 
         float surfaceTarget = inGloom && player.getEyeY() >= Sanity.GLOOM_SURFACE_Y ? 1f : 0f;
         float miasmaTarget = inMiasma ? 1f : 0f;
+        // on vient d'arriver, pas de transition
         if (!inUndervoid) {
             inUndervoid = true;
             surfaceFog = surfaceTarget;
             miasmaFog = miasmaTarget;
         }
-        oldSurfaceFog = surfaceFog;
-        oldMiasmaFog = miasmaFog;
+        lastSurfaceFog = surfaceFog;
+        lastMiasmaFog = miasmaFog;
+        // ~1s pour passer d'un brouillard a l'autre
         surfaceFog = Mth.approach(surfaceFog, surfaceTarget, 0.05f);
         miasmaFog = Mth.approach(miasmaFog, miasmaTarget, 0.05f);
 
@@ -69,33 +68,26 @@ public class UndervoidFog {
         surfaceFar = mask ? 24f : 14f;
         miasmaFar = mask ? 9f : 6f;
 
-        // nuage de particules autour du joueur dans le miasme
-        if (miasmaFog > 0f && !minecraft.isPaused()) {
-            spawnMiasmaParticles(player);
-        }
-    }
-
-    private static void spawnMiasmaParticles(LocalPlayer player) {
-        ClientLevel level = player.clientLevel;
-        RandomSource random = player.getRandom();
-        BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos();
-        int count = Mth.ceil(miasmaFog * 10);
-
-        for (int i = 0; i < count; i++) {
-            double x = player.getX() + (random.nextDouble() * 2 - 1) * miasmaFar;
-            double y = player.getEyeY() + (random.nextDouble() * 2 - 1) * miasmaFar * 0.5;
-            double z = player.getZ() + (random.nextDouble() * 2 - 1) * miasmaFar;
-            if (!level.getBlockState(pos.set(x, y, z)).isCollisionShapeFullBlock(level, pos)) {
-                level.addParticle(ModParticles.MIASMA.get(), x, y, z, 0, 0, 0);
+        if (miasmaFog > 0f && !mc.isPaused()) {
+            ClientLevel level = player.clientLevel;
+            RandomSource random = player.getRandom();
+            BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos();
+            int count = Mth.ceil(miasmaFog * 10);
+            for (int i = 0; i < count; i++) {
+                double x = player.getX() + (random.nextDouble() * 2 - 1) * miasmaFar;
+                double y = player.getEyeY() + (random.nextDouble() * 2 - 1) * miasmaFar * 0.5;
+                double z = player.getZ() + (random.nextDouble() * 2 - 1) * miasmaFar;
+                if (!level.getBlockState(pos.set(x, y, z)).isCollisionShapeFullBlock(level, pos)) {
+                    level.addParticle(ModParticles.MIASMA.get(), x, y, z, 0, 0, 0);
+                }
             }
         }
     }
 
     public static float fogEnd() {
-        if (!inUndervoid) {
-            return Float.MAX_VALUE;
-        }
-        return Mth.lerp(miasmaFog, Mth.lerp(surfaceFog, UNDERGROUND_FAR, surfaceFar), miasmaFar);
+        if (!inUndervoid) return Float.MAX_VALUE;
+        float far = Mth.lerp(surfaceFog, UNDERGROUND_FAR, surfaceFar);
+        return Mth.lerp(miasmaFog, far, miasmaFar);
     }
 
     @SubscribeEvent
@@ -104,9 +96,9 @@ public class UndervoidFog {
             return;
         }
 
-        float partialTick = (float) event.getPartialTick();
-        float surface = Mth.lerp(partialTick, oldSurfaceFog, surfaceFog);
-        float miasma = Mth.lerp(partialTick, oldMiasmaFog, miasmaFog);
+        float pt = (float) event.getPartialTick();
+        float surface = Mth.lerp(pt, lastSurfaceFog, surfaceFog);
+        float miasma = Mth.lerp(pt, lastMiasmaFog, miasmaFog);
 
         float near = Mth.lerp(surface, 8f, 0f);
         float far = Mth.lerp(surface, UNDERGROUND_FAR, surfaceFar);
@@ -118,35 +110,36 @@ public class UndervoidFog {
         event.setNearPlaneDistance(Math.min(event.getNearPlaneDistance(), near));
         event.setFarPlaneDistance(Math.min(event.getFarPlaneDistance(), far));
         event.setFogShape(FogShape.SPHERE);
-        event.setCanceled(true);
+        event.setCanceled(true); // obligé sinon ca prend pas les distances (c'est dans la javadoc)
     }
 
     @SubscribeEvent
     public static void onComputeFogColor(ViewportEvent.ComputeFogColor event) {
         Camera camera = event.getCamera();
-        if (!inUndervoid || camera.getFluidInCamera() != FogType.NONE || !(camera.getEntity() instanceof LivingEntity entity)) {
+        if (!inUndervoid || camera.getFluidInCamera() != FogType.NONE) {
             return;
         }
-        if (entity.hasEffect(MobEffects.BLINDNESS) || entity.hasEffect(MobEffects.DARKNESS) || entity.hasEffect(MobEffects.NIGHT_VISION)) {
+        if (!(camera.getEntity() instanceof LivingEntity entity) || entity.hasEffect(MobEffects.BLINDNESS) || entity.hasEffect(MobEffects.DARKNESS) || entity.hasEffect(MobEffects.NIGHT_VISION)) {
             return;
         }
 
+        // le jeu assombrit le brouillard entre minY+32 et minY a cause du void, cf https://minecraft.wiki/w/Fog
+        // du coup les caves du bloom etaient toutes noires. ligne copiée de FogRenderer.setupColor, on fait juste l'inverse
         ClientLevel level = Minecraft.getInstance().level;
-        float voidDarkness = ((float) camera.getPosition().y - level.getMinBuildHeight()) * level.getLevelData().getClearColorScale();
-        // le jeu assombrit tout sous y 32 a cause du vide, on compense sinon le bloom est noir
-        if (voidDarkness > 0.05f && voidDarkness < 1f) {
-            float boost = 1f / (voidDarkness * voidDarkness);
+        float f5 = ((float)camera.getPosition().y - (float)level.getMinBuildHeight()) * level.getLevelData().getClearColorScale();
+        // tout en bas ca divise par 0, 0.05 mis au pif
+        if (f5 < 1.0F && f5 > 0.05F) {
+            f5 *= f5;
+            float boost = 1.0F / f5;
             event.setRed(event.getRed() * boost);
             event.setGreen(event.getGreen() * boost);
             event.setBlue(event.getBlue() * boost);
         }
     }
 
+    //pas de musique dans le gloom c'est plus flippant
     @SubscribeEvent
-    //pas de musique dans le gloom, c'est plus flippant
     public static void onSelectMusic(SelectMusicEvent event) {
-        if (inGloom) {
-            event.setMusic(null);
-        }
+        if (inGloom) event.setMusic(null);
     }
 }

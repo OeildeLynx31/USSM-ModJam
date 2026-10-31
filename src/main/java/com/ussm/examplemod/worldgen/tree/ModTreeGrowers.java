@@ -9,4 +9,5 @@ import java.util.Optional;
 public class ModTreeGrowers {
     public static final TreeGrower VOID = new TreeGrower(ExampleMod.MODID + ":void",
             Optional.empty(), Optional.of(ModConfiguredFeatures.VOID_TREE_KEY), Optional.empty());
+
 }

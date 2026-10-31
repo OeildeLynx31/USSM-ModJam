@@ -33,7 +33,10 @@ public class ModEntityEvents {
 
     @SubscribeEvent
     public static void onPlayerTick(PlayerTickEvent.Post event) {
-        if (event.getEntity() instanceof ServerPlayer player && (player.tickCount + player.getId()) % 20 == 10) {
+        if (!(event.getEntity() instanceof ServerPlayer player)) return;
+
+        //+ getId() pour pas que tout les joueurs le fassent au meme tick
+        if ((player.tickCount + player.getId()) % 20 == 10) {
             MimicSpawner.tick(player);
         }
     }
@@ -47,7 +50,6 @@ public class ModEntityEvents {
         if (level.dimension().equals(ModDimensions.UNDERVOID_DIM_LEVEL_KEY)) {
             BlockPos pos = event.getPos();
             if (pos.getY() < level.getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, pos.getX(), pos.getZ())) {
-                //ExampleMod.LOGGER.info("spawn annulé en " + pos);
                 event.setCanceled(true);
             }
         }

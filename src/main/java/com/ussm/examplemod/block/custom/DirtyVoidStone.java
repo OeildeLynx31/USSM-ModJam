@@ -12,11 +12,9 @@ public class DirtyVoidStone extends Block {
         super(properties);
     }
 
-    // comme l'herbe : si on pose un bloc plein dessus elle redevient de la pierre du vide
     @Override
     protected void randomTick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
-        BlockPos above = pos.above();
-        if (level.getBlockState(above).isSolidRender(level, above)) {
+        if (level.getBlockState(pos.above()).isSolidRender(level, pos.above())) {
             level.setBlockAndUpdate(pos, ModBlocks.VOID_STONE.get().defaultBlockState());
         }
     }

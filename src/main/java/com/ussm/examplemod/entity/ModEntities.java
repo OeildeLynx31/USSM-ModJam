@@ -20,7 +20,6 @@ public class ModEntities {
             ENTITY_TYPES.register("hedgehog", () -> EntityType.Builder.of(Hedgehog::new, MobCategory.CREATURE)
                     .sized(0.5f, 0.4f).build("hedgehog"));
 
-    // memes dimensions que le joueur
     public static final Supplier<EntityType<Mimic>> MIMIC =
             ENTITY_TYPES.register("mimic", () -> EntityType.Builder.of(Mimic::new, MobCategory.MONSTER)
                     .sized(0.6f, 1.8f)

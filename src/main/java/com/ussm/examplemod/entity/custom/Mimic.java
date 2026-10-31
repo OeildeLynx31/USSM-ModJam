@@ -19,7 +19,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
@@ -35,6 +34,7 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.control.LookControl;
 import net.minecraft.world.entity.ai.goal.*;
 import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
+import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
 import net.minecraft.world.entity.ai.navigation.GroundPathNavigation;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.player.Player;
@@ -51,8 +51,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
-// se fait passer pour un joueur qui est pas la (skin, pseudo, stuff), vient vers toi comme un pote puis se retourne contre toi
-// fortement inspiré de mon mod mimic (fabric 1.20.1)
 public class Mimic extends Monster {
     private static final EntityDataAccessor<Optional<UUID>> COPIED_ID =
             SynchedEntityData.defineId(Mimic.class, EntityDataSerializers.OPTIONAL_UUID);
@@ -65,36 +63,25 @@ public class Mimic extends Monster {
     private static final EntityDataAccessor<Boolean> REVEALED =
             SynchedEntityData.defineId(Mimic.class, EntityDataSerializers.BOOLEAN);
 
-    //comme un joueur accroupi, valeurs prises dans Player.POSES
-    private static final EntityDimensions CROUCHING = EntityDimensions.scalable(0.6f, 1.5f).withEyeHeight(1.27f);
+    private static final EntityDimensions CROUCHING = EntityDimensions.scalable(0.6f, 1.5f).withEyeHeight(1.27f); //valeurs du wiki
     private static final EquipmentSlot[] SLOTS = {
             EquipmentSlot.HEAD, EquipmentSlot.CHEST, EquipmentSlot.LEGS, EquipmentSlot.FEET, EquipmentSlot.MAINHAND, EquipmentSlot.OFFHAND};
 
-    // la voix : il parle que si quelqu'un peut l'entendre, jamais en coupant la parole
-    private static final double LISTENER_RANGE = 16;
-    private static final double CONVERSATION_RANGE = 24;
-    private static final long REPLY_AFTER_MILLIS = 700;
-    private static final long REPLY_WITHIN_MILLIS = 2500;
-    private static final long QUIET_BEFORE_MILLIS = 4000;
-    private static final long REPEAT_MILLIS = 240_000; // une phrase deja dite revient pas avant 4 min
-
     private final UUID voiceChannelId = UUID.randomUUID();
-    private final Map<Long, Long> recentClips = new HashMap<>();
-    @Nullable
-    private Player victim;
+    private Player prey;
     private int lureTicks, closeTicks;
     private int lureLimit = -1;
     private int lifeTicks;
-    private int lastHurtTick = -1000;
-    private int voiceCooldown = 60, quietUntil;
-    private long lastRepliedTo;
     private boolean replaying;
-    @Nullable
-    private GameProfile gameProfile;
 
     public Mimic(EntityType<? extends Monster> entityType, Level level) {
         super(entityType, level);
-        this.lookControl = new MimicLookControl(this);
+        this.lookControl = new LookControl(this) {
+            @Override
+            public void tick() {
+                if (!replaying) super.tick();
+            }
+        };
         if (this.getNavigation() instanceof GroundPathNavigation navigation) {
             navigation.setCanOpenDoors(true);
         }
@@ -104,7 +91,6 @@ public class Mimic extends Monster {
     protected void registerGoals() {
         this.goalSelector.addGoal(0, new FloatGoal(this));
         this.goalSelector.addGoal(1, new OpenDoorGoal(this, true));
-        // 0,86 avec le sprint ca donne a peu pres la vitesse d'un joueur qui sprinte
         this.goalSelector.addGoal(2, new MeleeAttackGoal(this, 0.86, true));
         this.goalSelector.addGoal(3, new MimicStalkGoal(this));
         this.goalSelector.addGoal(4, new MimicReplayGoal(this));
@@ -113,14 +99,15 @@ public class Mimic extends Monster {
         this.goalSelector.addGoal(7, new RandomLookAroundGoal(this));
 
         this.targetSelector.addGoal(1, new HurtByTargetGoal(this));
+        //this.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, Player.class, true));
     }
 
     public static AttributeSupplier.Builder createAttributes() {
         return Monster.createMonsterAttributes()
                 .add(Attributes.MAX_HEALTH, 20d)
-                .add(Attributes.MOVEMENT_SPEED, 0.313D) // vitesse de marche d'un joueur avec la physique des mobs
-                .add(Attributes.ATTACK_DAMAGE, 4.0)
-                .add(Attributes.FOLLOW_RANGE, 48D);
+                .add(Attributes.MOVEMENT_SPEED, 0.313d)
+                .add(Attributes.ATTACK_DAMAGE, 4d)
+                .add(Attributes.FOLLOW_RANGE, 48d);
     }
 
     @Override
@@ -133,15 +120,6 @@ public class Mimic extends Monster {
         builder.define(REVEALED, false);
     }
 
-    @Override
-    public void onSyncedDataUpdated(EntityDataAccessor<?> key) {
-        super.onSyncedDataUpdated(key);
-        if (COPIED_ID.equals(key) || COPIED_NAME.equals(key) || TEXTURES.equals(key) || SIGNATURE.equals(key)) {
-            gameProfile = null;
-        }
-    }
-
-    @Nullable
     public UUID getCopiedId() {
         return this.entityData.get(COPIED_ID).orElse(null);
     }
@@ -158,14 +136,10 @@ public class Mimic extends Monster {
         return voiceChannelId;
     }
 
-    // pour le skin cote client, meme si le joueur copié est deco
     public GameProfile getGameProfile() {
-        if (gameProfile == null) {
-            UUID id = getCopiedId();
-            gameProfile = new MimicProfile(id == null ? getUUID() : id, getCopiedName(),
-                    entityData.get(TEXTURES), entityData.get(SIGNATURE), false).toGameProfile();
-        }
-        return gameProfile;
+        UUID id = getCopiedId();
+        return new MimicProfile(id == null ? getUUID() : id, getCopiedName(),
+                entityData.get(TEXTURES), entityData.get(SIGNATURE), false).toGameProfile();
     }
 
     public void copy(MimicMemory.Known known) {
@@ -176,7 +150,7 @@ public class Mimic extends Monster {
         this.entityData.set(SIGNATURE, profile.signature());
         for (EquipmentSlot slot : SLOTS) {
             this.setItemSlot(slot, known.equipment(slot));
-            this.setDropChance(slot, 0.0F); //sinon on pouvait dupliquer le stuff en le tuant
+            this.setDropChance(slot, 0.0F);
         }
         this.setLeftHanded(profile.leftHanded());
         this.lureLimit = -1;
@@ -185,13 +159,9 @@ public class Mimic extends Monster {
     @Override
     public Component getName() {
         String name = this.getCopiedName();
-        if (name.isEmpty()) {
-            return super.getName();
-        }
-        if (this.isRevealed()) {
-            return Component.literal(name).withStyle(ChatFormatting.OBFUSCATED, ChatFormatting.DARK_RED);
-        }
-        return Component.literal(name);
+        if (name.isEmpty()) return super.getName();
+
+        return isRevealed() ? Component.literal(name).withStyle(ChatFormatting.OBFUSCATED, ChatFormatting.DARK_RED) : Component.literal(name);
     }
 
     @Override
@@ -202,119 +172,111 @@ public class Mimic extends Monster {
     @Override
     protected void customServerAiStep() {
         super.customServerAiStep();
-        updatePose();
-        tickLure();
+
+        // en gros comme Player.updatePlayerPose
+        if (!isDeadOrDying() && !isSleeping()) {
+            Pose pose = this.isShiftKeyDown() && !this.isInWater() ? Pose.CROUCHING : Pose.STANDING;
+            if (pose != this.getPose() && (pose == Pose.CROUCHING
+                    || this.level().noCollision(this, this.getDimensions(Pose.STANDING).makeBoundingBox(this.position()).deflate(1.0E-7)))) {
+                this.setPose(pose);
+            }
+        }
+
+        if (isRevealed()) {
+            if ((prey == null || !canHunt(prey)) && tickCount % 20 == 0) {
+                prey = level().getNearestPlayer(getX(), getY(), getZ(), 32, e -> canHunt((Player) e));
+            }
+            if (prey != null && getTarget() == null) setTarget(prey);
+        } else {
+            if (lureLimit < 0) {
+                lureTicks = 0;
+                closeTicks = 0;
+                lureLimit = 20 * Mth.nextInt(random, Config.MIMIC_LURE_MIN.get(), Config.MIMIC_LURE_MAX.get());
+            }
+            if(level().getDifficulty() != Difficulty.PEACEFUL) {
+                Player player = level().getNearestPlayer(getX(), getY(), getZ(), 16, EntitySelector.NO_CREATIVE_OR_SPECTATOR);
+                if (player == null) {
+                    lureTicks = Math.max(0, lureTicks - 2);
+                    closeTicks = 0;
+                } else {
+                    lureTicks++;
+                    double dist = distanceTo(player);
+                    if (dist < 2.5) closeTicks++;
+                    else closeTicks = 0;
+
+                    if (lureTicks >= lureLimit || closeTicks > 30) {
+                        reveal(player);
+                    } else if (player.getHealth() < player.getMaxHealth() * 0.35f && dist < 10 && hasLineOfSight(player)) {
+                        reveal(player); //le joueur a presque plus de vie donc il attaque direct
+                    }
+                }
+            }
+        }
+
         tickVoice();
+
         if (isRevealed()) {
             setSprinting(getTarget() != null && !isShiftKeyDown());
-        }
-        if (!isRevealed() && (tickCount + getId()) % 200 == 0) {
-            syncEquipment();
+        } else if ((tickCount + getId()) % 200 == 0) {
+            ServerPlayer online = getServer().getPlayerList().getPlayer(getCopiedId());
+            if (online != null) {
+                for (EquipmentSlot slot : SLOTS) {
+                    ItemStack stack = online.getItemBySlot(slot);
+                    if (!ItemStack.matches(getItemBySlot(slot), stack)) {
+                        setItemSlot(slot, stack.copy());
+                        setDropChance(slot, 0.0F);
+                    }
+                }
+            }
         }
 
-        // ils finissent tous par partir, au premier moment ou personne le regarde
         int despawn = Config.MIMIC_DESPAWN_SECONDS.get();
-        if (despawn > 0 && ++lifeTicks > despawn * 20 && tickCount % 20 == 0 && !(hasCustomName() && isPersistenceRequired())
-                && tickCount - lastHurtTick >= 200 && !isWatched()) {
-            discard();
-        }
-    }
-
-    private void updatePose() {
-        if (isDeadOrDying() || isSleeping()) {
-            return;
-        }
-        Pose wanted = isShiftKeyDown() && !isInWater() ? Pose.CROUCHING : Pose.STANDING;
-        if (wanted != getPose() && (wanted == Pose.CROUCHING
-                || level().noCollision(this, getDimensions(Pose.STANDING).makeBoundingBox(position()).deflate(1.0E-7)))) {
-            setPose(wanted);
-        }
-    }
-
-    //----------------------------FAIRE SEMBLANT PUIS FRAPPER----------------------------
-    private void resetLure() {
-        int min = Config.MIMIC_LURE_MIN.get();
-        int max = Math.max(min, Config.MIMIC_LURE_MAX.get());
-        lureTicks = 0;
-        closeTicks = 0;
-        lureLimit = 20 * Mth.nextInt(random, min, max);
-    }
-
-    // il se revele s'il a passé trop de temps pres de toi, si tu restes collé a lui, ou si t'es affaibli
-    private void tickLure() {
-        if (isRevealed()) {
-            if ((victim == null || !canHunt(victim)) && tickCount % 20 == 0) {
-                victim = level().getNearestPlayer(getX(), getY(), getZ(), 32, e -> e instanceof Player p && canHunt(p));
+        if (despawn > 0 && ++lifeTicks > despawn * 20 && tickCount % 20 == 0) {
+            boolean named = hasCustomName() && isPersistenceRequired();
+            if (!named && tickCount - lastHurtTick >= 200 && !isSeen()) {
+                //System.out.println("despawn " + getCopiedName());
+                discard();
             }
-            if (victim != null && getTarget() == null) {
-                setTarget(victim);
-            }
-            return;
-        }
-        if (lureLimit < 0) {
-            resetLure();
-        }
-        if (level().getDifficulty() == Difficulty.PEACEFUL) {
-            return;
-        }
-        Player player = level().getNearestPlayer(getX(), getY(), getZ(), 16, EntitySelector.NO_CREATIVE_OR_SPECTATOR);
-        if (player == null) {
-            lureTicks = Math.max(0, lureTicks - 2);
-            closeTicks = 0;
-            return;
-        }
-        lureTicks++;
-        double distance = distanceTo(player);
-        closeTicks = distance < 2.5 ? closeTicks + 1 : 0;
-        boolean weak = player.getHealth() < player.getMaxHealth() * 0.35f;
-        if (lureTicks >= lureLimit || closeTicks > 30 || (weak && distance < 10 && hasLineOfSight(player))) {
-            reveal(player);
         }
     }
 
     public boolean canHunt(Player player) {
-        return player.isAlive() && !player.isCreative() && !player.isSpectator() && player.level() == level()
-                && distanceToSqr(player) <= 48 * 48 && level().getDifficulty() != Difficulty.PEACEFUL;
+        if (level().getDifficulty() == Difficulty.PEACEFUL || player.level() != level()) return false;
+        return player.isAlive() && !player.isSpectator() && !player.isCreative() && distanceToSqr(player) <= 48 * 48;
     }
 
-    // la il se revele et il attaque
-    private void reveal(@Nullable Player target) {
+    private void reveal(Player target) {
         this.entityData.set(REVEALED, true);
         this.setShiftKeyDown(false);
         if (target == null) {
             target = level().getNearestPlayer(getX(), getY(), getZ(), 32, e -> e instanceof Player p && canHunt(p));
         }
-        this.victim = target;
+        this.prey = target;
         if (target != null) {
             this.setTarget(target);
         }
-        this.level().playSound(
-                null,
-                this.getX(),
-                this.getY(),
-                this.getZ(),
-                SoundEvents.ENDERMAN_STARE,
-                SoundSource.HOSTILE,
-                1.0F,
-                0.8F
-        );
+        // TODO un vrai son a nous
+        this.level().playSound(null, this.getX(), this.getY(), this.getZ(), SoundEvents.ENDERMAN_STARE, SoundSource.HOSTILE, 1.0F, 0.8F);
         MimicVoice.stop(this);
         speak(ClipPicker.Context.ATTACK);
     }
 
+    private int lastHurtTick = -1000;
+
     @Override
     public boolean hurt(DamageSource source, float amount) {
         boolean hurt = super.hurt(source, amount);
-        if (hurt && !this.level().isClientSide()) {
+        if(hurt && !this.level().isClientSide()) {
             lastHurtTick = tickCount;
             Player attacker = source.getEntity() instanceof Player player && canHunt(player) ? player : null;
             if (!this.isRevealed()) {
                 this.reveal(attacker);
-            } else if (attacker != null && attacker != victim && (victim == null || distanceToSqr(attacker) < distanceToSqr(victim))) {
-                victim = attacker;
-                setTarget(attacker);
+            } else if (attacker != null && attacker != prey) {
+                if (prey == null || distanceToSqr(attacker) < distanceToSqr(prey)) {
+                    prey = attacker;
+                    setTarget(attacker);
+                }
             }
-            // il crie, mais pas a chaque coup
             if (isAlive() && !MimicVoice.isTalking(this) && tickCount > quietUntil + 120 && random.nextFloat() < 0.3f) {
                 speak(ClipPicker.Context.PAIN);
             }
@@ -326,7 +288,9 @@ public class Mimic extends Monster {
     public boolean doHurtTarget(Entity target) {
         boolean sprinting = isSprinting();
         boolean hit = super.doHurtTarget(target);
-        SoundEvent sound = !hit ? SoundEvents.PLAYER_ATTACK_NODAMAGE : sprinting ? SoundEvents.PLAYER_ATTACK_KNOCKBACK : SoundEvents.PLAYER_ATTACK_STRONG;
+        SoundEvent sound = SoundEvents.PLAYER_ATTACK_STRONG;
+        if (!hit) sound = SoundEvents.PLAYER_ATTACK_NODAMAGE;
+        else if (sprinting) sound = SoundEvents.PLAYER_ATTACK_KNOCKBACK;
         level().playSound(null, getX(), getY(), getZ(), sound, getSoundSource(), 1.0F, 1.0F);
         return hit;
     }
@@ -339,171 +303,67 @@ public class Mimic extends Monster {
         return super.killedEntity(level, killed);
     }
 
-    // il reprend le stuff du joueur copié s'il est connecté
-    private void syncEquipment() {
-        UUID id = getCopiedId();
-        MinecraftServer server = getServer();
-        ServerPlayer online = id == null || server == null ? null : server.getPlayerList().getPlayer(id);
-        if (online == null) {
-            return;
-        }
-        for (EquipmentSlot slot : SLOTS) {
-            ItemStack wanted = online.getItemBySlot(slot);
-            if (!ItemStack.matches(getItemBySlot(slot), wanted)) {
-                setItemSlot(slot, wanted.copy());
-                setDropChance(slot, 0.0F);
-            }
-        }
-    }
+    private boolean isSeen() {
+        int chunks = getServer().getPlayerList().getViewDistance();
+        if (chunks < 2) chunks = 2;
+        int range = Math.min(getType().clientTrackingRange(), chunks) * 16;
 
-    // un joueur pourrait le voir ? (distance d'affichage, champ de vision large, rien d'opaque entre les deux)
-    private boolean isWatched() {
-        int viewDistance = getServer() == null ? 10 : getServer().getPlayerList().getViewDistance();
-        double range = Math.min(getType().clientTrackingRange(), Math.max(2, viewDistance)) * 16.0;
-        Vec3[] points = {getEyePosition(), position().add(0.0, getBbHeight() * 0.5, 0.0), position().add(0.0, 0.1, 0.0)};
-        for (Player player : level().players()) {
+        for(Player player : level().players()) {
+            if(player.isSpectator()) continue;
             double dx = getX() - player.getX();
             double dz = getZ() - player.getZ();
-            if (player.isSpectator() || dx * dx + dz * dz > range * range) {
-                continue;
-            }
-            Vec3 eye = player.getEyePosition();
-            Vec3 look = player.getViewVector(1.0F);
-            for (Vec3 point : points) {
-                Vec3 toPoint = point.subtract(eye);
-                double distance = toPoint.length();
-                if (distance < 1.0E-4) {
-                    return true;
-                }
-                if (look.dot(toPoint) / distance > 0.2 && level().clip(new ClipContext(eye, point, ClipContext.Block.VISUAL,
-                        ClipContext.Fluid.NONE, player)).getType() == HitResult.Type.MISS) {
-                    return true;
-                }
+            if(dx * dx + dz * dz > range * range) continue;
+
+            if (isLookingAt(player, getEyePosition())
+                    || isLookingAt(player, position().add(0.0, getBbHeight() * 0.5, 0.0))
+                    || isLookingAt(player, position().add(0.0, 0.1, 0.0))) {
+                return true;
             }
         }
         return false;
     }
 
-    //----------------------------DEPLACEMENTS ENREGISTRES----------------------------
+    // repris de EnderMan.isLookingAtMe mais en plus large
+    private boolean isLookingAt(Player player, Vec3 point) {
+        Vec3 vec3 = player.getViewVector(1.0F);
+        Vec3 eye = player.getEyePosition();
+        Vec3 vec31 = point.subtract(eye);
+        double d0 = vec31.length();
+        if(d0 < 1.0E-4) return true;
+        double d1 = vec3.dot(vec31) / d0;
+        return d1 > 0.2 ? level().clip(new ClipContext(eye, point, ClipContext.Block.VISUAL, ClipContext.Fluid.NONE, player)).getType() == HitResult.Type.MISS : false;
+    }
+
     public boolean hasMoves() {
         UUID id = getCopiedId();
-        MinecraftServer server = getServer();
-        if (id == null || server == null) {
-            return false;
-        }
-        MimicMemory.Known known = MimicMemory.get(server).get(id);
+        if (id == null) return false;
+        MimicMemory.Known known = MimicMemory.get(getServer()).get(id);
         return known != null && known.hasMoves();
     }
 
-    @Nullable
     public MovementClip pickMove() {
         UUID id = getCopiedId();
-        MinecraftServer server = getServer();
-        return id == null || server == null ? null : MimicMemory.get(server).pickMove(id, random);
+        return id == null ? null : MimicMemory.get(getServer()).pickMove(id, random);
     }
 
-    public boolean isReplaying() {
-        return replaying;
-    }
-
-    public void setReplaying(boolean replaying) {
-        this.replaying = replaying;
-    }
-
-    //----------------------------VOIX----------------------------
-    // surtout pour repondre juste apres qu'un joueur proche a fini sa phrase, parfois de lui meme pendant un silence
-    private void tickVoice() {
-        if (voiceCooldown > 0) {
-            voiceCooldown--;
-        }
-        if ((tickCount + getId()) % 5 != 0 || !MimicVoice.isAvailable() || MimicVoice.isTalking(this)) {
-            return;
-        }
-        long now = System.currentTimeMillis();
-        Map<UUID, Long> heard = VoiceRecorder.lastHeard();
-        UUID copied = getCopiedId();
-        boolean listener = false;
-        long silence = Long.MAX_VALUE;
-        long replyTo = 0;
-        for (Player player : level().players()) {
-            double distanceSqr = distanceToSqr(player);
-            if (player.isSpectator() || distanceSqr > CONVERSATION_RANGE * CONVERSATION_RANGE) {
-                continue;
-            }
-            boolean close = distanceSqr <= LISTENER_RANGE * LISTENER_RANGE;
-            listener |= close;
-            Long last = heard.get(player.getUUID());
-            if (last == null) {
-                continue;
-            }
-            silence = Math.min(silence, now - last);
-            if (close && now - last >= REPLY_AFTER_MILLIS && now - last <= REPLY_WITHIN_MILLIS && last > lastRepliedTo
-                    && !player.getUUID().equals(copied)) {
-                replyTo = Math.max(replyTo, last);
-            }
-        }
-        // quelqu'un parle, il attend son tour
-        if (!listener || silence < REPLY_AFTER_MILLIS) {
-            return;
-        }
-        ClipPicker.Context context = isRevealed() ? ClipPicker.Context.ATTACK : ClipPicker.Context.LURE;
-        if (replyTo > 0 && context == ClipPicker.Context.LURE) {
-            lastRepliedTo = replyTo;
-            if (tickCount > quietUntil + 100 && random.nextFloat() < 0.4f) {
-                speak(context);
-            }
-            return;
-        }
-        if (voiceCooldown <= 0 && (context != ClipPicker.Context.LURE || silence > QUIET_BEFORE_MILLIS)) {
-            speak(context);
-        }
-    }
-
-    private boolean speak(ClipPicker.Context context) {
-        voiceCooldown = 20 * Mth.nextInt(random, 20, 50);
-        UUID copied = getCopiedId();
-        MinecraftServer server = getServer();
-        if (copied == null || server == null || !MimicVoice.isAvailable()) {
-            return false;
-        }
-        double range = context == ClipPicker.Context.LURE ? LISTENER_RANGE : CONVERSATION_RANGE;
-        if (level().getNearestPlayer(getX(), getY(), getZ(), range, EntitySelector.NO_SPECTATORS) == null) {
-            return false;
-        }
-        long now = System.currentTimeMillis();
-        recentClips.values().removeIf(time -> now - time > REPEAT_MILLIS);
-        VoiceClip clip = ClipPicker.pick(VoiceBank.get(server, copied).clips(), context, recentClips.keySet(), random);
-        if (clip == null || !MimicVoice.speak(this, clip)) {
-            return false;
-        }
-        voiceCooldown += clip.durationMillis() / 50;
-        quietUntil = tickCount + clip.durationMillis() / 50;
-        recentClips.put(clip.id, now);
-        return true;
-    }
-
-    @Override
-    public void remove(RemovalReason reason) {
-        if (!level().isClientSide()) {
-            MimicVoice.stop(this);
-        }
-        super.remove(reason);
-    }
+    public boolean isReplaying() { return replaying; }
+    public void setReplaying(boolean replaying) { this.replaying = replaying; }
 
     @Override
     public SpawnGroupData finalizeSpawn(ServerLevelAccessor level, DifficultyInstance difficulty,
                                         MobSpawnType spawnType, @Nullable SpawnGroupData spawnGroupData) {
+        // super() retire la main au pif (c'est pour ca que y'avait des mimics gaucher alors que le joueur l'est pas), on la garde de coté
         boolean leftHanded = this.isLeftHanded();
         spawnGroupData = super.finalizeSpawn(level, difficulty, spawnType, spawnGroupData);
         if (this.getCopiedId() == null) {
-            //oeuf ou /summon : quelqu'un qu'on connait, de preference pas la
+            // Spawn par oeuf ou commande : on copie quelqu'un au hasard
             Player nearest = level.getNearestPlayer(this, 64);
             MimicMemory.Known source = MimicSpawner.pickSource(level.getLevel().getServer(), nearest instanceof ServerPlayer p ? p : null, random);
             if (source != null) {
                 this.copy(source);
             }
         } else {
-            this.setLeftHanded(leftHanded); // faut garder la main du joueur copié sinon le jeu en tire une au hasard
+            this.setLeftHanded(leftHanded);
         }
         return spawnGroupData;
     }
@@ -511,8 +371,9 @@ public class Mimic extends Monster {
     @Override
     public void addAdditionalSaveData(CompoundTag compound) {
         super.addAdditionalSaveData(compound);
-        if (this.getCopiedId() != null) {
-            compound.putUUID("CopiedId", this.getCopiedId());
+        UUID id = this.getCopiedId();
+        if (id != null) {
+            compound.putUUID("CopiedId", id);
         }
         compound.putString("CopiedName", this.getCopiedName());
         compound.putString("Textures", this.entityData.get(TEXTURES));
@@ -524,7 +385,11 @@ public class Mimic extends Monster {
     @Override
     public void readAdditionalSaveData(CompoundTag compound) {
         super.readAdditionalSaveData(compound);
-        this.entityData.set(COPIED_ID, compound.hasUUID("CopiedId") ? Optional.of(compound.getUUID("CopiedId")) : Optional.empty());
+        if (compound.hasUUID("CopiedId")) {
+            this.entityData.set(COPIED_ID, Optional.of(compound.getUUID("CopiedId")));
+        } else {
+            this.entityData.set(COPIED_ID, Optional.empty());
+        }
         this.entityData.set(COPIED_NAME, compound.getString("CopiedName"));
         this.entityData.set(TEXTURES, compound.getString("Textures"));
         this.entityData.set(SIGNATURE, compound.getString("Signature"));
@@ -567,20 +432,71 @@ public class Mimic extends Monster {
         return SoundEvents.PLAYER_SPLASH_HIGH_SPEED;
     }
 
-    // pendant qu'il rejoue un enregistrement c'est l'enregistrement qui tourne la tete
-    private static class MimicLookControl extends LookControl {
-        private final Mimic mimic;
 
-        MimicLookControl(Mimic mimic) {
-            super(mimic);
-            this.mimic = mimic;
-        }
+    private int voiceCooldown = 60, quietUntil;
+    private long lastAnswered;
+    private final Map<Long, Long> alreadySaid = new HashMap<>();
 
-        @Override
-        public void tick() {
-            if (!mimic.isReplaying()) {
-                super.tick();
+    private void tickVoice() {
+        if(voiceCooldown > 0) voiceCooldown--;
+        if((tickCount + getId()) % 5 != 0 || !MimicVoice.isAvailable() || MimicVoice.isTalking(this)) return;
+
+        long now = System.currentTimeMillis();
+        boolean near = false;
+        long silence = Long.MAX_VALUE;
+        long answer = 0;
+        for(Player player : level().players()) {
+            double d = distanceToSqr(player);
+            if(player.isSpectator() || d > 24 * 24) continue;
+            if(d <= 256) near = true;
+
+            Long last = VoiceRecorder.lastHeard().get(player.getUUID());
+            if (last == null) continue;
+            long ago = now - last;
+            if(ago < silence) silence = ago;
+            // quelqu'un vient de parler a coté, il lui repond
+            if(d <= 16 * 16 && ago >= 700 && ago <= 2500 && last > lastAnswered && !player.getUUID().equals(getCopiedId())) {
+                if (last > answer) answer = last;
             }
         }
+        if(!near || silence < 700) return;
+
+        if (isRevealed()) {
+            if(voiceCooldown <= 0) speak(ClipPicker.Context.ATTACK);
+        } else if(answer > 0) {
+            lastAnswered = answer;
+            if(tickCount > quietUntil + 100 && random.nextFloat() < 0.4f) {
+                speak(ClipPicker.Context.LURE);
+            }
+        } else if(voiceCooldown <= 0 && silence > 4000) {
+            speak(ClipPicker.Context.LURE);
+        }
+    }
+
+    private void speak(ClipPicker.Context context) {
+        voiceCooldown = 20 * Mth.nextInt(random, 20, 50);
+        UUID copied = getCopiedId();
+        if(copied == null || !MimicVoice.isAvailable()) return;
+
+        int range = context == ClipPicker.Context.LURE ? 16 : 24;
+        if (level().getNearestPlayer(getX(), getY(), getZ(), range, EntitySelector.NO_SPECTATORS) == null) return;
+
+        long now = System.currentTimeMillis();
+        alreadySaid.values().removeIf(time -> now - time > 240000);
+        VoiceClip clip = ClipPicker.pick(VoiceBank.get(getServer(), copied).clips(), context, alreadySaid.keySet(), random);
+        if(clip != null && MimicVoice.speak(this, clip)) {
+            int ticks = clip.durationMillis() / 50;
+            voiceCooldown += ticks;
+            quietUntil = tickCount + ticks;
+            alreadySaid.put(clip.id, now);
+        }
+    }
+
+    @Override
+    public void remove(RemovalReason reason) {
+        if (!level().isClientSide) {
+            MimicVoice.stop(this);
+        }
+        super.remove(reason);
     }
 }

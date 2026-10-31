@@ -8,11 +8,11 @@ import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.model.PlayerModel;
 import net.minecraft.client.model.geom.ModelLayers;
 import net.minecraft.client.multiplayer.ClientPacketListener;
-import net.minecraft.client.multiplayer.PlayerInfo;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
+import net.minecraft.client.renderer.entity.layers.CapeLayer;
 import net.minecraft.client.renderer.entity.layers.CustomHeadLayer;
 import net.minecraft.client.renderer.entity.layers.ElytraLayer;
 import net.minecraft.client.renderer.entity.layers.HumanoidArmorLayer;
@@ -28,18 +28,18 @@ import net.minecraft.world.InteractionHand;
 
 import java.util.UUID;
 
-public class MimicRenderer extends EntityRenderer<Mimic> { // pas mal de trucs repris de PlayerRenderer
+public class MimicRenderer extends EntityRenderer<Mimic> { // pompé en grande partie sur PlayerRenderer
     private static final PlayerSkin DEFAULT_SKIN =
             new PlayerSkin(DefaultPlayerSkin.getDefaultTexture(), null, null, null, PlayerSkin.Model.SLIM, true);
 
-    private final BodyRenderer wideRenderer;
-    private final BodyRenderer slimRenderer;
+    private final BodyRenderer steve;
+    private final BodyRenderer alex;
 
     public MimicRenderer(EntityRendererProvider.Context context) {
         super(context);
         this.shadowRadius = 0.5f;
-        this.wideRenderer = new BodyRenderer(context, false);
-        this.slimRenderer = new BodyRenderer(context, true);
+        this.steve = new BodyRenderer(context, false);
+        this.alex = new BodyRenderer(context, true);
     }
 
     @Override
@@ -49,32 +49,28 @@ public class MimicRenderer extends EntityRenderer<Mimic> { // pas mal de trucs r
 
     @Override
     public void render(Mimic entity, float entityYaw, float partialTicks, PoseStack poseStack, MultiBufferSource buffer, int packedLight) {
-        if (getSkin(entity).model() == PlayerSkin.Model.SLIM) {
-            this.slimRenderer.render(entity, entityYaw, partialTicks, poseStack, buffer, packedLight);
+        if(getSkin(entity).model() == PlayerSkin.Model.SLIM) {
+            this.alex.render(entity, entityYaw, partialTicks, poseStack, buffer, packedLight);
         } else {
-            this.wideRenderer.render(entity, entityYaw, partialTicks, poseStack, buffer, packedLight);
+            this.steve.render(entity, entityYaw, partialTicks, poseStack, buffer, packedLight);
         }
     }
 
     @Override
     public Vec3 getRenderOffset(Mimic entity, float partialTicks) {
-        if(entity.isCrouching()) {
-            return new Vec3(0.0, -0.125, 0.0);
-        }
-        return super.getRenderOffset(entity, partialTicks);
+        return entity.isCrouching() ? new Vec3(0.0, -0.125, 0.0) : super.getRenderOffset(entity, partialTicks);
     }
 
     private static PlayerSkin getSkin(Mimic mimic) {
         UUID uuid = mimic.getCopiedId();
-        if (uuid == null) {
-            return DEFAULT_SKIN;
-        }
+        if (uuid == null) return DEFAULT_SKIN;
+
         ClientPacketListener connection = Minecraft.getInstance().getConnection();
-        PlayerInfo info = connection == null ? null : connection.getPlayerInfo(uuid);
-        if (info != null) {
-            return info.getSkin();
+        if (connection != null && connection.getPlayerInfo(uuid) != null) {
+            return connection.getPlayerInfo(uuid).getSkin();
         }
-        // joueur deco : son skin depuis les textures que le serveur a gardé (skin par defaut tant que c'est pas chargé)
+        // joueur deco, on prend les textures que le serveur a gardé
+        //return Minecraft.getInstance().getSkinManager().getOrLoad(mimic.getGameProfile()).getNow(DEFAULT_SKIN);
         return Minecraft.getInstance().getSkinManager().getInsecureSkin(mimic.getGameProfile());
     }
 
@@ -107,7 +103,7 @@ public class MimicRenderer extends EntityRenderer<Mimic> { // pas mal de trucs r
         @Override
         protected void scale(Mimic entity, PoseStack poseStack, float partialTicks) {
             float f = 0.9375F;
-            poseStack.scale(0.9375F, 0.9375F, 0.9375F);
+            poseStack.scale(f, f, f);
         }
 
         private void setModelProperties(Mimic entity) {
@@ -115,18 +111,18 @@ public class MimicRenderer extends EntityRenderer<Mimic> { // pas mal de trucs r
             playermodel.setAllVisible(true);
             playermodel.crouching = entity.isCrouching();
 
-            HumanoidModel.ArmPose mainHandPose = getArmPose(entity, InteractionHand.MAIN_HAND);
-            HumanoidModel.ArmPose offHandPose = getArmPose(entity, InteractionHand.OFF_HAND);
-            if (mainHandPose.isTwoHanded()) {
-                offHandPose = entity.getOffhandItem().isEmpty() ? HumanoidModel.ArmPose.EMPTY : HumanoidModel.ArmPose.ITEM;
+            HumanoidModel.ArmPose humanoidmodel$armpose = getArmPose(entity, InteractionHand.MAIN_HAND);
+            HumanoidModel.ArmPose humanoidmodel$armpose1 = getArmPose(entity, InteractionHand.OFF_HAND);
+            if (humanoidmodel$armpose.isTwoHanded()) {
+                humanoidmodel$armpose1 = entity.getOffhandItem().isEmpty() ? HumanoidModel.ArmPose.EMPTY : HumanoidModel.ArmPose.ITEM;
             }
 
             if (entity.getMainArm() == HumanoidArm.RIGHT) {
-                playermodel.rightArmPose = mainHandPose;
-                playermodel.leftArmPose = offHandPose;
+                playermodel.rightArmPose = humanoidmodel$armpose;
+                playermodel.leftArmPose = humanoidmodel$armpose1;
             } else {
-                playermodel.rightArmPose = offHandPose;
-                playermodel.leftArmPose = mainHandPose;
+                playermodel.rightArmPose = humanoidmodel$armpose1;
+                playermodel.leftArmPose = humanoidmodel$armpose;
             }
         }
 

@@ -14,26 +14,17 @@ import net.minecraft.world.level.saveddata.SavedData;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
-// ce que les imitateurs savent des joueurs deja venus (meme deco) : skin, dernier stuff vu, facon de bouger
-// sauvegardé dans data/examplemod_mimics.dat de l'overworld
 public class MimicMemory extends SavedData {
-    private static final String NAME = "examplemod_mimics";
-    private static final EquipmentSlot[] SLOTS = EquipmentSlot.values();
-
     private final Map<UUID, Known> known = new HashMap<>();
 
+    public static MimicMemory create() {
+        return new MimicMemory();
+    }
+
     public static MimicMemory get(MinecraftServer server) {
-        return server.overworld().getDataStorage().computeIfAbsent(new Factory<>(MimicMemory::new, MimicMemory::load), NAME);
+        return server.overworld().getDataStorage().computeIfAbsent(new Factory<>(MimicMemory::create, MimicMemory::load), "examplemod_mimics");
     }
 
     @Nullable
@@ -45,136 +36,141 @@ public class MimicMemory extends SavedData {
         return known.values();
     }
 
+    // appele au login/logout + toutes les 30s
     public Known update(ServerPlayer player) {
         MimicProfile profile = MimicProfile.of(player);
         Known entry = known.get(player.getUUID());
-        if (entry == null) {
+        if(entry == null) {
             entry = new Known(profile);
             known.put(player.getUUID(), entry);
             setDirty();
-        } else if (!entry.profile.equals(profile)) {
+        } else if(!entry.profile.equals(profile)) {
             entry.profile = profile;
             setDirty();
         }
-        for (EquipmentSlot slot : SLOTS) {
+
+        for(EquipmentSlot slot : EquipmentSlot.values()) {
             ItemStack stack = player.getItemBySlot(slot);
-            if (!ItemStack.matches(stack, entry.equipment[slot.ordinal()])) {
+            if(!ItemStack.matches(stack, entry.equipment[slot.ordinal()])) {
                 entry.equipment[slot.ordinal()] = stack.copy();
                 setDirty();
             }
         }
-        entry.lastSeen = System.currentTimeMillis(); // pas besoin de resauvegarder pour ca
+        entry.lastSeen = System.currentTimeMillis();
         return entry;
     }
 
-    // on garde les plus vivants, un nouveau remplace le moins bon seulement s'il est mieux
+    // meme principe que VoiceBank : si c'est plein on vire le moins bon
     public void offerMove(UUID id, MovementClip clip, int max) {
         Known entry = known.get(id);
-        if (entry == null || max <= 0) {
-            return;
-        }
+        if(entry == null) return;
+
         long now = System.currentTimeMillis();
-        if (entry.moves.size() >= max) {
-            MovementClip worst = Collections.min(entry.moves, Comparator.comparingDouble(c -> c.effectiveScore(now)));
-            if (worst.effectiveScore(now) >= clip.effectiveScore(now)) {
-                return;
+        List<MovementClip> moves = entry.moves;
+        if(moves.size() >= max) {
+            int worst = 0;
+            for(int i = 1; i < moves.size(); i++) {
+                if(moves.get(i).effectiveScore(now) < moves.get(worst).effectiveScore(now)) worst = i;
             }
-            entry.moves.remove(worst);
+            if(moves.get(worst).effectiveScore(now) >= clip.effectiveScore(now)) return;
+            moves.remove(worst);
         }
-        entry.moves.add(clip);
+        moves.add(clip);
         setDirty();
     }
 
     @Nullable
     public MovementClip pickMove(UUID id, RandomSource random) {
         Known entry = known.get(id);
-        if (entry == null || entry.moves.isEmpty()) {
+        if(entry == null || entry.moves.isEmpty()) {
             return null;
         }
+        List<MovementClip> moves = entry.moves;
         long now = System.currentTimeMillis();
         double total = 0;
-        for (MovementClip clip : entry.moves) {
-            total += clip.effectiveScore(now);
+        for(MovementClip clip : moves) total += clip.effectiveScore(now);
+
+        double r = random.nextDouble() * total;
+        for(int i = 0; i < moves.size() - 1; i++) {
+            r -= moves.get(i).effectiveScore(now);
+            if(r <= 0) return moves.get(i);
         }
-        double roll = random.nextDouble() * total;
-        for (MovementClip clip : entry.moves) {
-            roll -= clip.effectiveScore(now);
-            if (roll <= 0) {
-                return clip;
-            }
-        }
-        return entry.moves.get(entry.moves.size() - 1);
+        return moves.get(moves.size() - 1);
     }
 
     public void setVoiceClips(UUID id, int count) {
-        Known entry = known.get(id);
-        if (entry != null && entry.voiceClips != count) {
-            entry.voiceClips = count;
+        Known k = known.get(id);
+        if(k != null && k.voiceClips != count) {
+            k.voiceClips = count;
             setDirty();
         }
     }
 
+
     @Override
     public CompoundTag save(CompoundTag tag, HolderLookup.Provider registries) {
-        ListTag list = new ListTag();
-        for (Known entry : known.values()) {
-            CompoundTag player = entry.profile.save();
+        ListTag players = new ListTag();
+        for(Known k : known.values()) {
+            CompoundTag playerTag = k.profile.save();
+
             ListTag equipment = new ListTag();
-            for (EquipmentSlot slot : SLOTS) {
-                CompoundTag stack = new CompoundTag();
-                stack.putString("Slot", slot.getName());
-                stack.put("Item", entry.equipment[slot.ordinal()].saveOptional(registries));
-                equipment.add(stack);
+            for(EquipmentSlot slot : EquipmentSlot.values()) {
+                CompoundTag slotTag = new CompoundTag();
+                slotTag.putString("Slot", slot.getName());
+                slotTag.put("Item", k.equipment[slot.ordinal()].saveOptional(registries));
+                equipment.add(slotTag);
             }
-            player.put("Equipment", equipment);
+            playerTag.put("Equipment", equipment);
+
             ListTag moves = new ListTag();
-            for (MovementClip move : entry.moves) {
-                moves.add(move.save());
-            }
-            player.put("Moves", moves);
-            player.putLong("LastSeen", entry.lastSeen);
-            player.putInt("VoiceClips", entry.voiceClips);
-            list.add(player);
+            for(MovementClip move : k.moves) moves.add(move.save());
+            playerTag.put("Moves", moves);
+
+            playerTag.putLong("LastSeen", k.lastSeen);
+            playerTag.putInt("VoiceClips", k.voiceClips);
+            players.add(playerTag);
         }
-        tag.put("Players", list);
+        tag.put("Players", players);
         return tag;
     }
 
     public static MimicMemory load(CompoundTag tag, HolderLookup.Provider registries) {
-        MimicMemory memory = new MimicMemory();
-        ListTag list = tag.getList("Players", Tag.TAG_COMPOUND);
-        for (int i = 0; i < list.size(); i++) {
-            CompoundTag player = list.getCompound(i);
-            Known entry = new Known(MimicProfile.load(player));
-            ListTag equipment = player.getList("Equipment", Tag.TAG_COMPOUND);
-            for (int j = 0; j < equipment.size(); j++) {
-                CompoundTag stack = equipment.getCompound(j);
-                try {
-                    EquipmentSlot slot = EquipmentSlot.byName(stack.getString("Slot"));
-                    entry.equipment[slot.ordinal()] = ItemStack.parseOptional(registries, stack.getCompound("Item"));
-                } catch (IllegalArgumentException ignored) {
+        MimicMemory memory = create();
+        ListTag players = tag.getList("Players", 10);
+        for(int i = 0; i < players.size(); i++) {
+            CompoundTag playerTag = players.getCompound(i);
+            Known entry = new Known(MimicProfile.load(playerTag));
+
+            ListTag equipment = playerTag.getList("Equipment", 10);
+            for(int j = 0; j < equipment.size(); j++) {
+                CompoundTag slotTag = equipment.getCompound(j);
+                String name = slotTag.getString("Slot");
+                for(EquipmentSlot slot : EquipmentSlot.values()) {
+                    if(slot.getName().equals(name)) {
+                        entry.equipment[slot.ordinal()] = ItemStack.parseOptional(registries, slotTag.getCompound("Item"));
+                    }
                 }
             }
-            ListTag moves = player.getList("Moves", Tag.TAG_COMPOUND);
-            for (int j = 0; j < moves.size(); j++) {
+
+            for(Tag t : playerTag.getList("Moves", Tag.TAG_COMPOUND)) {
                 try {
-                    entry.moves.add(MovementClip.load(moves.getCompound(j)));
-                } catch (IOException e) {
+                    entry.moves.add(MovementClip.load((CompoundTag) t));
+                } catch(IOException e) {
                     ExampleMod.LOGGER.warn("deplacement illisible pour {}", entry.profile.name());
                 }
             }
-            entry.lastSeen = player.getLong("LastSeen");
-            entry.voiceClips = player.getInt("VoiceClips");
+            entry.lastSeen = playerTag.getLong("LastSeen");
+            entry.voiceClips = playerTag.getInt("VoiceClips");
             memory.known.put(entry.profile.id(), entry);
         }
         return memory;
     }
 
     public static class Known {
-        private MimicProfile profile;
-        private final ItemStack[] equipment = new ItemStack[SLOTS.length];
-        private final List<MovementClip> moves = new ArrayList<>();
-        private long lastSeen;
+        MimicProfile profile;
+        final ItemStack[] equipment = new ItemStack[EquipmentSlot.values().length];
+        final List<MovementClip> moves = new ArrayList<>();
+        private long lastSeen; // TODO s'en servir pour oublier les joueurs qui reviennent jamais
         private int voiceClips;
 
         Known(MimicProfile profile) {

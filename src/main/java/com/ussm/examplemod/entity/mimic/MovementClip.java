@@ -2,18 +2,14 @@ package com.ussm.examplemod.entity.mimic;
 
 import net.minecraft.nbt.CompoundTag;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
+import java.io.*;
 
-// 8 secondes de deplacement d'un joueur, tick par tick, pour que l'imitateur bouge comme lui
 public class MovementClip {
     public static final int SNEAK = 1;
     public static final int SPRINT = 2;
     public static final int JUMP = 4;
     public static final int SWING = 8;
+    public static final int USE = 16;
 
     public final long createdAt;
     public final float score;
@@ -34,69 +30,55 @@ public class MovementClip {
         return flags.length;
     }
 
-    public float dx(int i) {
-        return dx[i];
-    }
-
-    public float dz(int i) {
-        return dz[i];
-    }
-
-    public float yaw(int i) {
-        return yaw[i];
-    }
-
-    public float pitch(int i) {
-        return pitch[i];
-    }
+    public float dx(int i) { return dx[i]; }
+    public float dz(int i) { return dz[i]; }
+    public float yaw(int i) { return yaw[i]; }
+    public float pitch(int i) { return pitch[i]; }
 
     public boolean has(int i, int flag) {
         return (flags[i] & flag) != 0;
     }
 
-    // petit bonus aux recents pour que ca se renouvelle
     public float effectiveScore(long now) {
-        double hours = Math.max(0, now - createdAt) / 3_600_000.0;
-        return score + 0.5f * (float) Math.exp(-hours / 24.0);
+        double hours = Math.max(0, now - createdAt) / 3600000.0;
+        return score + 0.5f * (float) Math.exp(-hours / 24);
     }
 
     public CompoundTag save() {
-        CompoundTag tag = new CompoundTag();
-        tag.putLong("Time", createdAt);
-        tag.putFloat("Score", score);
-        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-        try (DataOutputStream out = new DataOutputStream(bytes)) {
-            out.writeInt(size());
-            for (int i = 0; i < size(); i++) {
-                out.writeFloat(dx[i]);
-                out.writeFloat(dz[i]);
-                out.writeFloat(yaw[i]);
-                out.writeFloat(pitch[i]);
-                out.writeByte(flags[i]);
+        CompoundTag nbt = new CompoundTag();
+        nbt.putLong("Time", createdAt);
+        nbt.putFloat("Score", score);
+
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        DataOutputStream dos = new DataOutputStream(baos);
+        try {
+            dos.writeInt(flags.length);
+            for (int i = 0; i < flags.length; i++) {
+                dos.writeFloat(dx[i]);
+                dos.writeFloat(dz[i]);
+                dos.writeFloat(yaw[i]);
+                dos.writeFloat(pitch[i]);
+                dos.writeByte(flags[i]);
             }
         } catch (IOException e) {
-            throw new IllegalStateException(e);
+            e.printStackTrace();
         }
-        tag.putByteArray("Frames", bytes.toByteArray());
-        return tag;
+        nbt.putByteArray("Frames", baos.toByteArray());
+        return nbt;
     }
 
-    public static MovementClip load(CompoundTag tag) throws IOException {
-        try (DataInputStream in = new DataInputStream(new ByteArrayInputStream(tag.getByteArray("Frames")))) {
-            int count = in.readInt();
-            float[] dx = new float[count];
-            float[] dz = new float[count];
-            float[] yaw = new float[count];
-            float[] pitch = new float[count];
-            byte[] flags = new byte[count];
-            for (int i = 0; i < count; i++) {
-                dx[i] = in.readFloat();
-                dz[i] = in.readFloat();
-                yaw[i] = in.readFloat();
-                pitch[i] = in.readFloat();
-                flags[i] = in.readByte();
-            }
-            return new MovementClip(tag.getLong("Time"), tag.getFloat("Score"), dx, dz, yaw, pitch, flags);
+    public static MovementClip load(CompoundTag nbt) throws IOException {
+        DataInputStream in = new DataInputStream(new ByteArrayInputStream(nbt.getByteArray("Frames")));
+        int n = in.readInt();
+        float[] dx = new float[n], dz = new float[n], yaw = new float[n], pitch = new float[n];
+        byte[] flags = new byte[n];
+        for (int i = 0; i < n; i++) {
+            dx[i] = in.readFloat();
+            dz[i] = in.readFloat();
+            yaw[i] = in.readFloat();
+            pitch[i] = in.readFloat();
+            flags[i] = in.readByte();
         }
+        return new MovementClip(nbt.getLong("Time"), nbt.getFloat("Score"), dx, dz, yaw, pitch, flags);
     }
 }

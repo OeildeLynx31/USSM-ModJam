@@ -13,12 +13,11 @@ public class ModAdvancements {
 
     public static void award(ServerPlayer player, ResourceLocation id) {
         AdvancementHolder advancement = player.server.getAdvancements().get(id);
-        if (advancement == null) return;
-
-        //System.out.println("award " + id);
-        AdvancementProgress progress = player.getAdvancements().getOrStartProgress(advancement);
-        for (String criterion : progress.getRemainingCriteria()) {
-            player.getAdvancements().award(advancement, criterion);
+        if(advancement != null) {
+            AdvancementProgress progress = player.getAdvancements().getOrStartProgress(advancement);
+            for(String criterion : progress.getRemainingCriteria()) {
+                player.getAdvancements().award(advancement, criterion);
+            }
         }
     }
 }

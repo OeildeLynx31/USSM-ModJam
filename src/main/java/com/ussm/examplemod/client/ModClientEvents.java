@@ -22,6 +22,7 @@ import net.neoforged.neoforge.client.event.RegisterParticleProvidersEvent;
 import net.neoforged.neoforge.client.gui.ConfigurationScreen;
 import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
 
+//bus = MOD est deprecated maintenant, ca marche sans
 @EventBusSubscriber(modid = ExampleMod.MODID, value = Dist.CLIENT)
 public class ModClientEvents {
     @SubscribeEvent
@@ -34,13 +35,14 @@ public class ModClientEvents {
     public static void registerAdditionalModels(ModelEvent.RegisterAdditional event) {
         event.register(HazmatMaskLayer.MODEL);
     }
-
     @SubscribeEvent
     public static void addLayers(EntityRenderersEvent.AddLayers event) {
-        for (PlayerSkin.Model skin : event.getSkins()) {
-            if (event.getSkin(skin) instanceof PlayerRenderer renderer) {
-                renderer.addLayer(new HazmatMaskLayer<>(renderer));
-            }
+        // steve et alex
+        if (event.getSkin(PlayerSkin.Model.WIDE) instanceof PlayerRenderer wide) {
+            wide.addLayer(new HazmatMaskLayer<>(wide));
+        }
+        if (event.getSkin(PlayerSkin.Model.SLIM) instanceof PlayerRenderer slim) {
+            slim.addLayer(new HazmatMaskLayer<>(slim));
         }
     }
 
@@ -57,13 +59,11 @@ public class ModClientEvents {
     }
 
     @SubscribeEvent
-    // /blue ouvre le menu de config du mod
     public static void registerCommands(RegisterClientCommandsEvent event) {
-        event.getDispatcher().register(Commands.literal("blue").executes(context -> {
-            Minecraft minecraft = Minecraft.getInstance();
-            ModContainer container = ModList.get().getModContainerById(ExampleMod.MODID).orElseThrow();
-            //TODO tester l'onglet serveur sur un vrai serveur
-            minecraft.tell(() -> minecraft.setScreen(new ConfigurationScreen(container, null)));
+        event.getDispatcher().register(Commands.literal("blue").executes(ctx -> {
+            Minecraft mc = Minecraft.getInstance();
+            ModContainer container = ModList.get().getModContainerById(ExampleMod.MODID).get();
+            mc.tell(() -> mc.setScreen(new ConfigurationScreen(container, null))); // marche pas sans le tell, jsp pourquoi
             return 1;
         }));
     }

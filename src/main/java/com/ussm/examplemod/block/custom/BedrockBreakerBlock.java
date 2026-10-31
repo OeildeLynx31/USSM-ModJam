@@ -22,39 +22,33 @@ import java.util.List;
 public class BedrockBreakerBlock extends Block {
     public static final BooleanProperty CHARGING = BooleanProperty.create("charging");
 
-    private static final int CHARGE_TICKS = 60;
-
     public BedrockBreakerBlock(Properties properties) {
         super(properties);
-        registerDefaultState(defaultBlockState().setValue(CHARGING, false));
-    }
-
-    @Override
-    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
-        builder.add(CHARGING);
-    }
-
-    // comme la tnt : si on le pose deja alimenté ca charge direct
-    @Override
-    protected void onPlace(BlockState state, Level level, BlockPos pos, BlockState oldState, boolean movedByPiston) {
-        if (!oldState.is(state.getBlock()) && level.hasNeighborSignal(pos)) {
-            charge(state, level, pos);
-        }
+        this.registerDefaultState(this.defaultBlockState().setValue(CHARGING, false));
     }
 
     @Override
     protected void neighborChanged(BlockState state, Level level, BlockPos pos, Block neighborBlock, BlockPos neighborPos, boolean movedByPiston) {
-        if (level.hasNeighborSignal(pos)) {
+        if(level.hasNeighborSignal(pos)) {
+            charge(state, level, pos);
+        }
+    }
+
+    // si on le pose a coté d'une redstone deja allumée ca part direct
+    @Override
+    protected void onPlace(BlockState state, Level level, BlockPos pos, BlockState oldState, boolean movedByPiston) {
+        if(!oldState.is(state.getBlock()) && level.hasNeighborSignal(pos)) {
             charge(state, level, pos);
         }
     }
 
     private void charge(BlockState state, Level level, BlockPos pos) {
-        if (level.isClientSide() || state.getValue(CHARGING)) {
+        if(level.isClientSide() || state.getValue(CHARGING)) {
             return;
         }
+
         level.setBlock(pos, state.setValue(CHARGING, true), 3);
-        level.scheduleTick(pos, this, CHARGE_TICKS);
+        level.scheduleTick(pos, this, 60); // 3s avant le laser
         level.playSound(null, pos, SoundEvents.WARDEN_SONIC_CHARGE, SoundSource.BLOCKS, 3f, 0.6f);
         level.playSound(null, pos, SoundEvents.BEACON_POWER_SELECT, SoundSource.BLOCKS, 2f, 0.5f);
     }
@@ -69,17 +63,15 @@ public class BedrockBreakerBlock extends Block {
 
     @Override
     public void animateTick(BlockState state, Level level, BlockPos pos, RandomSource random) {
-        if (!state.getValue(CHARGING)) {
-            return;
-        }
+        if(!state.getValue(CHARGING)) return;
+
         double x = pos.getX() + 0.5;
-        double y = pos.getY() + 0.5;
         double z = pos.getZ() + 0.5;
-        for (int i = 0; i < 6; i++) {
-            level.addParticle(ParticleTypes.ENCHANT, x, y, z,
+        for(int i = 0; i < 6; i++) {
+            level.addParticle(ParticleTypes.ENCHANT, x, pos.getY() + 0.5, z,
                     (random.nextDouble() - 0.5) * 4, (random.nextDouble() - 0.5) * 4, (random.nextDouble() - 0.5) * 4);
         }
-        if (random.nextInt(3) == 0) {
+        if(random.nextInt(3) == 0) {
             level.addParticle(ParticleTypes.END_ROD, x, pos.getY() + 1.05, z, 0, 0.05, 0);
             level.addParticle(ParticleTypes.END_ROD, x, pos.getY() - 0.05, z, 0, -0.05, 0);
         }
@@ -88,5 +80,11 @@ public class BedrockBreakerBlock extends Block {
     @Override
     public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltipComponents, TooltipFlag tooltipFlag) {
         tooltipComponents.add(Component.translatable("tooltip.examplemod.bedrock_breaker").withStyle(ChatFormatting.GRAY));
+        super.appendHoverText(stack, context, tooltipComponents, tooltipFlag);
+    }
+
+    @Override
+    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
+        builder.add(CHARGING);
     }
 }

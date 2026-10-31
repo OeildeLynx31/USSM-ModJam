@@ -6,9 +6,10 @@ import org.jetbrains.annotations.Nullable;
 
 public class UndervoidEffects extends DimensionSpecialEffects {
     public UndervoidEffects() {
-        super(Float.NaN, false, SkyType.NONE, false, false);
+        super(Float.NaN, false, SkyType.NONE, false, false); // NaN = pas de nuages
     }
 
+    // la couleur du brouillard est geree dans UndervoidFog, on y touche pas ici
     @Override
     public Vec3 getBrightnessDependentFogColor(Vec3 fogColor, float brightness) {
         return fogColor;

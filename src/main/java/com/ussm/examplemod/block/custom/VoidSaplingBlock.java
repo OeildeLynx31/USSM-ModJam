@@ -15,16 +15,18 @@ public class VoidSaplingBlock extends SaplingBlock {
         super(treeGrower, properties);
     }
 
-    // les arbres du vide poussent que dans l'entre-monde
     @Override
     public void advanceTree(ServerLevel level, BlockPos pos, BlockState state, RandomSource random) {
-        if (level.dimension().equals(ModDimensions.UNDERVOID_DIM_LEVEL_KEY)) {
+        if (level.dimension() == ModDimensions.UNDERVOID_DIM_LEVEL_KEY) {
             super.advanceTree(level, pos, state, random);
         }
     }
 
     @Override
     public boolean isValidBonemealTarget(LevelReader level, BlockPos pos, BlockState state) {
-        return level instanceof Level realLevel && realLevel.dimension().equals(ModDimensions.UNDERVOID_DIM_LEVEL_KEY);
+        if (level instanceof Level lvl) {
+            return lvl.dimension() == ModDimensions.UNDERVOID_DIM_LEVEL_KEY;
+        }
+        return false; // pas sensé arriver
     }
 }

@@ -15,6 +15,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.alchemy.PotionContents;
+import net.minecraft.world.item.alchemy.Potions;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
@@ -24,41 +25,44 @@ import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 
 @EventBusSubscriber(modid = ExampleMod.MODID)
 public class SanityEvents {
+
     @SubscribeEvent
     public static void onPlayerTick(PlayerTickEvent.Post event) {
-        if (event.getEntity() instanceof ServerPlayer player && player.isAlive()
-                && (player.tickCount + player.getId()) % 20 == 0) {
-            Sanity.tick(player);
+        if (event.getEntity() instanceof ServerPlayer player && player.isAlive()) {
+            if ((player.tickCount + player.getId()) % 20 == 0) {
+                Sanity.tick(player);
+            }
         }
     }
 
     @SubscribeEvent
     public static void onChangedDimension(PlayerEvent.PlayerChangedDimensionEvent event) {
-        if(event.getTo().equals(ModDimensions.UNDERVOID_DIM_LEVEL_KEY) && event.getEntity() instanceof ServerPlayer player) {
+        if(event.getTo() == ModDimensions.UNDERVOID_DIM_LEVEL_KEY && event.getEntity() instanceof ServerPlayer player) {
             Sanity.add(player, -Config.ARRIVAL_LOSS.get().floatValue());
         }
     }
 
+    //TODO bloquer aussi les splash
     @SubscribeEvent
-    public static void onUseItemStart(LivingEntityUseItemEvent.Start event) {
-        if (!(event.getEntity() instanceof Player player) || !HazmatArmorItem.isWearingMask(player)) return;
-
-        ItemStack stack = event.getItem();
-        PotionContents contents = stack.get(DataComponents.POTION_CONTENTS);
-        if (!stack.is(Items.POTION) || contents == null) return;
-
-        // toutes les potions de santé mentale, meme les instantanées
-        for (MobEffectInstance effect : contents.getAllEffects()) {
-            if (effect.is(ModEffects.SERENITY) || effect.is(ModEffects.CLARITY) || effect.is(ModEffects.RESTORATION)
-                    || effect.is(ModEffects.DISTRESS) || effect.is(ModEffects.EROSION)) {
-                event.setCanceled(true);
-                if (player.level().isClientSide()) {
-                    player.displayClientMessage(
-                            Component.translatable("message.examplemod.mask_blocks_drinking"),
-                            true
-                    );
+    public static void onDrinkPotion(LivingEntityUseItemEvent.Start event) {
+        if (event.getEntity() instanceof Player player && HazmatArmorItem.isWearingMask(player)) {
+            ItemStack stack = event.getItem();
+            if (stack.is(Items.POTION)) {
+                boolean blocked = false;
+                PotionContents contents = stack.getOrDefault(DataComponents.POTION_CONTENTS, PotionContents.EMPTY);
+                for (MobEffectInstance effect : contents.getAllEffects()) {
+                    if (effect.is(ModEffects.SERENITY) || effect.is(ModEffects.CLARITY) || effect.is(ModEffects.RESTORATION)
+                            || effect.is(ModEffects.DISTRESS) || effect.is(ModEffects.EROSION)) {
+                        blocked = true;
+                    }
                 }
-                return;
+
+                if (blocked) {
+                    event.setCanceled(true);
+                    if (player.level().isClientSide()) {
+                        player.displayClientMessage(Component.translatable("message.examplemod.mask_blocks_drinking"), true);
+                    }
+                }
             }
         }
     }
@@ -66,21 +70,22 @@ public class SanityEvents {
     //Commande /sanity pour debug
     @SubscribeEvent
     public static void onRegisterCommands(RegisterCommandsEvent event) {
-        event.getDispatcher().register(Commands.literal("sanity")
-                .requires(source -> source.hasPermission(2))
-                .then(Commands.literal("get")
-                        .executes(context -> {
-                            ServerPlayer player = context.getSource().getPlayerOrException();
-                            int value = Math.round(Sanity.get(player));
-                            context.getSource().sendSuccess(() -> Component.translatable("commands.examplemod.sanity.get", value), false);
-                            return value;
-                        }))
+        event.getDispatcher().register(Commands.literal("sanity").requires(source -> source.hasPermission(2))
+                .then(Commands.literal("get").executes(ctx -> {
+                    ServerPlayer player = ctx.getSource().getPlayerOrException();
+                    int sanity = Math.round(Sanity.get(player));
+                    ctx.getSource().sendSuccess(() -> Component.translatable("commands.examplemod.sanity.get", sanity), false);
+                    return sanity;
+                }))
+//                .then(Commands.literal("reset").executes(ctx -> {
+//                    Sanity.set(ctx.getSource().getPlayerOrException(), Sanity.MAX);
+//                    return 1;
+//                }))
                 .then(Commands.literal("set")
                         .then(Commands.argument("value", FloatArgumentType.floatArg(0f, Sanity.MAX))
                                 .executes(context -> {
-                                    ServerPlayer player = context.getSource().getPlayerOrException();
                                     float value = FloatArgumentType.getFloat(context, "value");
-                                    Sanity.set(player, value);
+                                    Sanity.set(context.getSource().getPlayerOrException(), value);
                                     context.getSource().sendSuccess(() -> Component.translatable("commands.examplemod.sanity.set", Math.round(value)), true);
                                     return 1;
                                 }))));

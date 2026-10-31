@@ -9,17 +9,11 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.EnumSet;
 
-// quand personne est assez pres, il rejoue un enregistrement du joueur copié (sa demarche, ses sauts, sa facon de
-// regarder autour), tourné pour coller au terrain et plutot vers le joueur le plus proche
 public class MimicReplayGoal extends Goal {
-    private static final int MAX_FALL = 3;
-
     private final Mimic mimic;
-    @Nullable
     private MovementClip clip;
     private int index, stuckTicks;
     private float yawOffset;
@@ -27,7 +21,7 @@ public class MimicReplayGoal extends Goal {
 
     public MimicReplayGoal(Mimic mimic) {
         this.mimic = mimic;
-        this.setFlags(EnumSet.of(Flag.MOVE, Flag.LOOK, Flag.JUMP));
+        setFlags(EnumSet.of(Flag.MOVE, Flag.LOOK, Flag.JUMP));
     }
 
     @Override
@@ -40,12 +34,12 @@ public class MimicReplayGoal extends Goal {
             return false;
         }
         clip = mimic.pickMove();
-        if (clip == null || !chooseOrientation()) {
-            clip = null;
-            cooldown = 60 + mimic.getRandom().nextInt(60);
-            return false;
+        if (clip != null && chooseOrientation()) {
+            return true;
         }
-        return true;
+        clip = null;
+        cooldown = 60 + mimic.getRandom().nextInt(60);
+        return false;
     }
 
     @Override
@@ -82,26 +76,27 @@ public class MimicReplayGoal extends Goal {
             return;
         }
         int i = index++;
+
         float yaw = clip.yaw(i) + yawOffset;
         mimic.setYRot(yaw);
         mimic.setYHeadRot(yaw);
         mimic.setXRot(clip.pitch(i));
 
-        double[] move = rotate(clip.dx(i), clip.dz(i), yawOffset);
-        double horizontal = move[0] * move[0] + move[1] * move[1];
-        if (horizontal > 1.0E-4 && !hasGround(mimic.level(), mimic.position().add(move[0] * 4, 0, move[1] * 4))) {
-            stuckTicks = Integer.MAX_VALUE; // un trou devant, on arrete la
+        // https://fr.wikipedia.org/wiki/Matrice_de_rotation
+        double rad = yawOffset * Mth.DEG_TO_RAD;
+        double mx = clip.dx(i) * Math.cos(rad) - clip.dz(i) * Math.sin(rad);
+        double mz = clip.dx(i) * Math.sin(rad) + clip.dz(i) * Math.cos(rad);
+        double horizontal = mx * mx + mz * mz;
+        if (horizontal > 1.0E-4 && !hasGround(mimic.level(), mimic.position().add(mx * 4, 0, mz * 4))) {
+            stuckTicks = Integer.MAX_VALUE; // un peu bourrin
             return;
         }
-        Vec3 velocity = mimic.getDeltaMovement();
-        mimic.setDeltaMovement(move[0], velocity.y, move[1]);
+        mimic.setDeltaMovement(mx, mimic.getDeltaMovement().y, mz);
 
-        boolean blocked = mimic.horizontalCollision && horizontal > 1.0E-3;
-        if (clip.has(i, MovementClip.JUMP) || blocked) {
+        boolean blocked = mimic.horizontalCollision && horizontal > 0.001;
+        if (blocked) stuckTicks++;
+        if (blocked || clip.has(i, MovementClip.JUMP)) {
             mimic.getJumpControl().jump();
-        }
-        if (blocked) {
-            stuckTicks++;
         }
         mimic.setShiftKeyDown(clip.has(i, MovementClip.SNEAK));
         mimic.setSprinting(clip.has(i, MovementClip.SPRINT));
@@ -110,47 +105,47 @@ public class MimicReplayGoal extends Goal {
         }
     }
 
-    // on essaie les 4 orientations, on garde celle qui finit le plus pres du joueur sans passer dans un mur ou un trou
     private boolean chooseOrientation() {
         float base = Mth.wrapDegrees(mimic.getYRot() - clip.yaw(0));
         Player player = mimic.level().getNearestPlayer(mimic, 48);
-        int first = mimic.getRandom().nextInt(4);
-        boolean found = false;
+        int start = mimic.getRandom().nextInt(4);
         double best = Double.MAX_VALUE;
+        // on teste les 4 sens et on garde celui qui finit le plus pres du joueur
         for (int k = 0; k < 4; k++) {
-            float offset = base + 90.0F * ((first + k) % 4);
+            float offset = base + 90.0F * ((start + k) % 4);
             Vec3 end = pathEnd(offset);
-            if (end == null) {
-                continue;
+            if (end == null) continue;
+
+            if (player == null) { // personne autour
+                yawOffset = offset;
+                return true;
             }
-            double distance = player == null ? 0 : end.distanceToSqr(player.position());
-            if (!found || distance < best) {
-                found = true;
-                best = distance;
+            double dist = end.distanceToSqr(player.position());
+            if (dist < best) {
+                best = dist;
                 yawOffset = offset;
             }
-            if (player == null) {
-                break;
-            }
         }
-        return found;
+        return best != Double.MAX_VALUE;
     }
 
-    @Nullable
     private Vec3 pathEnd(float offset) {
         Level level = mimic.level();
+        double rad = offset * Mth.DEG_TO_RAD;
+        double cos = Math.cos(rad);
+        double sin = Math.sin(rad);
         double x = mimic.getX();
         double z = mimic.getZ();
         for (int i = 0; i < clip.size(); i++) {
-            double[] move = rotate(clip.dx(i), clip.dz(i), offset);
-            x += move[0];
-            z += move[1];
-            if (i % 5 == 4) {
+            double dx = clip.dx(i);
+            double dz = clip.dz(i);
+            x += dx * cos - dz * sin;
+            z += dx * sin + dz * cos;
+            if (i % 5 == 4) { // tout les 5 ticks ca suffit
                 Vec3 point = new Vec3(x, mimic.getY(), z);
                 BlockPos head = BlockPos.containing(point).above();
-                if (!level.getBlockState(head).getCollisionShape(level, head).isEmpty() || !hasGround(level, point)) {
-                    return null;
-                }
+                if (!level.getBlockState(head).getCollisionShape(level, head).isEmpty()) return null;
+                if (!hasGround(level, point)) return null;
             }
         }
         return new Vec3(x, mimic.getY(), z);
@@ -158,23 +153,12 @@ public class MimicReplayGoal extends Goal {
 
     private static boolean hasGround(Level level, Vec3 point) {
         BlockPos pos = BlockPos.containing(point);
-        for (int dy = 0; dy <= MAX_FALL; dy++) {
-            BlockPos below = pos.below(dy);
+        for (int i = 0; i <= 3; i++) {
+            BlockPos below = pos.below(i);
             BlockState state = level.getBlockState(below);
-            if (!state.getFluidState().isEmpty()) {
-                return false;
-            }
-            if (!state.getCollisionShape(level, below).isEmpty()) {
-                return true;
-            }
+            if (!state.getFluidState().isEmpty()) return false;
+            if (!state.getCollisionShape(level, below).isEmpty()) return true;
         }
         return false;
-    }
-
-    private static double[] rotate(double dx, double dz, float degrees) {
-        double rad = degrees * Mth.DEG_TO_RAD;
-        double cos = Math.cos(rad);
-        double sin = Math.sin(rad);
-        return new double[]{dx * cos - dz * sin, dx * sin + dz * cos};
     }
 }

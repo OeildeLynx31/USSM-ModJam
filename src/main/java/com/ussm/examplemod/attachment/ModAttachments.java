@@ -17,11 +17,7 @@ public class ModAttachments {
             DeferredRegister.create(NeoForgeRegistries.Keys.ATTACHMENT_TYPES, ExampleMod.MODID);
 
     public static final Supplier<AttachmentType<Float>> SANITY = ATTACHMENT_TYPES.register("sanity",
-            () -> AttachmentType.builder(() -> Sanity.MAX)
-                    .serialize(Codec.FLOAT)
-                    //.copyOnDeath()
-                    .sync((holder, player) -> holder == player, ByteBufCodecs.FLOAT)
-                    .build());
+            () -> AttachmentType.builder(() -> Sanity.MAX).serialize(Codec.FLOAT).sync((holder, to) -> holder == to, ByteBufCodecs.FLOAT).build());
 
     public static final Supplier<AttachmentType<Integer>> VOID_TICKS = ATTACHMENT_TYPES.register("void_ticks",
             () -> AttachmentType.builder(() -> 0).build());

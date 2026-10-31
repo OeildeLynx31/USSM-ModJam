@@ -36,6 +36,7 @@ public class BloomRiftBlock extends Block implements Portal {
         return SHAPE;
     }
 
+    // repris de NetherPortalBlock
     @Override
     protected void entityInside(BlockState state, Level level, BlockPos pos, Entity entity) {
         if (entity.canUsePortal(false)) {
@@ -45,8 +46,8 @@ public class BloomRiftBlock extends Block implements Portal {
 
     @Override
     public int getPortalTransitionTime(ServerLevel level, Entity entity) {
-        if (entity instanceof Player player && player.getAbilities().invulnerable) {
-            return 1;
+        if (entity instanceof Player && ((Player) entity).getAbilities().invulnerable) {
+            return 1; //direct en créatif
         }
         return 30;
     }
@@ -58,48 +59,39 @@ public class BloomRiftBlock extends Block implements Portal {
 
     @Nullable
     @Override
-    // on ressort a la surface de l'overworld, memes x et z
     public DimensionTransition getPortalDestination(ServerLevel level, Entity entity, BlockPos pos) {
-        if (!(entity instanceof ServerPlayer)) {
-            return null;
-        }
+        if (!(entity instanceof ServerPlayer)) return null;
 
         ServerLevel overworld = level.getServer().overworld();
-        overworld.getChunkAt(pos);
+        overworld.getChunkAt(pos); // faut charger le chunk avant sinon ca marche pas
         BlockPos arrival = overworld.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING, pos);
         if (arrival.getY() <= overworld.getMinBuildHeight()) {
             arrival = overworld.getSharedSpawnPos();
         }
 
-        return new DimensionTransition(overworld, arrival.getBottomCenter(), Vec3.ZERO, entity.getYRot(), entity.getXRot(),
+        return new DimensionTransition(overworld, Vec3.atBottomCenterOf(arrival), Vec3.ZERO, entity.getYRot(), entity.getXRot(),
                 DimensionTransition.PLAY_PORTAL_SOUND.then(DimensionTransition.PLACE_PORTAL_TICKET));
     }
 
     @Override
     public void animateTick(BlockState state, Level level, BlockPos pos, RandomSource random) {
         double x = pos.getX() + 0.5;
+        double y = pos.getY();
         double z = pos.getZ() + 0.5;
 
         for (int i = 0; i < 3; i++) {
             level.addParticle(ParticleTypes.REVERSE_PORTAL,
-                    x + (random.nextDouble() - 0.5) * 0.4, pos.getY() + random.nextDouble(), z + (random.nextDouble() - 0.5) * 0.4,
+                    x + (random.nextDouble() - 0.5) * 0.4, y + random.nextDouble(), z + (random.nextDouble() - 0.5) * 0.4,
                     (random.nextDouble() - 0.5) * 0.05, random.nextDouble() * 0.02, (random.nextDouble() - 0.5) * 0.05);
         }
-
         if (random.nextInt(4) == 0) {
             level.addParticle(ParticleTypes.END_ROD,
-                    x + (random.nextDouble() - 0.5) * 0.3, pos.getY() + random.nextDouble(), z + (random.nextDouble() - 0.5) * 0.3,
+                    x + (random.nextDouble() - 0.5) * 0.3, y + random.nextDouble(), z + (random.nextDouble() - 0.5) * 0.3,
                     (random.nextDouble() - 0.5) * 0.02, 0.01 + random.nextDouble() * 0.02, (random.nextDouble() - 0.5) * 0.02);
         }
 
-        // son de portail de temps en temps
         if (random.nextInt(80) == 0) {
-            level.playLocalSound(x, pos.getY() + 0.5, z, SoundEvents.PORTAL_AMBIENT, SoundSource.BLOCKS, 0.4f, 1.6f, false);
+            level.playLocalSound(x, y + 0.5, z, SoundEvents.PORTAL_AMBIENT, SoundSource.BLOCKS, 0.4f, 1.6f, false);
         }
-    }
-
-    @Override
-    public ItemStack getCloneItemStack(BlockState state, HitResult target, LevelReader level, BlockPos pos, Player player) {
-        return ItemStack.EMPTY;
     }
 }

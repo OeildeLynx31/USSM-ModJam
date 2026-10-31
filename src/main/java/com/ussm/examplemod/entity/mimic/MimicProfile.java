@@ -1,6 +1,5 @@
 package com.ussm.examplemod.entity.mimic;
 
-import com.google.common.collect.Iterables;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import net.minecraft.nbt.CompoundTag;
@@ -9,14 +8,17 @@ import net.minecraft.world.entity.HumanoidArm;
 
 import java.util.UUID;
 
-// ce qu'il faut pour ressembler a un joueur meme quand il est pas la : pseudo + la propriété "textures" (skin et cape)
 public record MimicProfile(UUID id, String name, String textures, String signature, boolean leftHanded) {
 
     public static MimicProfile of(ServerPlayer player) {
         GameProfile profile = player.getGameProfile();
-        Property property = Iterables.getFirst(profile.getProperties().get("textures"), null);
-        String textures = property == null ? "" : property.value();
-        String signature = property == null || property.signature() == null ? "" : property.signature();
+        String textures = "";
+        String signature = "";
+        for (Property p : profile.getProperties().get("textures")) {
+            textures = p.value();
+            if (p.signature() != null) signature = p.signature();
+            break;
+        }
         return new MimicProfile(profile.getId(), profile.getName(), textures, signature, player.getMainArm() == HumanoidArm.LEFT);
     }
 
@@ -29,17 +31,22 @@ public record MimicProfile(UUID id, String name, String textures, String signatu
     }
 
     public CompoundTag save() {
-        CompoundTag tag = new CompoundTag();
-        tag.putUUID("Id", id);
-        tag.putString("Name", name);
-        tag.putString("Textures", textures);
-        tag.putString("Signature", signature);
-        tag.putBoolean("LeftHanded", leftHanded);
-        return tag;
+        CompoundTag nbt = new CompoundTag();
+        nbt.putUUID("Id", id);
+        nbt.putString("Name", name);
+        nbt.putString("Textures", textures);
+        nbt.putString("Signature", signature);
+        nbt.putBoolean("LeftHanded", leftHanded);
+        return nbt;
     }
 
-    public static MimicProfile load(CompoundTag tag) {
-        return new MimicProfile(tag.getUUID("Id"), tag.getString("Name"), tag.getString("Textures"),
-                tag.getString("Signature"), tag.getBoolean("LeftHanded"));
+    public static MimicProfile load(CompoundTag nbt) {
+        return new MimicProfile(
+                nbt.getUUID("Id"),
+                nbt.getString("Name"),
+                nbt.getString("Textures"),
+                nbt.getString("Signature"),
+                nbt.getBoolean("LeftHanded")
+        );
     }
 }

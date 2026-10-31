@@ -3,6 +3,7 @@ package com.ussm.examplemod.item.custom;
 import com.ussm.examplemod.Config;
 import com.ussm.examplemod.attachment.ModAttachments;
 import com.ussm.examplemod.item.ModToolTiers;
+import com.ussm.examplemod.util.ModAdvancements;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -14,11 +15,10 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.SwordItem;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
-import com.ussm.examplemod.util.ModAdvancements;
 
 public class KatanaItem extends SwordItem {
-    public KatanaItem(Properties properties) {
-        super(ModToolTiers.KATANA, properties.attributes(SwordItem.createAttributes(ModToolTiers.KATANA, 5, -2.2f)));
+    public KatanaItem(Properties pProperties) {
+        super(ModToolTiers.KATANA, pProperties.attributes(SwordItem.createAttributes(ModToolTiers.KATANA, 5, -2.2f))); // 8 dmg en jeu, 1.8 de vitesse
     }
 
     public static boolean isKatana(ItemStack stack) {
@@ -28,7 +28,7 @@ public class KatanaItem extends SwordItem {
     @Override
     public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
-        if (hand != InteractionHand.MAIN_HAND || player.isPassenger()) {
+        if (hand == InteractionHand.OFF_HAND || player.isPassenger()) {
             return InteractionResultHolder.pass(stack);
         }
 
@@ -37,33 +37,24 @@ public class KatanaItem extends SwordItem {
             player.getCooldowns().addCooldown(this, Config.PARRY_COOLDOWN.get());
             if (!level.isClientSide()) {
                 player.setData(ModAttachments.KATANA_PARRY, level.getGameTime() + Config.PARRY_TICKS.get());
-                level.playSound(
-                        null,
-                        player.getX(),
-                        player.getY(),
-                        player.getZ(),
-                        SoundEvents.PLAYER_ATTACK_SWEEP,
-                        SoundSource.PLAYERS,
-                        0.8f,
-                        1.8f
-                );
+                level.playSound(null, player.getX(), player.getY(), player.getZ(),
+                        SoundEvents.PLAYER_ATTACK_SWEEP, SoundSource.PLAYERS, 0.8f, 1.8f);
             }
             return InteractionResultHolder.sidedSuccess(stack, level.isClientSide());
         }
 
-        Vec3 direction = player.getLookAngle();
-        // au sol si on regarde en bas on dash tout droit, sinon on rentre dans le sol
-        if (player.onGround() && direction.y < 0) {
-            direction = Vec3.directionFromRotation(0, player.getYRot());
+        Vec3 look = player.getLookAngle();
+        if (player.onGround() && look.y < 0) { // sinon on fonce dans le sol
+            look = Vec3.directionFromRotation(0, player.getYRot());
         }
         boolean dual = isKatana(player.getOffhandItem());
-        KatanaDash dash = new KatanaDash(player, direction, dual);
+
+        KatanaDash dash = new KatanaDash(player, look, dual);
         player.setData(ModAttachments.KATANA_DASH, dash);
         player.resetFallDistance();
         player.getCooldowns().addCooldown(this, dash.getCooldown());
 
         if (player instanceof ServerPlayer serverPlayer) {
-            //TODO mettre un vrai son de katana
             level.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.PLAYER_ATTACK_SWEEP, SoundSource.PLAYERS, 1f, 1.2f);
             stack.hurtAndBreak(1, player, EquipmentSlot.MAINHAND);
             if (dual) {
