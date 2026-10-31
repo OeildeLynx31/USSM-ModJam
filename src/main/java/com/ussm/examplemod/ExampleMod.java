@@ -66,6 +66,7 @@ public class ExampleMod {
                 output.accept(ModItems.VOID_BALL.get());
                 output.accept(ModItems.HEDGEHOG_SPAWN_EGG.get());
                 output.accept(ModItems.MIMIC_SPAWN_EGG.get());
+                output.accept(ModItems.SMOKE_BOSS_SPAWN_EGG.get());
                 output.accept(ModBlocks.CALM_LILY.asItem());
                 output.accept(ModBlocks.NIGHTSHADE_BLOOM.asItem());
                 output.accept(ModBlocks.ASHEN_POPPY.asItem());
