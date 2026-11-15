@@ -1,0 +1,9 @@
+{
+  "loader": "neoforge:obj",
+  "model": "the_undervoid:models/block/decor/pebbles.obj",
+  "flip_v": true,
+  "render_type": "minecraft:cutout",
+  "textures": {
+    "particle": "the_undervoid:block/decor/pebbles"
+  }
+}

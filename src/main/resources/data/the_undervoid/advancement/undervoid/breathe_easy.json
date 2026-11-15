@@ -1,0 +1,35 @@
+{
+  "parent": "the_undervoid:undervoid/root",
+  "criteria": {
+    "full_suit": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "the_undervoid:hazmat_mask"
+          },
+          {
+            "items": "the_undervoid:hazmat_suit"
+          },
+          {
+            "items": "the_undervoid:hazmat_leggings"
+          },
+          {
+            "items": "the_undervoid:hazmat_boots"
+          }
+        ]
+      }
+    }
+  },
+  "display": {
+    "icon": {
+      "id": "the_undervoid:hazmat_mask"
+    },
+    "title": {
+      "translate": "advancements.the_undervoid.undervoid.breathe_easy.title"
+    },
+    "description": {
+      "translate": "advancements.the_undervoid.undervoid.breathe_easy.description"
+    }
+  }
+}

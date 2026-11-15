@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "the_undervoid:block/decor/pale_tuft"
+    },
+    "facing=east": {
+      "model": "the_undervoid:block/decor/pale_tuft",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "the_undervoid:block/decor/pale_tuft",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "the_undervoid:block/decor/pale_tuft",
+      "y": 270
+    }
+  }
+}

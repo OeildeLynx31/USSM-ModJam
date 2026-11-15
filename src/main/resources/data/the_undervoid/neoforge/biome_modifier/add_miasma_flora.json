@@ -1,0 +1,8 @@
+{
+  "type": "neoforge:add_features",
+  "biomes": [
+    "the_undervoid:miasma"
+  ],
+  "features": "the_undervoid:miasma_flora",
+  "step": "vegetal_decoration"
+}

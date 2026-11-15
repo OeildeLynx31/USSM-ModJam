@@ -1,0 +1,32 @@
+package com.ussm.the_undervoid.block.custom;
+
+import com.ussm.the_undervoid.worldgen.dimension.ModDimensions;
+import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.RandomSource;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.block.SaplingBlock;
+import net.minecraft.world.level.block.grower.TreeGrower;
+import net.minecraft.world.level.block.state.BlockState;
+
+public class VoidSaplingBlock extends SaplingBlock {
+    public VoidSaplingBlock(TreeGrower treeGrower, Properties properties) {
+        super(treeGrower, properties);
+    }
+
+    @Override
+    public void advanceTree(ServerLevel level, BlockPos pos, BlockState state, RandomSource random) {
+        if (level.dimension() == ModDimensions.UNDERVOID_DIM_LEVEL_KEY) {
+            super.advanceTree(level, pos, state, random);
+        }
+    }
+
+    @Override
+    public boolean isValidBonemealTarget(LevelReader level, BlockPos pos, BlockState state) {
+        if (level instanceof Level lvl) {
+            return lvl.dimension() == ModDimensions.UNDERVOID_DIM_LEVEL_KEY;
+        }
+        return false; // pas sensé arriver
+    }
+}

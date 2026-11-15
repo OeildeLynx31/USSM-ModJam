@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "the_undervoid:block/decor/glimmer_cluster"
+    },
+    "facing=east": {
+      "model": "the_undervoid:block/decor/glimmer_cluster",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "the_undervoid:block/decor/glimmer_cluster",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "the_undervoid:block/decor/glimmer_cluster",
+      "y": 270
+    }
+  }
+}

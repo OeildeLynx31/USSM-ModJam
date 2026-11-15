@@ -1,0 +1,45 @@
+package com.ussm.the_undervoid.client;
+
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.ussm.the_undervoid.UnderVoidMod;
+import com.ussm.the_undervoid.entity.custom.Hedgehog;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.entity.EntityRendererProvider;
+import net.minecraft.resources.ResourceLocation;
+import software.bernie.geckolib.cache.object.BakedGeoModel;
+import software.bernie.geckolib.model.DefaultedEntityGeoModel;
+import software.bernie.geckolib.renderer.GeoEntityRenderer;
+
+public class HedgehogRenderer extends GeoEntityRenderer<Hedgehog> {
+    public HedgehogRenderer(EntityRendererProvider.Context context) {
+        super(context, new DefaultedEntityGeoModel<>(ResourceLocation.fromNamespaceAndPath(UnderVoidMod.MODID, "hedgehog")));
+        this.shadowRadius = 0.3f;
+    }
+
+    /* tuto kaupenjoe
+    @Override
+    public void render(Hedgehog entity, float entityYaw, float partialTick, PoseStack poseStack, MultiBufferSource bufferSource, int packedLight) {
+        if(entity.isBaby()) {
+            poseStack.scale(0.5f, 0.5f, 0.5f);
+        } else {
+            poseStack.scale(1f, 1f, 1f);
+        }
+
+        super.render(entity, entityYaw, partialTick, poseStack, bufferSource, packedLight);
+    }*/
+
+    @Override
+    public void scaleModelForRender(float widthScale, float heightScale, PoseStack poseStack, Hedgehog animatable, BakedGeoModel model,
+                                    boolean isReRender, float partialTick, int packedLight, int packedOverlay) {
+        float scale = animatable.isBaby() ? 0.5f : 1f;
+        super.scaleModelForRender(widthScale * scale, heightScale * scale, poseStack, animatable, model, isReRender, partialTick, packedLight, packedOverlay);
+    }
+
+    @Override
+    protected float getShadowRadius(Hedgehog entity) {
+        if (entity.isBaby()) {
+            return this.shadowRadius / 2;
+        }
+        return this.shadowRadius;
+    }
+}
