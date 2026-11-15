@@ -1,11 +1,13 @@
 package com.ussm.examplemod.entity.custom;
 
 import com.ussm.examplemod.item.ModItems;
+import com.ussm.examplemod.particle.ModParticles;
 import com.ussm.examplemod.sanity.Sanity;
 import net.minecraft.network.chat.Component;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerBossEvent;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.AnimationState;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.BossEvent;
@@ -35,9 +37,9 @@ import net.minecraft.world.effect.MobEffects;
 public class SmokeBossEntity extends Monster {
     private static final int DASH_WINDUP_TICKS = 15;      // 0,75 s de préparation
     private static final int DASH_DURATION_TICKS = 9;
-    private static final double DASH_SPEED = 1.5;
+    private static final double DASH_SPEED = 1.8;
     private static final float DASH_DAMAGE = 10.0f;
-    private static final int DASH_COOLDOWN = 140;         // 7 s
+    private static final int DASH_COOLDOWN = 100;         // 7 s
     private static final int DASH_COOLDOWN_PHASE_2 = 80;  // 4 s sous 50 % de vie
     private static final double AURA_RANGE = 24.0;
     private static final float AURA_SANITY_LOSS = 1.5f;   // par seconde
@@ -48,7 +50,7 @@ public class SmokeBossEntity extends Monster {
     private static final double TELEPORT_MAX_LANDING = 7.0;
 
     private final ServerBossEvent bossEvent = new ServerBossEvent(
-            Component.translatable("entity.examplemod.smoke_boss"),
+            Component.translatable("entity.examplemod.erena"),
             BossEvent.BossBarColor.RED, BossEvent.BossBarOverlay.PROGRESS);
 
     private int dashCooldown = 100;
@@ -59,8 +61,12 @@ public class SmokeBossEntity extends Monster {
     private Vec3 dashDir = Vec3.ZERO;
     private boolean swingOffhandNext;
     private static final float SMOKE_SCALE = 1.2f;
-    private static final int SMOKE_PER_TICK = 30;
+    private static final int SMOKE_PER_TICK = 3;
     private static final float STRENGTH_SANITY_THRESHOLD = 40.0f; // = 40 % de la santé mentale
+    public final AnimationState attack1State = new AnimationState();
+    public final AnimationState attack2State = new AnimationState();
+    public final AnimationState attack3State = new AnimationState();
+    private int attackAnimTimeout;
 
 
     public SmokeBossEntity(EntityType<? extends Monster> type, Level level) {
@@ -80,7 +86,7 @@ public class SmokeBossEntity extends Monster {
         return Monster.createMonsterAttributes()
                 .add(Attributes.MAX_HEALTH, 300.0)
                 .add(Attributes.ATTACK_DAMAGE, 7.0)
-                .add(Attributes.MOVEMENT_SPEED, 0.3)
+                .add(Attributes.MOVEMENT_SPEED, 0.4)
                 .add(Attributes.FOLLOW_RANGE, 40.0)
                 .add(Attributes.KNOCKBACK_RESISTANCE, 0.7)
                 .add(Attributes.ARMOR, 4.0);
@@ -133,7 +139,7 @@ public class SmokeBossEntity extends Monster {
             teleportCooldown--;
         }
 
-        // 1) Le dash en cours
+        // Le dash en cours
         if (dashTicks > 0) {
             dashTicks--;
             setDeltaMovement(dashDir.x * DASH_SPEED, getDeltaMovement().y, dashDir.z * DASH_SPEED);
@@ -156,12 +162,12 @@ public class SmokeBossEntity extends Monster {
             return;
         }
 
-        // 2) La préparation du dash : il s'immobilise et la fumée se densifie
+        // La préparation du dash il s'immobilise et la fumée devient genre encore plus bien
         if (windup > 0) {
             windup--;
             getNavigation().stop();
             if (level() instanceof ServerLevel serverLevel) {
-                serverLevel.sendParticles(ParticleTypes.SMOKE, getX(), getY() + 1.0, getZ(),
+                serverLevel.sendParticles(ModParticles.BLACK_SMOKE.get(), getX(), getY() + 1.0, getZ(),
                         12, 0.5, 0.8, 0.5, 0.02);
             }
             if (target != null) {
@@ -179,7 +185,7 @@ public class SmokeBossEntity extends Monster {
             }
             return;
         }
-// 2b) Téléportation : seulement s'il a une cible (donc s'il est « énervé »)
+// Téléportation : seulement s'il a une cible (donc s'il est vener)
         if (target != null && teleportCooldown == 0) {
             double distance = distanceTo(target);
             boolean farAway = distance > TELEPORT_TRIGGER_DISTANCE;
@@ -189,7 +195,7 @@ public class SmokeBossEntity extends Monster {
                 return;
             }
         }
-        // 3) Décision : lancer un dash
+        // Décision lancer un dash
         if (target != null && dashCooldown == 0) {
             double distance = distanceTo(target);
             if (distance >= 5.0 && distance <= 18.0 && hasLineOfSight(target)) {
@@ -198,14 +204,20 @@ public class SmokeBossEntity extends Monster {
         }
     }
 
-    // Les deux katanas frappent à tour de rôle
     @Override
     public void swing(InteractionHand hand, boolean updateSelf) {
-        swingOffhandNext = !swingOffhandNext;
-        super.swing(swingOffhandNext ? InteractionHand.OFF_HAND : InteractionHand.MAIN_HAND, updateSelf);
+        super.swing(hand, updateSelf);
+        if (level().isClientSide()) {
+            attack1State.stop(); attack2State.stop(); attack3State.stop();
+            switch (random.nextInt(3)) {
+                case 0 -> { attack1State.start(tickCount); attackAnimTimeout = 20; }
+                case 1 -> { attack2State.start(tickCount); attackAnimTimeout = 33; }
+                default -> { attack3State.start(tickCount); attackAnimTimeout = 20; }
+            }
+        }
     }
 
-    // Drops : le réceptacle et un fragment de lame
+    // Drops
     @Override
     protected void dropCustomDeathLoot(ServerLevel level, DamageSource source, boolean recentlyHit) {
         super.dropCustomDeathLoot(level, source, recentlyHit);
@@ -234,6 +246,9 @@ public class SmokeBossEntity extends Monster {
     public void aiStep() {
         super.aiStep();
         if (level().isClientSide()) {
+            if (attackAnimTimeout > 0 && --attackAnimTimeout == 0) {
+                attack1State.stop(); attack2State.stop(); attack3State.stop();
+            }
             spawnSmokeBody();
         }
     }
@@ -273,10 +288,9 @@ public class SmokeBossEntity extends Monster {
             lx *= SMOKE_SCALE;
             ly *= SMOKE_SCALE;
             lz *= SMOKE_SCALE;
-            // Rotation selon l'orientation du corps
             double x = getX() + lx * cos - lz * sin;
             double z = getZ() + lx * sin + lz * cos;
-            level().addParticle(random.nextInt(3) == 0 ? ParticleTypes.SMOKE : ParticleTypes.LARGE_SMOKE,
+            level().addParticle(random.nextInt(3) == 0 ? ModParticles.BLACK_SMOKE.get() : ModParticles.BLACK_SMOKE.get(),
                     x, getY() + ly, z, 0.0, 0.01, 0.0);
         }
     }
@@ -293,10 +307,9 @@ public class SmokeBossEntity extends Monster {
             double fromY = getY();
             double fromZ = getZ();
 
-            // false = pas de particules violettes d'Enderman
             if (randomTeleport(x, y, z, false)) {
                 if (Math.abs(getY() - target.getY()) > 4.0) {
-                    // Trop haut ou trop bas par rapport au joueur : on annule et on réessaie
+                    // Trop haut ou trop bas par rapport au joueur : annule et réessaie
                     teleportTo(fromX, fromY, fromZ);
                     continue;
                 }
@@ -314,8 +327,8 @@ public class SmokeBossEntity extends Monster {
 
     private void smokeBurst(double x, double y, double z) {
         if (level() instanceof ServerLevel serverLevel) {
-            serverLevel.sendParticles(ParticleTypes.LARGE_SMOKE, x, y + 1.2, z, 60, 0.5, 1.0, 0.5, 0.05);
-            serverLevel.sendParticles(ParticleTypes.SMOKE, x, y + 1.2, z, 40, 0.5, 1.0, 0.5, 0.05);
+            serverLevel.sendParticles(ModParticles.BLACK_SMOKE.get(), x, y + 1.2, z, 60, 0.5, 1.0, 0.5, 0.05);
+            serverLevel.sendParticles(ModParticles.BLACK_SMOKE.get(), x, y + 1.2, z, 40, 0.5, 1.0, 0.5, 0.05);
         }
     }
     @Override

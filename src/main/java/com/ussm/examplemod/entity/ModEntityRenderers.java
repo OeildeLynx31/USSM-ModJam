@@ -1,13 +1,15 @@
 package com.ussm.examplemod.entity;
 
 import com.ussm.examplemod.ExampleMod;
+import com.ussm.examplemod.client.EneraRenderer;
+import com.ussm.examplemod.client.model.EneraModel;
 import com.ussm.examplemod.entity.ModEntities;
 import com.ussm.examplemod.client.HerobrineRenderer;
 import net.minecraft.client.renderer.entity.ThrownItemRenderer;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
-import com.ussm.examplemod.client.SmokeBossRenderer;
 import net.neoforged.fml.common.EventBusSubscriber;
+import com.ussm.examplemod.client.EneraRenderer;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 
 @EventBusSubscriber(
@@ -20,6 +22,11 @@ public class ModEntityRenderers {
     public static void registerRenderers(EntityRenderersEvent.RegisterRenderers event) {
         event.registerEntityRenderer(ModEntities.VOID_BALL.get(), ThrownItemRenderer::new);
         event.registerEntityRenderer(ModEntities.HEROBRINE.get(), HerobrineRenderer::new);
-        event.registerEntityRenderer(ModEntities.SMOKE_BOSS.get(), SmokeBossRenderer::new);
+        event.registerEntityRenderer(ModEntities.SMOKE_BOSS.get(), EneraRenderer::new);
+
+    }
+    @SubscribeEvent
+    public static void registerLayers(EntityRenderersEvent.RegisterLayerDefinitions event) {
+        event.registerLayerDefinition(EneraModel.LAYER_LOCATION, EneraModel::createBodyLayer);
     }
 }

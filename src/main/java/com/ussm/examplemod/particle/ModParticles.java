@@ -8,12 +8,17 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
+import java.util.function.Supplier;
+
 public class ModParticles {
     public static final DeferredRegister<ParticleType<?>> PARTICLE_TYPES =
             DeferredRegister.create(BuiltInRegistries.PARTICLE_TYPE, ExampleMod.MODID);
 
     public static final DeferredHolder<ParticleType<?>, SimpleParticleType> MIASMA =
             PARTICLE_TYPES.register("miasma", () -> new SimpleParticleType(false));
+
+    public static final Supplier<SimpleParticleType> BLACK_SMOKE =
+            PARTICLE_TYPES.register("black_smoke", () -> new SimpleParticleType(false));
 
     public static final DeferredHolder<ParticleType<?>, SimpleParticleType> FALLING_VOID_LEAF =
             PARTICLE_TYPES.register("falling_void_leaf", () -> new SimpleParticleType(false));

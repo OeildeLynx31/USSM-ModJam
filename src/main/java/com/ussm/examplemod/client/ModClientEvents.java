@@ -78,6 +78,7 @@ public class ModClientEvents {
     public static void registerParticleFactories(RegisterParticleProvidersEvent event) {
         event.registerSpriteSet(ModParticles.MIASMA.get(), MiasmaParticle.Provider::new);
         event.registerSpriteSet(ModParticles.FALLING_VOID_LEAF.get(), FallingVoidLeafParticle.Provider::new);
+        event.registerSpriteSet(ModParticles.BLACK_SMOKE.get(), BlackSmokeParticleProvider::new);
     }
 
     @SubscribeEvent
