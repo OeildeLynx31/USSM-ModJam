@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "the_undervoid:block/decor/venom_dart_flower"
+    },
+    "facing=east": {
+      "model": "the_undervoid:block/decor/venom_dart_flower",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "the_undervoid:block/decor/venom_dart_flower",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "the_undervoid:block/decor/venom_dart_flower",
+      "y": 270
+    }
+  }
+}

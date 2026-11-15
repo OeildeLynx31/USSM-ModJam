@@ -1,0 +1,84 @@
+{
+  "type": "the_undervoid:undervoid_type",
+  "generator": {
+    "type": "minecraft:noise",
+    "biome_source": {
+      "type": "minecraft:multi_noise",
+      "biomes": [
+        {
+          "biome": "the_undervoid:gloom",
+          "parameters": {
+            "continentalness": 0.0,
+            "depth": [
+              -1.0,
+              0.25
+            ],
+            "erosion": 0.0,
+            "humidity": [
+              -1.0,
+              0.35
+            ],
+            "offset": 0.0,
+            "temperature": 0.0,
+            "weirdness": 0.0
+          }
+        },
+        {
+          "biome": "the_undervoid:gloom",
+          "parameters": {
+            "continentalness": 0.0,
+            "depth": [
+              0.02,
+              0.25
+            ],
+            "erosion": 0.0,
+            "humidity": [
+              0.35,
+              1.0
+            ],
+            "offset": 0.0,
+            "temperature": 0.0,
+            "weirdness": 0.0
+          }
+        },
+        {
+          "biome": "the_undervoid:miasma",
+          "parameters": {
+            "continentalness": 0.0,
+            "depth": [
+              -1.0,
+              0.02
+            ],
+            "erosion": 0.0,
+            "humidity": [
+              0.35,
+              1.0
+            ],
+            "offset": 0.0,
+            "temperature": 0.0,
+            "weirdness": 0.0
+          }
+        },
+        {
+          "biome": "the_undervoid:bloom",
+          "parameters": {
+            "continentalness": 0.0,
+            "depth": [
+              0.25,
+              1.0
+            ],
+            "erosion": 0.0,
+            "humidity": [
+              -1.0,
+              1.0
+            ],
+            "offset": 0.0,
+            "temperature": 0.0,
+            "weirdness": 0.0
+          }
+        }
+      ]
+    },
+    "settings": "the_undervoid:undervoid"
+  }
+}

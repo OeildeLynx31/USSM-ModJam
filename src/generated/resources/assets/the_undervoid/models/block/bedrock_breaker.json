@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/cube_column",
+  "textures": {
+    "end": "the_undervoid:block/bedrock_breaker_end",
+    "side": "the_undervoid:block/bedrock_breaker_side"
+  }
+}

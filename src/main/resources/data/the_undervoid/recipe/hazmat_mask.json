@@ -1,0 +1,26 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "F": {
+      "item": "the_undervoid:hazmat_fabric"
+    },
+    "G": {
+      "item": "minecraft:glass_pane"
+    },
+    "I": {
+      "item": "minecraft:iron_ingot"
+    },
+    "C": {
+      "item": "minecraft:charcoal"
+    }
+  },
+  "pattern": [
+    "FGF",
+    "ICI"
+  ],
+  "result": {
+    "count": 1,
+    "id": "the_undervoid:hazmat_mask"
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "F": {
+      "item": "the_undervoid:hazmat_fabric"
+    }
+  },
+  "pattern": [
+    "F F",
+    "F F"
+  ],
+  "result": {
+    "count": 1,
+    "id": "the_undervoid:hazmat_boots"
+  }
+}

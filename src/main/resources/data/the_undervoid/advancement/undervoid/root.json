@@ -1,0 +1,22 @@
+{
+  "criteria": {
+    "entered_undervoid": {
+      "trigger": "minecraft:changed_dimension",
+      "conditions": {
+        "to": "the_undervoid:undervoid"
+      }
+    }
+  },
+  "display": {
+    "icon": {
+      "id": "the_undervoid:void_stone"
+    },
+    "title": {
+      "translate": "advancements.the_undervoid.undervoid.root.title"
+    },
+    "description": {
+      "translate": "advancements.the_undervoid.undervoid.root.description"
+    },
+    "background": "the_undervoid:textures/block/void_stone.png"
+  }
+}

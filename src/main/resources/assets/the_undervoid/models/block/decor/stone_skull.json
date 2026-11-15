@@ -1,0 +1,9 @@
+{
+  "loader": "neoforge:obj",
+  "model": "the_undervoid:models/block/decor/stone_skull.obj",
+  "flip_v": true,
+  "render_type": "minecraft:cutout",
+  "textures": {
+    "particle": "the_undervoid:block/decor/stone_skull"
+  }
+}

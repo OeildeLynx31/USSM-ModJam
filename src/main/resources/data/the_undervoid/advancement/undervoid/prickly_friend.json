@@ -1,0 +1,19 @@
+{
+  "parent": "the_undervoid:undervoid/root",
+  "criteria": {
+    "petted_hedgehog": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "display": {
+    "icon": {
+      "id": "the_undervoid:hedgehog_spawn_egg"
+    },
+    "title": {
+      "translate": "advancements.the_undervoid.undervoid.prickly_friend.title"
+    },
+    "description": {
+      "translate": "advancements.the_undervoid.undervoid.prickly_friend.description"
+    }
+  }
+}

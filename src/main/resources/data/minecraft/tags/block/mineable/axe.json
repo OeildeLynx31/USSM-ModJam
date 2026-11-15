@@ -1,14 +1,14 @@
 {
   "replace": false,
   "values": [
-    "examplemod:void_stairs",
-    "examplemod:void_slab",
-    "examplemod:void_fence",
-    "examplemod:void_fence_gate",
-    "examplemod:void_door",
-    "examplemod:void_trapdoor",
-    "examplemod:void_button",
-    "examplemod:void_pressure_plate",
-    "examplemod:eye_nest"
+    "the_undervoid:void_stairs",
+    "the_undervoid:void_slab",
+    "the_undervoid:void_fence",
+    "the_undervoid:void_fence_gate",
+    "the_undervoid:void_door",
+    "the_undervoid:void_trapdoor",
+    "the_undervoid:void_button",
+    "the_undervoid:void_pressure_plate",
+    "the_undervoid:eye_nest"
   ]
 }

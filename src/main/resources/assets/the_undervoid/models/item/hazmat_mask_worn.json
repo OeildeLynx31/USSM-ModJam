@@ -1,0 +1,23 @@
+{
+  "loader": "neoforge:obj",
+  "model": "the_undervoid:models/item/hazmat_mask_worn.obj",
+  "flip_v": true,
+  "render_type": "minecraft:cutout",
+  "textures": {
+    "particle": "the_undervoid:item/hazmat_mask_worn"
+  },
+  "display": {
+    "head": {
+      "translation": [
+        0,
+        6.75,
+        -5
+      ],
+      "scale": [
+        1.7,
+        1.7,
+        1.7
+      ]
+    }
+  }
+}
