@@ -23,14 +23,16 @@ import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 
 @EventBusSubscriber(modid = UnderVoidMod.MODID)
 public class HerobrineEvents {
-    private static final String HAUNTED_KEY = "the_undervoid_herobrine_haunted";
-    private static final String NEXT_KEY = "the_undervoid_herobrine_next";
+    private static final String HAUNTED_KEY = "examplemod_herobrine_haunted";
+    private static final String NEXT_KEY = "examplemod_herobrine_next";
 
     private static final int CHECK_INTERVAL = 200;
-    private static final float CHANCE = 1.0f / 120.0f;
-    private static final long COOLDOWN = 12000L;
+    private static final float CHANCE = 1.0f / 240.0f;
+    private static final long COOLDOWN = 36000L;
+    private static final long GLOBAL_COOLDOWN = 24000L;
     private static final double MIN_DISTANCE = 28.0;
     private static final double MAX_DISTANCE = 40.0;
+    private static long globalNext = 0L;  // prochain moment autorisé pour tout le serv
 
     @SubscribeEvent
     public static void onPlayerTick(PlayerTickEvent.Post event) {
@@ -58,7 +60,7 @@ public class HerobrineEvents {
         }
 
         long now = level.getGameTime();
-        if (now < data.getLong(NEXT_KEY)) {
+        if (now < data.getLong(NEXT_KEY) || now < globalNext) {
             return;
         }
         if (level.random.nextFloat() >= CHANCE) {
@@ -66,10 +68,11 @@ public class HerobrineEvents {
         }
         if (spawnNear(player)) {
             data.putLong(NEXT_KEY, now + COOLDOWN);
+            globalNext = now + GLOBAL_COOLDOWN;
         }
     }
 
-    // Marque le joueur dès son arrivée dans l'Undervoid
+    // hante le joueur dès son arrivée dans l'Undervoid
     @SubscribeEvent
     public static void onChangedDimension(PlayerEvent.PlayerChangedDimensionEvent event) {
         if (event.getTo().equals(ModDimensions.UNDERVOID_DIM_LEVEL_KEY)
@@ -107,7 +110,8 @@ public class HerobrineEvents {
                 .then(Commands.literal("haunt").executes(context -> {
                     ServerPlayer player = context.getSource().getPlayerOrException();
                     player.getPersistentData().putBoolean(HAUNTED_KEY, true);
-                    context.getSource().sendSuccess(() -> Component.literal("Joueur hanté."), false);
+                    context.getSource().sendSuccess(() -> Component.literal(
+                            "Joueur hanté. Herobrine risque d'apparaître près d ce joueur."), false);
                     return 1;
                 }))
                 .then(Commands.literal("debug").executes(context -> {

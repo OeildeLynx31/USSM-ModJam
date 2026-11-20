@@ -38,6 +38,11 @@ public class ModAttachments {
             () -> AttachmentType.builder(() -> 0L).build()
     );
 
+    public static final Supplier<AttachmentType<Long>> KATANA_UP_DASH = ATTACHMENT_TYPES.register(
+            "katana_up_dash",
+            () -> AttachmentType.builder(() -> 0L).build()
+    );
+
     public static void register(IEventBus eventBus) {
         ATTACHMENT_TYPES.register(eventBus);
     }

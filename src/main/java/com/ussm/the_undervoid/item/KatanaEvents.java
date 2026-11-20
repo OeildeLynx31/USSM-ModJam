@@ -40,6 +40,13 @@ public class KatanaEvents {
     public static void onPlayerTickPre(PlayerTickEvent.Pre event) {
         Player player = event.getEntity();
         //if(!player.level().isClientSide()) {
+        long upDash = player.getData(ModAttachments.KATANA_UP_DASH);
+
+        //pour qu'on puisse pas fly avec le katana
+        if (upDash != 0L && player.level().getGameTime() > upDash + 3
+                && (player.onGround() || player.isInLiquid() || player.onClimbable() || player.getAbilities().flying)) {
+            player.setData(ModAttachments.KATANA_UP_DASH, 0L);}
+
         if(player.isLocalPlayer()) {
             KatanaDash dash = player.getExistingDataOrNull(ModAttachments.KATANA_DASH);
             if(dash != null && !dash.tickMovement(player)) {
