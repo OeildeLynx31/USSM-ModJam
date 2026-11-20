@@ -7,6 +7,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerBossEvent;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.AnimationState;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
@@ -75,6 +76,7 @@ public class SmokeBossEntity extends Monster {
         setPersistenceRequired();
         if (!level.isClientSide()) {
             // Un katana dans chaque main, qui ne tombent jamais
+            // en gros deux katanas pour plus de degats etc mais sur le model y'en a qu'un
             setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(ModItems.KATANA.get()));
             setItemSlot(EquipmentSlot.OFFHAND, new ItemStack(ModItems.KATANA.get()));
             setDropChance(EquipmentSlot.MAINHAND, 0.0f);
@@ -142,7 +144,8 @@ public class SmokeBossEntity extends Monster {
         // Le dash en cours
         if (dashTicks > 0) {
             dashTicks--;
-            setDeltaMovement(dashDir.x * DASH_SPEED, getDeltaMovement().y, dashDir.z * DASH_SPEED);
+            setDeltaMovement(dashDir.scale(DASH_SPEED));
+            fallDistance = 0.0f;
             hasImpulse = true;
             if (!dashHit) {
                 for (Player player : level().getEntitiesOfClass(Player.class, getBoundingBox().inflate(0.8))) {
@@ -157,6 +160,8 @@ public class SmokeBossEntity extends Monster {
                 }
             }
             if (dashTicks == 0) {
+                setNoGravity(false);
+                setDeltaMovement(getDeltaMovement().multiply(0.2, 0.0, 0.2));
                 dashCooldown = phase2 ? DASH_COOLDOWN_PHASE_2 : DASH_COOLDOWN;
             }
             return;
@@ -174,12 +179,14 @@ public class SmokeBossEntity extends Monster {
                 getLookControl().setLookAt(target, 30.0f, 30.0f);
             }
             if (windup == 0 && target != null) {
-                Vec3 delta = target.position().subtract(position());
-                Vec3 flat = new Vec3(delta.x, 0.0, delta.z);
-                if (flat.lengthSqr() > 0.0001) {
-                    dashDir = flat.normalize();
+                Vec3 aim = target.position().add(0.0, target.getBbHeight() * 0.5, 0.0);
+                Vec3 delta = aim.subtract(position().add(0.0, getBbHeight() * 0.5, 0.0));
+                if (delta.lengthSqr() > 0.0001) {
+                    Vec3 dir = delta.normalize();
+                    dashDir = new Vec3(dir.x, Mth.clamp(dir.y, -0.7, 0.7), dir.z).normalize();
                     dashTicks = DASH_DURATION_TICKS;
                     dashHit = false;
+                    setNoGravity(true);
                     playSound(SoundEvents.PHANTOM_SWOOP, 1.5f, 0.7f);
                 }
             }
@@ -290,7 +297,7 @@ public class SmokeBossEntity extends Monster {
             lz *= SMOKE_SCALE;
             double x = getX() + lx * cos - lz * sin;
             double z = getZ() + lx * sin + lz * cos;
-            level().addParticle(random.nextInt(3) == 0 ? ModParticles.BLACK_SMOKE.get() : ModParticles.BLACK_SMOKE.get(),
+            level().addParticle(ModParticles.BLACK_SMOKE.get(),
                     x, getY() + ly, z, 0.0, 0.01, 0.0);
         }
     }
@@ -308,11 +315,11 @@ public class SmokeBossEntity extends Monster {
             double fromZ = getZ();
 
             if (randomTeleport(x, y, z, false)) {
-                if (Math.abs(getY() - target.getY()) > 4.0) {
-                    // Trop haut ou trop bas par rapport au joueur : annule et réessaie
+                if (Math.abs(getY() - target.getY()) > 10.0) {
                     teleportTo(fromX, fromY, fromZ);
                     continue;
                 }
+
                 smokeBurst(fromX, fromY, fromZ);
                 smokeBurst(getX(), getY(), getZ());
                 level().playSound(null, fromX, fromY, fromZ, SoundEvents.ENDERMAN_TELEPORT,

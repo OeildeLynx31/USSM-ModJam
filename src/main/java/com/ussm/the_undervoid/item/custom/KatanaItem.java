@@ -42,7 +42,9 @@ public class KatanaItem extends SwordItem {
             }
             return InteractionResultHolder.sidedSuccess(stack, level.isClientSide());
         }
-
+        if (player.getData(ModAttachments.KATANA_UP_DASH) != 0L) {
+            return InteractionResultHolder.fail(stack);
+        }
         Vec3 look = player.getLookAngle();
         if (player.onGround() && look.y < 0) { // sinon on fonce dans le sol
             look = Vec3.directionFromRotation(0, player.getYRot());
@@ -51,6 +53,9 @@ public class KatanaItem extends SwordItem {
 
         KatanaDash dash = new KatanaDash(player, look, dual);
         player.setData(ModAttachments.KATANA_DASH, dash);
+        if (look.y > 0.1) {
+            player.setData(ModAttachments.KATANA_UP_DASH, level.getGameTime() + 1);
+        }
         player.resetFallDistance();
         player.getCooldowns().addCooldown(this, dash.getCooldown());
 
