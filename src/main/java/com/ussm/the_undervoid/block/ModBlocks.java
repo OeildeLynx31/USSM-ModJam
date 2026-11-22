@@ -28,6 +28,10 @@ public class ModBlocks {
     public static final DeferredRegister.Blocks BLOCKS =
             DeferredRegister.createBlocks(UnderVoidMod.MODID);
 
+    public static final DeferredBlock<Block> SANITY_TOTEM = registerBlock("sanity_totem",
+            () -> new SanityTotemBlock(BlockBehaviour.Properties.of().strength(3f, 6f)
+                    .sound(SoundType.DEEPSLATE).noOcclusion().lightLevel(state -> 7)));
+
     public static final DeferredBlock<Block> VOID_STONE = registerBlock("void_stone",
             () -> new VoidStone(BlockBehaviour.Properties.of().strength(1.5f)
                     .sound(SoundType.STONE)));

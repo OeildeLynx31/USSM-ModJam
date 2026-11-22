@@ -6,6 +6,9 @@ public class Config {
     public static final ModConfigSpec SERVER_SPEC;
     public static final ModConfigSpec CLIENT_SPEC;
 
+    public static final ModConfigSpec.DoubleValue SANITY_TOTEM_GAIN;
+    public static final ModConfigSpec.IntValue SANITY_TOTEM_COOLDOWN;
+
     public static final ModConfigSpec.IntValue VOID_SURVIVAL_TICKS;
     public static final ModConfigSpec.IntValue VOID_GOLDEN_APPLES;
     public static final ModConfigSpec.DoubleValue VOID_APPLE_DAMAGE;
@@ -111,6 +114,11 @@ public class Config {
         MIASMA_SANITY_LOSS = server.defineInRange("miasmaSanityLoss", 3.0, 0.0, 100.0);
         MIASMA_DAMAGE = server.defineInRange("miasmaDamage", 1.0, 0.0, 20.0);
         MIASMA_DAMAGE_SECONDS = server.defineInRange("miasmaDamageSeconds", 3, 1, 60);
+        server.pop();
+
+        server.push("sanityTotem");
+        SANITY_TOTEM_GAIN = server.defineInRange("sanityTotemGain", 30.0, 0.0, 100.0);
+        SANITY_TOTEM_COOLDOWN = server.defineInRange("sanityTotemCooldownSeconds", 120, 0, 3600);
         server.pop();
 
         SERVER_SPEC = server.build();

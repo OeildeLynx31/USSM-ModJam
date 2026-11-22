@@ -49,6 +49,7 @@ public class ModBlockLootTableProvider extends BlockLootSubProvider {
         dropSelf(ModBlocks.SPORETHORN.get());
         add(ModBlocks.DIRTY_VOID_STONE.get(), block -> createSingleItemTableWithSilkTouch(block, ModBlocks.VOID_STONE.get()));
         dropSelf(ModBlocks.BEDROCK_BREAKER.get());
+        dropSelf(ModBlocks.SANITY_TOTEM.get());
         this.add(ModBlocks.VOID_MATTER_ORE.get(),
                 block -> createOreDrops(
                         ModBlocks.VOID_MATTER_ORE.get(),
