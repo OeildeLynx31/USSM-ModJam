@@ -117,17 +117,18 @@ public class KatanaDash {
             Vec3 c = target.getBoundingBox().getCenter();
             double d = Mth.clamp(c.subtract(start).dot(dir), reached, progress);
             if (c.distanceTo(start.add(dir.scale(d))) > 1.5) continue;
+            if (!player.hasLineOfSight(target)) continue;
 
             touched.add(target);
-            // copié de ThrownTrident, comme ca tranchant/aura de feu marchent aussi
+            // copié de ThrownTrident, comme ca tranchant/aura de feu marchent  aussi // MERCI
             DamageSource source = player.damageSources().playerAttack(player);
             float amount = EnchantmentHelper.modifyDamage(serverLevel, katana, target, source, damage);
             //System.out.println("dash hit " + target.getName().getString() + " " + amount);
             if (target.hurt(source, amount)) {
                 EnchantmentHelper.doPostAttackEffectsWithItemSource(serverLevel, target, source, katana);
                 if (target.isDeadOrDying()) onKill(player, target instanceof Player);
-            }
-            target.knockback(0.4, -dir.x, -dir.z);
+                target.knockback(0.4, -dir.x, -dir.z); }
+
         }
 
         double len = from.distanceTo(to);

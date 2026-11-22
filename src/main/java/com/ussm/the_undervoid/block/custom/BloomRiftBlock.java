@@ -1,6 +1,7 @@
 package com.ussm.the_undervoid.block.custom;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -14,6 +15,7 @@ import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.Portal;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.Heightmap;
@@ -64,13 +66,35 @@ public class BloomRiftBlock extends Block implements Portal {
 
         ServerLevel overworld = level.getServer().overworld();
         overworld.getChunkAt(pos); // faut charger le chunk avant sinon ca marche pas
-        BlockPos arrival = overworld.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING, pos);
-        if (arrival.getY() <= overworld.getMinBuildHeight()) {
-            arrival = overworld.getSharedSpawnPos();
-        }
-
+        BlockPos arrival = findSafeArrival(overworld, pos);
         return new DimensionTransition(overworld, Vec3.atBottomCenterOf(arrival), Vec3.ZERO, entity.getYRot(), entity.getXRot(),
                 DimensionTransition.PLAY_PORTAL_SOUND.then(DimensionTransition.PLACE_PORTAL_TICKET));
+    }
+    // cherche un endroit sûr de plus en plus loin (16 blocs max), sinon le spawn du monde
+    private static BlockPos findSafeArrival(ServerLevel level, BlockPos origin) {
+        for (int r = 0; r <= 16; r++) {
+            for (int dx = -r; dx <= r; dx++) {
+                for (int dz = -r; dz <= r; dz++) {
+                    if (Math.max(Math.abs(dx), Math.abs(dz)) != r) continue;
+                    BlockPos column = new BlockPos(origin.getX() + dx, 0, origin.getZ() + dz);
+                    level.getChunkAt(column);
+                    BlockPos spot = level.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, column);
+                    if (isSafe(level, spot)) return spot;
+               }}}
+        return level.getSharedSpawnPos();}
+
+
+    private static boolean isSafe(ServerLevel level, BlockPos pos) {
+        if (pos.getY() <= level.getMinBuildHeight() + 1) return false;
+        BlockPos below = pos.below();
+        BlockState ground = level.getBlockState(below);
+        return ground.isFaceSturdy(level, below, Direction.UP)
+                && !ground.is(Blocks.MAGMA_BLOCK) && !ground.is(Blocks.CACTUS)
+                && !ground.is(Blocks.CAMPFIRE) && !ground.is(Blocks.SOUL_CAMPFIRE)
+                && level.getFluidState(below).isEmpty()
+                && level.getFluidState(pos).isEmpty()
+                && level.getBlockState(pos).getCollisionShape(level, pos).isEmpty()
+                && level.getBlockState(pos.above()).getCollisionShape(level, pos.above()).isEmpty();
     }
 
     @Override

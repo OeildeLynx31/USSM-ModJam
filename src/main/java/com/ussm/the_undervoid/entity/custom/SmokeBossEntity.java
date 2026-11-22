@@ -51,7 +51,7 @@ public class SmokeBossEntity extends Monster {
     private static final double TELEPORT_MAX_LANDING = 7.0;
 
     private final ServerBossEvent bossEvent = new ServerBossEvent(
-            Component.translatable("entity.the_undervoid.erena"),
+            Component.translatable("entity.the_undervoid.enera"),
             BossEvent.BossBarColor.RED, BossEvent.BossBarOverlay.PROGRESS);
 
     private int dashCooldown = 100;

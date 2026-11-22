@@ -55,7 +55,9 @@ public class ModEvents {
 
         long time = player.level().getGameTime();
         int apples = player.getData(ModAttachments.VOID_APPLES);
-        if (time - player.getData(ModAttachments.VOID_APPLE_TIME) > APPLE_WINDOW) apples = 0;
+        if (apples == 0 || time - player.getData(ModAttachments.VOID_APPLE_START) > APPLE_WINDOW) {
+            apples = 0;
+            player.setData(ModAttachments.VOID_APPLE_START, time);}
         player.setData(ModAttachments.VOID_APPLES, apples + 1);
         player.setData(ModAttachments.VOID_APPLE_TIME, time);
     }

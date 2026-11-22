@@ -27,6 +27,8 @@ public class ModAttachments {
             () -> AttachmentType.builder(() -> 0).build());
     public static final Supplier<AttachmentType<Long>> VOID_APPLE_TIME = ATTACHMENT_TYPES.register("void_apple_time",
             () -> AttachmentType.builder(() -> 0L).build());
+    public static final Supplier<AttachmentType<Long>> VOID_APPLE_START = ATTACHMENT_TYPES.register("void_apple_start",
+            () -> AttachmentType.builder(() -> 0L).build());
 
     public static final Supplier<AttachmentType<KatanaDash>> KATANA_DASH = ATTACHMENT_TYPES.register(
             "katana_dash",

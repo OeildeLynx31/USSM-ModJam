@@ -80,7 +80,10 @@ public class VoiceRecorder {
         if (s.isOver(now)) {
             finish(player, s, now);
         }
-        if (!s.active()) s.reset(now);
+        if (!s.active()) {
+            if (now - s.last > GAP) s.discard = false;
+            s.reset(now);
+        }
 
         float db = volume(s.decoder, opus);
         s.frames.add(opus.clone());
@@ -112,6 +115,7 @@ public class VoiceRecorder {
             // pas de pause du tout, tant pis on jete
             s.reset(now);
             s.discard = true;
+            s.last = now;
             return;
         }
         List<byte[]> rest = new ArrayList<>();

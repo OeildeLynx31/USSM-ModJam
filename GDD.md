@@ -1,7 +1,7 @@
 # GDD — Mod Jam USSM
 
 Version 0.3 — 26/10/2026 — Minecraft 1.21.1, NeoForge 21.1.262, GeckoLib 4.8.4
-Nom du mod : à définir (mod_id actuel : `examplemod`)
+Nom du mod : the_undervoid
 
 Légende des règles :
 - **[Discord]** : demandé dans le salon d'idées (citations en 1.3).

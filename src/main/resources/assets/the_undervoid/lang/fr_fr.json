@@ -61,7 +61,6 @@
   "entity.the_undervoid.bloom_butterfly": "Papillon du Bloom",
   "entity.the_undervoid.floating_light": "Lumière flottante",
   "entity.the_undervoid.carnivorous_plant": "Plante carnivore",
-  "entity.the_undervoid.smoke_boss": "Enera",
   "item.the_undervoid.cockroach_spawn_egg": "Œuf d'apparition de cafard",
   "item.the_undervoid.gloom_bird_spawn_egg": "Œuf d'apparition d'oiseau du Gloom",
   "item.the_undervoid.bloom_butterfly_spawn_egg": "Œuf d'apparition de papillon du Bloom",
@@ -172,7 +171,6 @@
   "effect.the_undervoid.erosion": "Érosion",
   "effect.the_undervoid.restoration": "Restauration",
   "entity.the_undervoid.herobrine": "Herobrine",
-  "entity.the_undervoid.smoke_boss": "§kchpsjdqsqsjhqsdf",
   "item.the_undervoid.smoke_boss_spawn_egg": "Œuf d'apparition du Smoke Boss",
   "item.minecraft.potion.effect.distress": "Potion de détresse",
   "item.minecraft.potion.effect.erosion": "Potion d'érosion",
@@ -182,5 +180,8 @@
   "item.the_undervoid.void_stabilizer": "Stabilisateur de vide",
   "item.the_undervoid.void_ball": "Boule du vide",
   "item.the_undervoid.captured_spawner": "Générateur capturé",
-  "block.the_undervoid.void_matter_ore": "Minerai de matière du vide"
+  "block.the_undervoid.void_matter_ore": "Minerai de matière du vide",
+  "tooltip.the_undervoid.spawner_receptacle_tooltip": "Placé dans votre main secondaire, cet artefact permet de miner les spawners.",
+  "entity.the_undervoid.smoke_boss": "Enera",
+  "entity.the_undervoid.enera": "Enera"
 }
