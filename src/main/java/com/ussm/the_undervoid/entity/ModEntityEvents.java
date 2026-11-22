@@ -13,7 +13,12 @@ import com.ussm.the_undervoid.entity.custom.GloomBird;
 import com.ussm.the_undervoid.entity.custom.BloomButterfly;
 import com.ussm.the_undervoid.entity.custom.FloatingLight;
 import com.ussm.the_undervoid.entity.custom.CarnivorousPlant;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.level.biome.MobSpawnSettings;
+import net.minecraft.world.level.levelgen.synth.NormalNoise;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.entity.SpawnPlacementTypes;
 import net.minecraft.world.level.levelgen.Heightmap;
@@ -23,6 +28,8 @@ import net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent;
 import net.neoforged.neoforge.event.entity.RegisterSpawnPlacementsEvent;
 import net.neoforged.neoforge.event.level.LevelEvent;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
+
+import java.util.List;
 
 @EventBusSubscriber(modid = UnderVoidMod.MODID)
 public class ModEntityEvents {
@@ -66,7 +73,17 @@ public class ModEntityEvents {
         }
     }
 
-    // pas de monstres sous la surface dans l'undervoid
+    // zones a monstres : meme bruit et meme seuil que la surface rule (noise_settings/undervoid.json), le sol y est nu
+    public static final ResourceKey<NormalNoise.NoiseParameters> MONSTER_ZONES =
+            ResourceKey.create(Registries.NOISE, ResourceLocation.fromNamespaceAndPath(UnderVoidMod.MODID, "monster_zones"));
+    private static final double MONSTER_ZONE_THRESHOLD = 0.25;
+
+    public static boolean inMonsterZone(ServerLevel level, BlockPos pos) {
+        NormalNoise noise = level.getChunkSource().randomState().getOrCreateNoise(MONSTER_ZONES);
+        return noise.getValue(pos.getX(), 0.0, pos.getZ()) >= MONSTER_ZONE_THRESHOLD;
+    }
+
+    // pas de monstres sous la surface dans l'undervoid, et en surface seulement dans les zones a monstres
     @SubscribeEvent
     public static void onPotentialSpawns(LevelEvent.PotentialSpawns event) {
         if (event.getMobCategory() != MobCategory.MONSTER) return;
@@ -76,6 +93,11 @@ public class ModEntityEvents {
             BlockPos pos = event.getPos();
             if (pos.getY() < level.getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, pos.getX(), pos.getZ())) {
                 event.setCanceled(true);
+            } else if (!inMonsterZone(level, pos)) {
+                // les plantes carnivores restent partout, c'est des plantes
+                for (MobSpawnSettings.SpawnerData data : List.copyOf(event.getSpawnerDataList())) {
+                    if (data.type != ModEntities.CARNIVOROUS_PLANT.get()) event.removeSpawnerData(data);
+                }
             }
         }
     }

@@ -95,6 +95,7 @@ Sous le vide, il y a l'Entre-monde. En surface, le Gloom : une plaine corrompue,
 | D38 | 30/10 | « Avec hallucination on voit des mobs en double, des mirages, etc. » |
 | D40 | 30/10 | « Il manque des textures de fleurs » : les 10 fleurs d'ItzSuky avaient toutes la même image provisoire |
 | D41 | 30/10 | « On prend trop de dégâts quand on a 0 santé mentale » |
+| D56 | 22/11 | « Fais en sorte que y'ait que certaines zones où y'a des monstres » : en surface, monstres seulement dans les zones du bruit `monster_zones` (seuil 0,25, ~1/4 de la surface), reconnaissables à leur sol de pierre sombre nue ; les plantes carnivores restent partout |
 | D55 | 22/11 | Structures `bones` et `pic` (sauvées par l'équipe) générées à la surface de l'Entre-monde (jigsaw à une pièce, `worldgen/structure`), bloc structure retiré de `pic` |
 | D54 | 22/11 | Void ball : grossit et tourne en s'ouvrant (`client/VoidBallRenderer`), traînée et tourbillon de particules, attraction plus forte au centre, petits dégâts au cœur, implosion finale qui recrache tout, attire aussi objets et XP, 1 s entre deux lancers |
 | D53 | 22/11 | Bloc « os brûlé » (`burnt_bone_block`, orientable, textures de l'équipe), obtenu en cuisant un bloc d'os |
