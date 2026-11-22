@@ -13,17 +13,23 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.BaseEntityBlock;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.DirectionProperty;
+import net.minecraft.world.level.block.state.properties.IntegerProperty;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
@@ -32,12 +38,12 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 public class SanityTotemBlock extends BaseEntityBlock {
     public static final MapCodec<SanityTotemBlock> CODEC = simpleCodec(SanityTotemBlock::new);
     public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
-    // le socle du modele, la statue au dessus ne bloque pas
-    private static final VoxelShape SHAPE = box(0, 0, 0, 16, 14, 16);
+    public static final IntegerProperty PART = IntegerProperty.create("part", 0, 2);
+    private static final VoxelShape SHAPE = box(0, 0, 0, 16, 16, 16);
 
     public SanityTotemBlock(Properties properties) {
         super(properties);
-        registerDefaultState(stateDefinition.any().setValue(FACING, Direction.NORTH));
+        registerDefaultState(stateDefinition.any().setValue(FACING, Direction.NORTH).setValue(PART, 0));
     }
 
     @Override
@@ -46,13 +52,61 @@ public class SanityTotemBlock extends BaseEntityBlock {
     }
 
     @Override
-    protected void createBlockStateDefinition(StateDefinition.Builder<net.minecraft.world.level.block.Block, BlockState> builder) {
-        builder.add(FACING);
+    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
+        builder.add(FACING, PART);
     }
 
     @Override
     public BlockState getStateForPlacement(BlockPlaceContext context) {
+        BlockPos pos = context.getClickedPos();
+        Level level = context.getLevel();
+        // il faut la place pour les 3 blocs
+        if (pos.getY() > level.getMaxBuildHeight() - 3
+                || !level.getBlockState(pos.above()).canBeReplaced(context)
+                || !level.getBlockState(pos.above(2)).canBeReplaced(context)) {
+            return null;
+        }
         return defaultBlockState().setValue(FACING, context.getHorizontalDirection().getOpposite());
+    }
+
+    @Override
+    public void setPlacedBy(Level level, BlockPos pos, BlockState state, LivingEntity placer, ItemStack stack) {
+        level.setBlock(pos.above(), state.setValue(PART, 1), 3);
+        level.setBlock(pos.above(2), state.setValue(PART, 2), 3);
+    }
+
+    // si un morceau disparait (explosion...) les autres aussi
+    @Override
+    protected BlockState updateShape(BlockState state, Direction direction, BlockState neighbor, LevelAccessor level, BlockPos pos, BlockPos neighborPos) {
+        int part = state.getValue(PART);
+        if (direction == Direction.UP && part < 2 && !(neighbor.is(this) && neighbor.getValue(PART) == part + 1)) {
+            return Blocks.AIR.defaultBlockState();
+        }
+        if (direction == Direction.DOWN && part > 0 && !(neighbor.is(this) && neighbor.getValue(PART) == part - 1)) {
+            return Blocks.AIR.defaultBlockState();
+        }
+        return super.updateShape(state, direction, neighbor, level, pos, neighborPos);
+    }
+
+    // casser n'importe quel morceau casse les 3, et ca drop une seule fois
+    @Override
+    public BlockState playerWillDestroy(Level level, BlockPos pos, BlockState state, Player player) {
+        if (!level.isClientSide) {
+            BlockPos base = pos.below(state.getValue(PART));
+            BlockState baseState = level.getBlockState(base);
+            if (baseState.is(this)) {
+                if (!player.isCreative() && state.getValue(PART) != 0) {
+                    Block.dropResources(baseState, level, base, level.getBlockEntity(base), player, player.getMainHandItem());
+                }
+                for (int i = 0; i < 3; i++) {
+                    BlockPos part = base.above(i);
+                    if (!part.equals(pos) && level.getBlockState(part).is(this)) {
+                        level.setBlock(part, Blocks.AIR.defaultBlockState(), 35);
+                    }
+                }
+            }
+        }
+        return super.playerWillDestroy(level, pos, state, player);
     }
 
     @Override
@@ -60,20 +114,21 @@ public class SanityTotemBlock extends BaseEntityBlock {
         return SHAPE;
     }
 
-    // rendu par le BlockEntityRenderer
+    // seul le bas est rendu par le BlockEntityRenderer
     @Override
     protected RenderShape getRenderShape(BlockState state) {
-        return RenderShape.ENTITYBLOCK_ANIMATED;
+        return state.getValue(PART) == 0 ? RenderShape.ENTITYBLOCK_ANIMATED : RenderShape.INVISIBLE;
     }
 
     @Override
     public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
-        return new SanityTotemBlockEntity(pos, state);
+        return state.getValue(PART) == 0 ? new SanityTotemBlockEntity(pos, state) : null;
     }
 
     @Override
-    protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hit) {
+    protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos clicked, Player player, BlockHitResult hit) {
         if (level.isClientSide()) return InteractionResult.SUCCESS;
+        BlockPos pos = clicked.below(state.getValue(PART));
         if (!(player instanceof ServerPlayer serverPlayer) || !(level.getBlockEntity(pos) instanceof SanityTotemBlockEntity totem)) {
             return InteractionResult.PASS;
         }
