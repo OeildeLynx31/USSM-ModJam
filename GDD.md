@@ -95,6 +95,14 @@ Sous le vide, il y a l'Entre-monde. En surface, le Gloom : une plaine corrompue,
 | D38 | 30/10 | « Avec hallucination on voit des mobs en double, des mirages, etc. » |
 | D40 | 30/10 | « Il manque des textures de fleurs » : les 10 fleurs d'ItzSuky avaient toutes la même image provisoire |
 | D41 | 30/10 | « On prend trop de dégâts quand on a 0 santé mentale » |
+| D55 | 22/11 | Structures `bones` et `pic` (sauvées par l'équipe) générées à la surface de l'Entre-monde (jigsaw à une pièce, `worldgen/structure`), bloc structure retiré de `pic` |
+| D54 | 22/11 | Void ball : grossit et tourne en s'ouvrant (`client/VoidBallRenderer`), traînée et tourbillon de particules, attraction plus forte au centre, petits dégâts au cœur, implosion finale qui recrache tout, attire aussi objets et XP, 1 s entre deux lancers |
+| D53 | 22/11 | Bloc « os brûlé » (`burnt_bone_block`, orientable, textures de l'équipe), obtenu en cuisant un bloc d'os |
+| D52 | 22/11 | Mimic : déguisement plus long (attente 60-180 s au lieu de 20-60, 8 s collé au joueur au lieu de 1,5 s, config `mimicCloseRevealSeconds`) |
+| D51 | 22/11 | Hérissons apprivoisables avec des baies (1 chance sur 3), s'assoient avec accroupi + clic droit, suivent leur maître |
+| D50 | 22/11 | Biome « Forêt du vide » (`void_forest`) : bouts secs de la surface du Gloom, arbres du vide serrés, brouillard à 10 blocs, hérissons ; sélection par la température (0 sous terre et dans le miasme) |
+| D49 | 22/11 | L'eau de l'Entre-monde rend +2 santé mentale/s (`waterGain`) ; impossible d'en poser (seau, distributeur, glace cassée : elle s'évapore), mares générées dans le Gloom, la forêt et le Bloom |
+| D48 | 22/11 | Compatibilité shaders (Iris) : brouillard dessiné après le pack (`client/ShaderFog`) et faux temps couvert pour éviter le soleil couchant orange (réglages `shaderFog*`, `shaderOvercast`) |
 | D46 | 31/10 | « L'espèce de bûche d'arbre avec des yeux devrait drop du bois et pas des os » ; « améliore la texture de la barre de sanité » (icône en cerveau) |
 | D45 | 31/10 | « Fais en sorte que pour survivre au void il suffit de manger 3 golden apples » |
 | D44 | 31/10 | « Autorise les totems dans la main gauche avec le katana » |

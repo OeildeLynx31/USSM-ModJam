@@ -17,6 +17,7 @@ public class Config {
     public static final ModConfigSpec.DoubleValue ARRIVAL_LOSS;
     public static final ModConfigSpec.DoubleValue HAZMAT_MULTIPLIER;
     public static final ModConfigSpec.DoubleValue HEDGEHOG_PET_GAIN;
+    public static final ModConfigSpec.DoubleValue WATER_GAIN;
 
     public static final ModConfigSpec.DoubleValue DASH_DISTANCE;
     public static final ModConfigSpec.DoubleValue DUAL_DASH_DISTANCE;
@@ -35,6 +36,7 @@ public class Config {
     public static final ModConfigSpec.DoubleValue MIMIC_CHANCE;
     public static final ModConfigSpec.IntValue MIMIC_LURE_MIN;
     public static final ModConfigSpec.IntValue MIMIC_LURE_MAX;
+    public static final ModConfigSpec.IntValue MIMIC_CLOSE_REVEAL_SECONDS;
     public static final ModConfigSpec.IntValue MIMIC_DESPAWN_SECONDS;
     public static final ModConfigSpec.DoubleValue MIMIC_COPY_SELF_CHANCE;
     public static final ModConfigSpec.IntValue MIMIC_MOVEMENT_CLIPS;
@@ -50,6 +52,10 @@ public class Config {
     public static final ModConfigSpec.IntValue MIASMA_DAMAGE_SECONDS;
 
     public static final ModConfigSpec.DoubleValue HALLUCINATION_INTENSITY;
+    public static final ModConfigSpec.BooleanValue SHADER_FOG;
+    public static final ModConfigSpec.DoubleValue SHADER_FOG_START;
+    public static final ModConfigSpec.DoubleValue SHADER_FOG_SATURATION;
+    public static final ModConfigSpec.DoubleValue SHADER_OVERCAST;
 
     static {
         ModConfigSpec.Builder server = new ModConfigSpec.Builder();
@@ -69,6 +75,8 @@ public class Config {
         ARRIVAL_LOSS = server.defineInRange("arrivalLoss", 10.0, 0.0, 100.0);
         HAZMAT_MULTIPLIER = server.defineInRange("hazmatMultiplier", 0.5, 0.0, 1.0);
         HEDGEHOG_PET_GAIN = server.defineInRange("hedgehogPetGain", 8.0, 0.0, 100.0);
+        // par seconde dans l'eau de l'entre-monde (les mares)
+        WATER_GAIN = server.defineInRange("waterGain", 2.0, 0.0, 100.0);
         EUPHORIA_THRESHOLD = server.defineInRange("euphoriaThreshold", 95.0, 0.0, 100.0);
         EUPHORIA_DAMAGE = server.defineInRange("euphoriaDamage", 1.0, 0.0, 20.0);
         EUPHORIA_DAMAGE_SECONDS = server.defineInRange("euphoriaDamageSeconds", 4, 1, 60);
@@ -96,8 +104,10 @@ public class Config {
         server.push("mimic");
         MIMIC_SANITY_THRESHOLD = server.defineInRange("mimicSanityThreshold", 70.0, 0.0, 100.0);
         MIMIC_CHANCE = server.defineInRange("mimicChancePerSecond", 0.02, 0.0, 1.0);
-        MIMIC_LURE_MIN = server.defineInRange("mimicLureMinSeconds", 20, 1, 600);
-        MIMIC_LURE_MAX = server.defineInRange("mimicLureMaxSeconds", 60, 1, 600);
+        MIMIC_LURE_MIN = server.defineInRange("mimicLureMinSeconds", 60, 1, 600);
+        MIMIC_LURE_MAX = server.defineInRange("mimicLureMaxSeconds", 180, 1, 600);
+        // combien de temps il reste colle a toi avant de se reveler (c'etait 1.5s, il se grillait tout de suite)
+        MIMIC_CLOSE_REVEAL_SECONDS = server.defineInRange("mimicCloseRevealSeconds", 8, 1, 120);
         MIMIC_DESPAWN_SECONDS = server.defineInRange("mimicDespawnSeconds", 300, 0, 36000); // 0 = jamais
         MIMIC_COPY_SELF_CHANCE = server.defineInRange("mimicCopySelfChance", 0.15, 0.0, 1.0);
         MIMIC_MOVEMENT_CLIPS = server.defineInRange("mimicMovementClips", 24, 0, 100);
@@ -117,6 +127,13 @@ public class Config {
 
         ModConfigSpec.Builder client = new ModConfigSpec.Builder();
         HALLUCINATION_INTENSITY = client.defineInRange("hallucinationIntensity", 1.0, 0.0, 1.0);
+        // brouillard dessiné a la main quand un pack de shaders iris est actif
+        SHADER_FOG = client.define("shaderFog", true);
+        // a quelle fraction de la distance le brouillard commence (sinon ca delave tout ce qui est pres)
+        SHADER_FOG_START = client.defineInRange("shaderFogStart", 0.4, 0.0, 0.95);
+        SHADER_FOG_SATURATION = client.defineInRange("shaderFogSaturation", 1.3, 0.0, 3.0);
+        // fausse pluie pour que les packs passent en temps couvert (0 = soleil couchant du pack)
+        SHADER_OVERCAST = client.defineInRange("shaderOvercast", 0.8, 0.0, 1.0);
         CLIENT_SPEC = client.build();
     }
 }

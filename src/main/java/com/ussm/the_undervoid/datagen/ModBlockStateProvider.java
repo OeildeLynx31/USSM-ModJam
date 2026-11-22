@@ -41,6 +41,8 @@ public class ModBlockStateProvider extends BlockStateProvider { // Juste ne TOUC
         saplingBlock(ModBlocks.DEAD_SHRUB);
 
         logBlock(((RotatedPillarBlock) ModBlocks.VOID_LOG.get()));
+        logBlock(((RotatedPillarBlock) ModBlocks.BURNT_BONE_BLOCK.get()));
+        blockItem(ModBlocks.BURNT_BONE_BLOCK);
         axisBlock(((RotatedPillarBlock) ModBlocks.VOID_WOOD.get()), blockTexture(ModBlocks.VOID_LOG.get()), blockTexture(ModBlocks.VOID_LOG.get()));
 
         blockItem(ModBlocks.VOID_LOG);

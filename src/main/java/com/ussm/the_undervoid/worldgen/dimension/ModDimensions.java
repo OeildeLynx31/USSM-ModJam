@@ -79,7 +79,8 @@ public class ModDimensions {
                                 Pair.of(climate(Climate.Parameter.span(-1.0F, 0.35F), Climate.Parameter.span(-1.0F, 0.25F)), biomeRegistry.getOrThrow(ModBiomes.GLOOM)),
                                 Pair.of(climate(Climate.Parameter.span(0.35F, 1.0F), Climate.Parameter.span(0.02F, 0.25F)), biomeRegistry.getOrThrow(ModBiomes.GLOOM)),
                                 Pair.of(climate(Climate.Parameter.span(0.35F, 1.0F), Climate.Parameter.span(-1.0F, 0.02F)), biomeRegistry.getOrThrow(ModBiomes.MIASMA)),
-                                Pair.of(climate(Climate.Parameter.span(-1.0F, 1.0F), Climate.Parameter.span(0.25F, 1.0F)), biomeRegistry.getOrThrow(ModBiomes.BLOOM))
+                                Pair.of(climate(Climate.Parameter.span(-1.0F, 1.0F), Climate.Parameter.span(0.25F, 1.0F)), biomeRegistry.getOrThrow(ModBiomes.BLOOM)),
+                                Pair.of(forestClimate(), biomeRegistry.getOrThrow(ModBiomes.VOID_FOREST))
                         ))),
                 noiseGenSettings.getOrThrow(ModNoiseGeneratorSettings.UNDERVOID_NOISE_SETTINGS));
 
@@ -91,5 +92,13 @@ public class ModDimensions {
     private static Climate.ParameterPoint climate(Climate.Parameter humidity, Climate.Parameter depth) {
         Climate.Parameter zero = Climate.Parameter.point(0.0F);
         return Climate.parameters(zero, humidity, zero, zero, depth, zero, 0.0F);
+    }
+
+    // la foret se sert de la temperature, qui vaut 0 partout sauf sur la surface seche (cf noise_settings/undervoid.json)
+    // donc elle prend juste des bouts du gloom sans toucher au miasme ni au bloom
+    private static Climate.ParameterPoint forestClimate() {
+        Climate.Parameter zero = Climate.Parameter.point(0.0F);
+        return Climate.parameters(Climate.Parameter.span(0.45F, 1.0F), Climate.Parameter.span(-1.0F, 0.1F), zero, zero,
+                Climate.Parameter.span(-1.0F, 0.02F), zero, 0.0F);
     }
 }

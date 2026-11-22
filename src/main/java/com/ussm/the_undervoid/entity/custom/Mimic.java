@@ -289,7 +289,7 @@ public class Mimic extends Monster {
                     if (dist < 2.5) closeTicks++;
                     else closeTicks = 0;
 
-                    if (lureTicks >= lureLimit || closeTicks > 30) {
+                    if (lureTicks >= lureLimit || closeTicks > 20 * Config.MIMIC_CLOSE_REVEAL_SECONDS.get()) {
                         reveal(player);
                     } else if (player.getHealth() < player.getMaxHealth() * 0.35f && dist < 10 && hasLineOfSight(player)) {
                         reveal(player); //le joueur a presque plus de vie donc il attaque direct

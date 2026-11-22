@@ -4,6 +4,7 @@
     "minecraft:moss_block",
     "minecraft:podzol",
     "minecraft:rooted_dirt",
-    "minecraft:coarse_dirt"
+    "minecraft:coarse_dirt",
+    "the_undervoid:dirty_void_stone"
   ]
 }

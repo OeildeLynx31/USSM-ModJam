@@ -4,7 +4,28 @@ import com.ussm.the_undervoid.Config;
 import com.ussm.the_undervoid.UnderVoidMod;
 import com.ussm.the_undervoid.attachment.ModAttachments;
 import com.ussm.the_undervoid.worldgen.dimension.ModDimensions;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.core.dispenser.BlockSource;
+import net.minecraft.core.dispenser.DispenseItemBehavior;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.tags.EnchantmentTags;
+import net.minecraft.tags.FluidTags;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.BucketItem;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.DispenserBlock;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.HitResult;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.damagesource.DamageTypes;
@@ -17,6 +38,8 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.living.LivingEntityUseItemEvent;
 import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
+import net.neoforged.neoforge.event.level.BlockEvent;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 
 @EventBusSubscriber(modid = UnderVoidMod.MODID)
@@ -70,6 +93,60 @@ public class ModEvents {
         boolean recent = player.level().getGameTime() - player.getData(ModAttachments.VOID_APPLE_TIME) <= APPLE_WINDOW;
         if (recent && player.getData(ModAttachments.VOID_APPLES) >= Config.VOID_GOLDEN_APPLES.get()) {
             event.setAmount((float) (event.getAmount() * Config.VOID_APPLE_DAMAGE.get()));
+        }
+    }
+
+    // l'eau soigne la santé mentale dans l'entre-monde, donc on peut pas en poser : elle s'evapore comme dans le nether
+    // et faut trouver les mares
+    @SubscribeEvent
+    public static void onUseBucket(PlayerInteractEvent.RightClickItem event) {
+        Player player = event.getEntity();
+        ItemStack stack = event.getItemStack();
+        if (!(stack.getItem() instanceof BucketItem bucket) || !bucket.content.is(FluidTags.WATER)) return;
+        if (!player.level().dimension().equals(ModDimensions.UNDERVOID_DIM_LEVEL_KEY)) return;
+
+        event.setCanceled(true);
+        event.setCancellationResult(InteractionResult.FAIL);
+        if (player.level() instanceof ServerLevel level && player.pick(5.0, 1f, false) instanceof BlockHitResult hit
+                && hit.getType() == HitResult.Type.BLOCK) {
+            evaporate(level, hit.getBlockPos().relative(hit.getDirection()));
+            // le seau d'eau se vide, les seaux a poisson on les laisse sinon le poisson disparait
+            if (!player.getAbilities().instabuild && stack.is(Items.WATER_BUCKET)) {
+                player.setItemInHand(event.getHand(), new ItemStack(Items.BUCKET));
+            }
+        }
+    }
+
+    // la glace cassée devient de l'eau d'habitude
+    @SubscribeEvent
+    public static void onBreakIce(BlockEvent.BreakEvent event) {
+        if (!(event.getLevel() instanceof ServerLevel level) || !level.dimension().equals(ModDimensions.UNDERVOID_DIM_LEVEL_KEY)) return;
+        if (!event.getState().is(Blocks.ICE) || event.getPlayer().getAbilities().instabuild) return;
+        if (EnchantmentHelper.hasTag(event.getPlayer().getMainHandItem(), EnchantmentTags.PREVENTS_ICE_MELTING)) return;
+
+        event.setCanceled(true);
+        level.levelEvent(2001, event.getPos(), net.minecraft.world.level.block.Block.getId(event.getState()));
+        level.removeBlock(event.getPos(), false);
+    }
+
+    // pareil pour les distributeurs, appelé dans le commonSetup
+    public static void registerWaterDispensers() {
+        for (Item item : BuiltInRegistries.ITEM) {
+            if (!(item instanceof BucketItem bucket) || !bucket.content.is(FluidTags.WATER)) continue;
+            DispenseItemBehavior vanilla = DispenserBlock.DISPENSER_REGISTRY.get(item);
+            DispenserBlock.registerBehavior(item, (BlockSource source, ItemStack stack) -> {
+                if (!source.level().dimension().equals(ModDimensions.UNDERVOID_DIM_LEVEL_KEY)) return vanilla.dispense(source, stack);
+                Direction facing = source.state().getValue(DispenserBlock.FACING);
+                evaporate(source.level(), source.pos().relative(facing));
+                return stack.is(Items.WATER_BUCKET) ? new ItemStack(Items.BUCKET) : stack;
+            });
+        }
+    }
+
+    private static void evaporate(Level level, BlockPos pos) {
+        level.playSound(null, pos, SoundEvents.FIRE_EXTINGUISH, SoundSource.BLOCKS, 0.5F, 2.6F + (level.random.nextFloat() - level.random.nextFloat()) * 0.8F);
+        if (level instanceof ServerLevel serverLevel) {
+            serverLevel.sendParticles(ParticleTypes.LARGE_SMOKE, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, 8, 0.3, 0.3, 0.3, 0.0);
         }
     }
 

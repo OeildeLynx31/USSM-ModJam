@@ -31,6 +31,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.LevelReader;
+import net.neoforged.neoforge.event.EventHooks;
 import org.jetbrains.annotations.Nullable;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
@@ -41,7 +42,7 @@ import software.bernie.geckolib.animation.PlayState;
 import software.bernie.geckolib.animation.RawAnimation;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
-public class Hedgehog extends Animal implements GeoEntity {
+public class Hedgehog extends TamableAnimal implements GeoEntity {
     private final AnimatableInstanceCache geoCache = GeckoLibUtil.createInstanceCache(this);
 
     private static final RawAnimation IDLE_ANIM = RawAnimation.begin().thenLoop("idle");
@@ -54,20 +55,22 @@ public class Hedgehog extends Animal implements GeoEntity {
     private int curlTimer = 0;
     private long lastPet;
 
-    public Hedgehog(EntityType<? extends Animal> entityType, Level level) {
+    public Hedgehog(EntityType<? extends TamableAnimal> entityType, Level level) {
         super(entityType, level);
     }
 
     @Override
     protected void registerGoals() {
         this.goalSelector.addGoal(0, new FloatGoal(this));
+        this.goalSelector.addGoal(1, new SitWhenOrderedToGoal(this));
 
-        this.goalSelector.addGoal(1, new BreedGoal(this, 1.0));
-        this.goalSelector.addGoal(2, new TemptGoal(this, 1.1, stack -> stack.is(ModTags.Items.HEDGEHOG_FOOD), false));
-        this.goalSelector.addGoal(3, new FollowParentGoal(this, 1.1));
-        this.goalSelector.addGoal(4, new WaterAvoidingRandomStrollGoal(this, 0.8));
-        this.goalSelector.addGoal(5, new LookAtPlayerGoal(this, Player.class, 6f));
-        this.goalSelector.addGoal(6, new RandomLookAroundGoal(this));
+        this.goalSelector.addGoal(2, new BreedGoal(this, 1.0));
+        this.goalSelector.addGoal(3, new TemptGoal(this, 1.1, stack -> stack.is(ModTags.Items.HEDGEHOG_FOOD), false));
+        this.goalSelector.addGoal(4, new FollowOwnerGoal(this, 1.2, 10f, 2f)); // il est lent donc 1.2, sinon il se tp
+        this.goalSelector.addGoal(5, new FollowParentGoal(this, 1.1));
+        this.goalSelector.addGoal(6, new WaterAvoidingRandomStrollGoal(this, 0.8));
+        this.goalSelector.addGoal(7, new LookAtPlayerGoal(this, Player.class, 6f));
+        this.goalSelector.addGoal(8, new RandomLookAroundGoal(this));
     }
 
     public static AttributeSupplier.Builder createAttributes() {
@@ -88,7 +91,12 @@ public class Hedgehog extends Animal implements GeoEntity {
     @Nullable
     @Override
     public AgeableMob getBreedOffspring(ServerLevel level, AgeableMob otherParent) {
-        return ModEntities.HEDGEHOG.get().create(level);
+        Hedgehog baby = ModEntities.HEDGEHOG.get().create(level);
+        if (baby != null && isTame()) {
+            baby.setOwnerUUID(getOwnerUUID());
+            baby.setTame(true, true);
+        }
+        return baby;
     }
 
     @Override
@@ -97,7 +105,8 @@ public class Hedgehog extends Animal implements GeoEntity {
     }
 
     private PlayState predicate(AnimationState<Hedgehog> event) {
-        if (isCurled())
+        // assis = roulé en boule aussi, on a pas d'anim pour s'assoir
+        if (isCurled() || isInSittingPose())
             return event.setAndContinue(CURL_ANIM);
 
         if (event.isMoving()) {
@@ -168,7 +177,7 @@ public class Hedgehog extends Animal implements GeoEntity {
 
         if (!isCurled() && this.tickCount % 10 == 0) {
             Player player = level().getNearestPlayer(this, 3.0);
-            if (player != null && player.isSprinting()) {
+            if (player != null && player.isSprinting() && !isOwnedBy(player)) {
                 curlTimer = 60;
                 this.entityData.set(CURLED, true);
                 this.getNavigation().stop();
@@ -202,7 +211,20 @@ public class Hedgehog extends Animal implements GeoEntity {
 
     @Override
     public InteractionResult mobInteract(Player player, InteractionHand hand) {
-        if (hand == InteractionHand.MAIN_HAND && player.getItemInHand(hand).isEmpty()) {
+        ItemStack stack = player.getItemInHand(hand);
+        boolean client = level().isClientSide();
+
+        if (hand == InteractionHand.MAIN_HAND && stack.isEmpty()) {
+            // shift + main vide = assis/debout, sinon caresse normale
+            if (player.isShiftKeyDown() && isTame() && isOwnedBy(player)) {
+                if (!client) {
+                    setOrderedToSit(!isOrderedToSit());
+                    this.jumping = false;
+                    getNavigation().stop();
+                }
+                return InteractionResult.sidedSuccess(client);
+            }
+
             if (!this.level().isClientSide) {
                 if (isCurled()) {
                     player.hurt(damageSources().thorns(this), 1f);
@@ -222,7 +244,36 @@ public class Hedgehog extends Animal implements GeoEntity {
             return InteractionResult.sidedSuccess(level().isClientSide());
         }
 
+        if (isFood(stack)) {
+            if (!isTame()) {
+                if (!client) {
+                    usePlayerItem(player, hand, stack);
+                    tryToTame(player);
+                }
+                return InteractionResult.sidedSuccess(client);
+            }
+            // deja apprivoisé et blessé -> on le soigne, sinon ca passe au breed normal
+            if (getHealth() < getMaxHealth()) {
+                if (!client) {
+                    usePlayerItem(player, hand, stack);
+                    heal(2f);
+                }
+                return InteractionResult.sidedSuccess(client);
+            }
+        }
+
         return super.mobInteract(player, hand);
+    }
+
+    private void tryToTame(Player player) {
+        if (this.random.nextInt(3) == 0 && !EventHooks.onAnimalTame(this, player)) {
+            tame(player);
+            getNavigation().stop();
+            setOrderedToSit(true);
+            level().broadcastEntityEvent(this, (byte) 7);
+        } else {
+            level().broadcastEntityEvent(this, (byte) 6);
+        }
     }
 
     @Override

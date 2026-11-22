@@ -24,7 +24,39 @@
     "fluid_level_floodedness": 0.0,
     "fluid_level_spread": 0.0,
     "lava": 0.0,
-    "temperature": 0.0,
+    "temperature": {
+      "type": "minecraft:mul",
+      "argument1": {
+        "type": "minecraft:y_clamped_gradient",
+        "from_y": 80,
+        "to_y": 95,
+        "from_value": 0.0,
+        "to_value": 1.0
+      },
+      "argument2": {
+        "type": "minecraft:min",
+        "argument1": {
+          "type": "minecraft:noise",
+          "noise": "the_undervoid:forest",
+          "xz_scale": 1.0,
+          "y_scale": 0.0
+        },
+        "argument2": {
+          "type": "minecraft:add",
+          "argument1": 0.5,
+          "argument2": {
+            "type": "minecraft:mul",
+            "argument1": -2.0,
+            "argument2": {
+              "type": "minecraft:noise",
+              "noise": "the_undervoid:miasma",
+              "xz_scale": 1.5,
+              "y_scale": 0.0
+            }
+          }
+        }
+      }
+    },
     "vegetation": {
       "type": "minecraft:noise",
       "noise": "the_undervoid:miasma",
@@ -87,7 +119,8 @@
           "type": "minecraft:biome",
           "biome_is": [
             "the_undervoid:gloom",
-            "the_undervoid:miasma"
+            "the_undervoid:miasma",
+            "the_undervoid:void_forest"
           ]
         },
         "then_run": {

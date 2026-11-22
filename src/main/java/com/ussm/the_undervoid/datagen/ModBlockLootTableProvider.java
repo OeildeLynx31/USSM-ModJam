@@ -29,6 +29,7 @@ public class ModBlockLootTableProvider extends BlockLootSubProvider {
     @Override
     protected void generate() {
         dropSelf(ModBlocks.DARK_DEEPSLATE.get());
+        dropSelf(ModBlocks.BURNT_BONE_BLOCK.get());
         add(ModBlocks.CORRUPTED_GRASS.get(), createShearsOnlyDrop(ModBlocks.CORRUPTED_GRASS.get()));
         add(ModBlocks.DEAD_SHRUB.get(), createShearsDispatchTable(ModBlocks.DEAD_SHRUB.get(),
                 applyExplosionDecay(ModBlocks.DEAD_SHRUB.get(), LootItem.lootTableItem(Items.STICK)

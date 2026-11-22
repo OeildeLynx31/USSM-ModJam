@@ -48,7 +48,8 @@ public class UndervoidFog {
 
         Holder<Biome> biome = player.level().getBiome(BlockPos.containing(player.getEyePosition()));
         boolean inMiasma = biome.is(ModBiomes.MIASMA);
-        inGloom = inMiasma || biome.is(ModBiomes.GLOOM);
+        boolean inForest = biome.is(ModBiomes.VOID_FOREST);
+        inGloom = inMiasma || inForest || biome.is(ModBiomes.GLOOM);
 
         float surfaceTarget = inGloom && player.getEyeY() >= Sanity.GLOOM_SURFACE_Y ? 1f : 0f;
         float miasmaTarget = inMiasma ? 1f : 0f;
@@ -65,7 +66,8 @@ public class UndervoidFog {
         miasmaFog = Mth.approach(miasmaFog, miasmaTarget, 0.05f);
 
         boolean mask = HazmatArmorItem.isWearingMask(player);
-        surfaceFar = mask ? 24f : 14f;
+        // sous les arbres on voit encore moins loin
+        surfaceFar = inForest ? (mask ? 18f : 10f) : (mask ? 24f : 14f);
         miasmaFar = mask ? 9f : 6f;
 
         if (miasmaFog > 0f && !mc.isPaused()) {
@@ -82,6 +84,15 @@ public class UndervoidFog {
                 }
             }
         }
+    }
+
+    public static boolean isActive() {
+        return inUndervoid;
+    }
+
+    public static float fogStart() {
+        if (!inUndervoid) return Float.MAX_VALUE;
+        return Mth.lerp(miasmaFog, Mth.lerp(surfaceFog, 8f, 0f), 0f);
     }
 
     public static float fogEnd() {
@@ -118,6 +129,13 @@ public class UndervoidFog {
         Camera camera = event.getCamera();
         if (!inUndervoid || camera.getFluidInCamera() != FogType.NONE) {
             return;
+        }
+        // la fausse pluie de ShaderFog assombrit le brouillard (FogRenderer.setupColor), on remet la vraie couleur
+        float rain = ShaderFog.forcedRain();
+        if (rain > 0f) {
+            event.setRed(event.getRed() / (1f - rain * 0.5f));
+            event.setGreen(event.getGreen() / (1f - rain * 0.5f));
+            event.setBlue(event.getBlue() / (1f - rain * 0.4f));
         }
         if (!(camera.getEntity() instanceof LivingEntity entity) || entity.hasEffect(MobEffects.BLINDNESS) || entity.hasEffect(MobEffects.DARKNESS) || entity.hasEffect(MobEffects.NIGHT_VISION)) {
             return;

@@ -28,10 +28,14 @@ public class ModBiomes {
     public static final ResourceKey<Biome> MIASMA = ResourceKey.create(Registries.BIOME,
             ResourceLocation.fromNamespaceAndPath(UnderVoidMod.MODID, "miasma"));
 
+    public static final ResourceKey<Biome> VOID_FOREST = ResourceKey.create(Registries.BIOME,
+            ResourceLocation.fromNamespaceAndPath(UnderVoidMod.MODID, "void_forest"));
+
     public static void boostrap(BootstrapContext<Biome> context) {
         context.register(GLOOM, gloom(context));
         context.register(BLOOM, bloom(context));
         context.register(MIASMA, miasma(context));
+        context.register(VOID_FOREST, voidForest(context));
     }
 
     private static MobSpawnSettings.Builder gloomSpawns() {
@@ -137,6 +141,36 @@ public class ModBiomes {
                         .foliageColorOverride(0x3E2650)
                         .fogColor(0x6B2FA0)
                         .ambientParticle(new AmbientParticleSettings(ModParticles.MIASMA.get(), 0.04f))
+                        .ambientMoodSound(AmbientMoodSettings.LEGACY_CAVE_SETTINGS).build()
+                )
+                .build();
+    }
+
+    // foret du vide : une partie de la surface du gloom couverte d'arbres, avec des herissons
+    public static Biome voidForest(BootstrapContext<Biome> context) {
+        MobSpawnSettings.Builder spawnBuilder = gloomSpawns();
+        spawnBuilder.addSpawn(MobCategory.AMBIENT, new MobSpawnSettings.SpawnerData(ModEntities.GLOOM_BIRD.get(), 12, 1, 3));
+        spawnBuilder.addSpawn(MobCategory.CREATURE, new MobSpawnSettings.SpawnerData(ModEntities.HEDGEHOG.get(), 6, 1, 2));
+
+        BiomeGenerationSettings.Builder biomeBuilder =
+                new BiomeGenerationSettings.Builder(context.lookup(Registries.PLACED_FEATURE), context.lookup(Registries.CONFIGURED_CARVER));
+        biomeBuilder.addFeature(GenerationStep.Decoration.VEGETAL_DECORATION, ModPlacedFeatures.VOID_FOREST_TREE_PLACED_KEY);
+        biomeBuilder.addFeature(GenerationStep.Decoration.VEGETAL_DECORATION, ModPlacedFeatures.GLOOM_DECOR_PLACED_KEY);
+
+        return new Biome.BiomeBuilder()
+                .hasPrecipitation(false)
+                .downfall(0.4f)
+                .temperature(0.5f)
+                .generationSettings(biomeBuilder.build())
+                .mobSpawnSettings(spawnBuilder.build())
+                .specialEffects((new BiomeSpecialEffects.Builder())
+                        .waterColor(0x34405A)
+                        .waterFogColor(0x0F1420)
+                        .skyColor(0x000000)
+                        .grassColorOverride(0x33403A)
+                        .foliageColorOverride(0x2C3833)
+                        .fogColor(0x2C3340)
+                        .ambientParticle(new AmbientParticleSettings(ParticleTypes.WHITE_ASH, 0.015f))
                         .ambientMoodSound(AmbientMoodSettings.LEGACY_CAVE_SETTINGS).build()
                 )
                 .build();

@@ -12,6 +12,7 @@ import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockSetType;
 import net.minecraft.world.level.block.state.properties.WoodType;
+import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.material.PushReaction;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredBlock;
@@ -42,6 +43,10 @@ public class ModBlocks {
 
     public static final DeferredBlock<Block> DARK_DEEPSLATE = registerBlock("dark_deepslate",
             () -> new Block(BlockBehaviour.Properties.ofFullCopy(Blocks.DEEPSLATE)));
+
+    // os brulé : un bloc d'os passé au four
+    public static final DeferredBlock<Block> BURNT_BONE_BLOCK = registerBlock("burnt_bone_block",
+            () -> new RotatedPillarBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.BONE_BLOCK).mapColor(MapColor.COLOR_BLACK)));
 
     public static final DeferredBlock<Block> CORRUPTED_GRASS = registerBlock("corrupted_grass",
             () -> new CorruptedGrassPlantBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.SHORT_GRASS)));

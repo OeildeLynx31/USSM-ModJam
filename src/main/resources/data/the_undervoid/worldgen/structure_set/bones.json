@@ -1,0 +1,14 @@
+{
+  "structures": [
+    {
+      "structure": "the_undervoid:bones",
+      "weight": 1
+    }
+  ],
+  "placement": {
+    "type": "minecraft:random_spread",
+    "salt": 184731923,
+    "spacing": 10,
+    "separation": 4
+  }
+}

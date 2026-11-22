@@ -30,11 +30,13 @@ public class VoidBallItem extends Item {
                 player.getX(),
                 player.getY(),
                 player.getZ(),
-                SoundEvents.SNOWBALL_THROW,
+                SoundEvents.ENDER_PEARL_THROW,
                 SoundSource.PLAYERS,
                 0.5F,
-                0.8F
+                0.6F
         );
+        // une seconde entre deux lancers, sinon on en balance 10 d'un coup
+        player.getCooldowns().addCooldown(this, 20);
 
         if (!level.isClientSide()) {
             VoidBallProjectile projectile = new VoidBallProjectile(

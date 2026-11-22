@@ -1,0 +1,8 @@
+{
+  "type": "neoforge:add_features",
+  "biomes": [
+    "the_undervoid:gloom"
+  ],
+  "features": "the_undervoid:undervoid_pond_surface",
+  "step": "lakes"
+}

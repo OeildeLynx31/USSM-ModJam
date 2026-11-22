@@ -39,6 +39,7 @@ public class ModPlacedFeatures {
     public static final ResourceKey<PlacedFeature> GLOOM_DECOR_PLACED_KEY = registerKey("gloom_decor_placed");
     public static final ResourceKey<PlacedFeature> BLOOM_DECOR_PLACED_KEY = registerKey("bloom_decor_placed");
     public static final ResourceKey<PlacedFeature> BLOOM_CHAIN_PLACED_KEY = registerKey("bloom_chain_placed");
+    public static final ResourceKey<PlacedFeature> VOID_FOREST_TREE_PLACED_KEY = registerKey("void_forest_tree_placed");
 
     public static void bootstrap(BootstrapContext<PlacedFeature> context) {
         HolderGetter<ConfiguredFeature<?, ?>> configuredFeatures = context.lookup(Registries.CONFIGURED_FEATURE);
@@ -92,6 +93,11 @@ public class ModPlacedFeatures {
                                 BlockPredicate.ONLY_IN_AIR_PREDICATE,
                                 BlockPredicate.matchesBlocks(new Vec3i(0, 1, 0), Blocks.AIR))),
                         BiomeFilter.biome()));
+
+        // la foret du vide : les memes arbres que le gloom mais en beaucoup plus serré
+        register(context, VOID_FOREST_TREE_PLACED_KEY, configuredFeatures.getOrThrow(ModConfiguredFeatures.VOID_TREE_KEY),
+                VegetationPlacements.treePlacement(PlacementUtils.countExtra(6, 0.5f, 2),
+                        ModBlocks.VOID_SAPLING.get()));
     }
 
 

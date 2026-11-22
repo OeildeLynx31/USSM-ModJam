@@ -76,6 +76,27 @@
             "temperature": 0.0,
             "weirdness": 0.0
           }
+        },
+        {
+          "biome": "the_undervoid:void_forest",
+          "parameters": {
+            "continentalness": 0.0,
+            "depth": [
+              -1.0,
+              0.02
+            ],
+            "erosion": 0.0,
+            "humidity": [
+              -1.0,
+              0.1
+            ],
+            "offset": 0.0,
+            "temperature": [
+              0.45,
+              1.0
+            ],
+            "weirdness": 0.0
+          }
         }
       ]
     },

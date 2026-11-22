@@ -95,7 +95,10 @@ public class Sanity {
         boolean miasma = false;
         if (level.dimension() == ModDimensions.UNDERVOID_DIM_LEVEL_KEY) {
             Holder<Biome> biome = level.getBiome(BlockPos.containing(player.getEyePosition()));
-            if (biome.is(ModBiomes.MIASMA)) {
+            if (player.isInWater()) {
+                // l'eau des mares calme, on peut pas en poser donc faut les trouver
+                add(player, Config.WATER_GAIN.get().floatValue());
+            } else if (biome.is(ModBiomes.MIASMA)) {
                 miasma = true;
                 add(player, (float) -Config.MIASMA_SANITY_LOSS.get());
             } else if (biome.is(ModBiomes.BLOOM)) {

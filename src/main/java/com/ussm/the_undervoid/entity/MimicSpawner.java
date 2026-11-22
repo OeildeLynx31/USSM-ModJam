@@ -143,6 +143,6 @@ public class MimicSpawner {
     }
 
     private static boolean isGloom(Holder<Biome> biome) {
-        return biome.is(ModBiomes.GLOOM) || biome.is(ModBiomes.MIASMA);
+        return biome.is(ModBiomes.GLOOM) || biome.is(ModBiomes.MIASMA) || biome.is(ModBiomes.VOID_FOREST);
     }
 }

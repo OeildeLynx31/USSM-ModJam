@@ -2,6 +2,7 @@ package com.ussm.the_undervoid;
 
 import com.mojang.logging.LogUtils;
 import com.ussm.the_undervoid.attachment.ModAttachments;
+import com.ussm.the_undervoid.network.ModEvents;
 import com.ussm.the_undervoid.block.ModBlocks;
 import com.ussm.the_undervoid.effect.ModEffects;
 import com.ussm.the_undervoid.entity.ModEntities;
@@ -50,6 +51,7 @@ public class UnderVoidMod {
                 output.accept(ModBlocks.MOSS_VIOLET.asItem());
                 output.accept(ModBlocks.DARK_DIRT.asItem());
                 output.accept(ModBlocks.DARK_DEEPSLATE.asItem());
+                output.accept(ModBlocks.BURNT_BONE_BLOCK.asItem());
                 output.accept(ModBlocks.CORRUPTED_GRASS.asItem());
                 output.accept(ModBlocks.VOID_MATTER_ORE.asItem());
                 output.accept(ModBlocks.BEDROCK_BREAKER.asItem());
@@ -155,6 +157,8 @@ public class UnderVoidMod {
             pot.addPlant(ModBlocks.INK_BLOSSOM.getId(), ModBlocks.POTTED_INK_BLOSSOM);
             pot.addPlant(ModBlocks.DUSK_BELL.getId(), ModBlocks.POTTED_DUSK_BELL);
             pot.addPlant(ModBlocks.GHOST_FERN_BLOOM.getId(), ModBlocks.POTTED_GHOST_FERN_BLOOM);
+
+            ModEvents.registerWaterDispensers();
         });
     }
 }
