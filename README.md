@@ -2,7 +2,7 @@
 
 *A new dimension, hidden beneath our world since the beginning of time.*
 
-The UnderVoid is a NeoForge mod for Minecraft 1.21.1, made by the USSM team for a mod jam. Below the void lies the **Undervoid**: a dark, foggy world where your **sanity** slowly drains away. Survive it, find places to recover, and brew potions to keep your mind together.
+The UnderVoid is a NeoForge mod for Minecraft 1.21.1, made by the USSM team. Below the void lies the **Undervoid**: a dark, foggy world where your **sanity** slowly drains away. Survive it, find places to recover, and brew potions to keep your mind together.
 
 ## Requirements
 
@@ -72,7 +72,5 @@ Requires Java 21. Mod ID: `the_undervoid`.
 ## Credits and licence
 
 Made by the USSM team. Released under the MIT licence.
-
-Parts of the code were produced with the help of an AI assistant (Claude). All assets were made by the USSM.
 
 Built on [NeoForge](https://neoforged.net/) and [GeckoLib](https://github.com/bernie-g/geckolib). Mimics are inspired by the *mimic* mod by tgkowski.
