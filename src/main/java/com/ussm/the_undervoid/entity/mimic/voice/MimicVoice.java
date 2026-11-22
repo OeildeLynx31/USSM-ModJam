@@ -30,7 +30,9 @@ public class MimicVoice {
         Consumer<byte[]> out = MimicVoicePlugin.openChannel(mimic, clip.whisper);
         if (out == null) return false;
 
-        PLAYING.put(mimic.getUUID(), new Playback(mimic, out, clip));
+        // revelé = voix déformée
+        VoiceDistorter fx = mimic.isRevealed() ? MimicVoicePlugin.openDistorter() : null;
+        PLAYING.put(mimic.getUUID(), new Playback(mimic, out, clip, fx));
         startThread();
         return true;
     }
@@ -39,11 +41,15 @@ public class MimicVoice {
         Playback playback = PLAYING.remove(mimic.getUUID());
         if (playback != null) {
             playback.out.accept(null);
+            playback.close();
         }
     }
 
     public static void stopAll() {
-        PLAYING.values().forEach(p -> p.out.accept(null));
+        PLAYING.values().forEach(p -> {
+            p.out.accept(null);
+            p.close();
+        });
         PLAYING.clear();
         stopThread();
     }
@@ -72,11 +78,16 @@ public class MimicVoice {
             Iterator<Playback> it = PLAYING.values().iterator();
             while (it.hasNext()) {
                 Playback p = it.next();
-                if (p.mimic.isRemoved() || !p.mimic.isAlive() || p.index >= p.clip.frames.size()) {
+                byte[] frame = null;
+                if (!p.mimic.isRemoved() && p.mimic.isAlive()) {
+                    frame = p.fx != null ? p.fx.next(p::nextRaw) : p.nextRaw();
+                }
+                if (frame == null) {
                     p.out.accept(null); // null = fini
+                    p.close();
                     it.remove();
                 } else {
-                    p.out.accept(p.clip.frames.get(p.index++));
+                    p.out.accept(frame);
                 }
             }
         } catch (Throwable e) {
@@ -90,12 +101,22 @@ public class MimicVoice {
         Mimic mimic;
         Consumer<byte[]> out;
         VoiceClip clip;
+        VoiceDistorter fx;
         int index = 0;
 
-        Playback(Mimic mimic, Consumer<byte[]> out, VoiceClip clip) {
+        Playback(Mimic mimic, Consumer<byte[]> out, VoiceClip clip, VoiceDistorter fx) {
             this.mimic = mimic;
             this.out = out;
             this.clip = clip;
+            this.fx = fx;
+        }
+
+        byte[] nextRaw() {
+            return index < clip.frames.size() ? clip.frames.get(index++) : null;
+        }
+
+        void close() {
+            if (fx != null) fx.close();
         }
     }
 }
