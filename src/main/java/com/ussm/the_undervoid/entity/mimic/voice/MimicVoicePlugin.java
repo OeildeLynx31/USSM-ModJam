@@ -14,6 +14,7 @@ import de.maxhenkel.voicechat.api.events.PlayerDisconnectedEvent;
 import de.maxhenkel.voicechat.api.events.VoicechatServerStartedEvent;
 import de.maxhenkel.voicechat.api.events.VoicechatServerStoppedEvent;
 import de.maxhenkel.voicechat.api.opus.OpusDecoder;
+import de.maxhenkel.voicechat.api.opus.OpusEncoder;
 import net.minecraft.server.level.ServerPlayer;
 
 import java.util.function.Consumer;
@@ -67,6 +68,31 @@ public class MimicVoicePlugin implements VoicechatPlugin {
             if (opus == null) channel.flush();
             else channel.send(opus);
         };
+    }
+
+    static VoiceDistorter openDistorter() {
+        if (voicechatApi == null) {
+            return null;
+        }
+        OpusDecoder decoder = voicechatApi.createDecoder();
+        OpusEncoder encoder = voicechatApi.createEncoder();
+        return new VoiceDistorter(new VoiceDistorter.Codec() {
+            @Override
+            public short[] decode(byte[] opus) {
+                return decoder.decode(opus);
+            }
+
+            @Override
+            public byte[] encode(short[] pcm) {
+                return encoder.encode(pcm);
+            }
+
+            @Override
+            public void close() {
+                decoder.close();
+                encoder.close();
+            }
+        });
     }
 
     // le debut est repris de voicechat-interaction
