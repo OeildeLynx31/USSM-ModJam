@@ -86,15 +86,15 @@ public class SanityTotemBlock extends BaseEntityBlock {
         }
 
         long now = level.getGameTime();
-        int left = totem.secondsLeft(player.getUUID(), now, Config.SANITY_TOTEM_COOLDOWN.get() * 20);
-        if (left > 0) {
-            serverPlayer.displayClientMessage(Component.translatable("message.the_undervoid.sanity_totem.cooldown", left), true);
+        // il faut les 3 tetes allumées
+        if (totem.charge(now) < 1f) {
+            serverPlayer.displayClientMessage(Component.translatable("message.the_undervoid.sanity_totem.cooldown", totem.secondsLeft(now)), true);
             return InteractionResult.CONSUME;
         }
 
         float gain = Math.min(Config.SANITY_TOTEM_GAIN.get().floatValue(), max - Sanity.get(serverPlayer));
         Sanity.add(serverPlayer, gain);
-        totem.markUsed(player.getUUID(), now);
+        totem.use(now, Config.SANITY_TOTEM_COOLDOWN.get() * 20);
 
         ServerLevel serverLevel = (ServerLevel) level;
         serverLevel.sendParticles(ParticleTypes.END_ROD, pos.getX() + 0.5, pos.getY() + 1.6, pos.getZ() + 0.5, 25, 0.5, 0.8, 0.5, 0.02);

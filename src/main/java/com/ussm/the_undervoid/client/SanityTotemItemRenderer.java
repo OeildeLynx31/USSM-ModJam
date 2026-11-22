@@ -25,8 +25,7 @@ public class SanityTotemItemRenderer extends BlockEntityWithoutLevelRenderer {
         poseStack.translate(0.5, 1.5, 0.5);
         poseStack.mulPose(Axis.YP.rotationDegrees(180f));
         poseStack.scale(-1f, -1f, 1f);
-        float time = Minecraft.getInstance().level != null ? Minecraft.getInstance().level.getGameTime() : 0;
-        SanityTotemRenderer.draw(model, poseStack, buffers, time, light, overlay);
+        SanityTotemRenderer.draw(model, poseStack, buffers, 1f, light, overlay);
         poseStack.popPose();
     }
 }

@@ -17,7 +17,6 @@ import net.minecraft.world.phys.AABB;
 
 public class SanityTotemRenderer implements BlockEntityRenderer<SanityTotemBlockEntity> {
     private static final int FRAMES = 13;
-    private static final int TICKS_PER_FRAME = 3;
     private static final ResourceLocation[] TEXTURES = new ResourceLocation[FRAMES];
 
     static {
@@ -32,14 +31,13 @@ public class SanityTotemRenderer implements BlockEntityRenderer<SanityTotemBlock
         this.model = new SanityTotemModel(context.bakeLayer(SanityTotemModel.LAYER_LOCATION));
     }
 
-    // les 13 images font un aller-retour : 0 > 12 > 0
-    public static ResourceLocation texture(float time) {
-        int step = (int) (time / TICKS_PER_FRAME) % ((FRAMES - 1) * 2);
-        return TEXTURES[step < FRAMES ? step : (FRAMES - 1) * 2 - step];
+    // 12 etapes : 4 par tete, image 0 = tout éteint, image 12 = les 3 tetes allumées
+    public static ResourceLocation texture(float charge) {
+        return TEXTURES[Math.min(FRAMES - 1, (int) (charge * (FRAMES - 1)))];
     }
 
-    public static void draw(SanityTotemModel model, PoseStack poseStack, MultiBufferSource buffers, float time, int light, int overlay) {
-        model.renderToBuffer(poseStack, buffers.getBuffer(RenderType.entityCutoutNoCull(texture(time))), light, overlay, -1);
+    public static void draw(SanityTotemModel model, PoseStack poseStack, MultiBufferSource buffers, float charge, int light, int overlay) {
+        model.renderToBuffer(poseStack, buffers.getBuffer(RenderType.entityCutoutNoCull(texture(charge))), light, overlay, -1);
     }
 
     @Override
@@ -51,7 +49,7 @@ public class SanityTotemRenderer implements BlockEntityRenderer<SanityTotemBlock
         poseStack.translate(0.5, 1.5, 0.5);
         poseStack.mulPose(Axis.YP.rotationDegrees(180f - facing.toYRot()));
         poseStack.scale(-1f, -1f, 1f);
-        draw(model, poseStack, buffers, totem.getLevel().getGameTime() + partialTick, light, OverlayTexture.NO_OVERLAY);
+        draw(model, poseStack, buffers, totem.charge(totem.getLevel().getGameTime() + partialTick), light, OverlayTexture.NO_OVERLAY);
         poseStack.popPose();
     }
 
