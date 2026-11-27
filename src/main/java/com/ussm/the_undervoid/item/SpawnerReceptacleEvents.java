@@ -1,14 +1,16 @@
 package com.ussm.the_undervoid.item;
 
 import com.ussm.the_undervoid.UnderVoidMod;
+import com.ussm.the_undervoid.network.SpawnerCapturePayload;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.component.DataComponents;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.server.TickTask;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.entity.player.Player;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.component.CustomData;
+import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.SpawnerBlockEntity;
@@ -17,27 +19,29 @@ import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.level.BlockEvent;
+import net.neoforged.neoforge.network.PacketDistributor;
 
 @EventBusSubscriber(modid = UnderVoidMod.MODID)
 public class SpawnerReceptacleEvents {
-    @SubscribeEvent(priority = EventPriority.LOW)
+    @SubscribeEvent(priority = EventPriority.LOWEST)
     public static void onBreakSpawner(BlockEvent.BreakEvent event) {
         if (!(event.getLevel() instanceof ServerLevel level)) {
             return;
         }
+
         BlockState state = event.getState();
         if (!state.is(Blocks.SPAWNER)) {
             return;
         }
-        Player player = event.getPlayer();
-        if (player.isSpectator()) {
+
+        if (!(event.getPlayer() instanceof ServerPlayer player) || player.isSpectator()) {
             return;
         }
-        // Le réceptacle doit être dans la main secondaire
-        if (!player.getOffhandItem().is(ModItems.SPAWNER_RECEPTACLE.get())) {
+
+        ItemStack receptacle = player.getOffhandItem();
+        if (!receptacle.is(ModItems.SPAWNER_RECEPTACLE.get())) {
             return;
         }
-        // En survie, il faut une pioche (sinon un spawner ne donne rien, comme en vanilla)
         if (!player.isCreative() && !player.getMainHandItem().isCorrectToolForDrops(state)) {
             return;
         }
@@ -49,6 +53,21 @@ public class SpawnerReceptacleEvents {
 
         ItemStack stack = new ItemStack(ModItems.CAPTURED_SPAWNER.get());
         BlockItem.setBlockEntityData(stack, spawner.getType(), spawner.saveCustomOnly(level.registryAccess()));
-        Block.popResource(level, pos, stack);
+
+        var server = level.getServer();
+        server.tell(new TickTask(server.getTickCount(), () -> {
+            if (event.isCanceled() || level.getBlockState(pos).is(Blocks.SPAWNER)
+                    || !level.getGameRules().getBoolean(GameRules.RULE_DOBLOCKDROPS)
+                    || player.isRemoved() || player.serverLevel() != level
+                    || player.getOffhandItem() != receptacle
+                    || !receptacle.is(ModItems.SPAWNER_RECEPTACLE.get())) {
+                return;
+            }
+
+            Block.popResource(level, pos, stack);
+            receptacle.shrink(1);
+            level.playSound(null, player, SoundEvents.TOTEM_USE, SoundSource.PLAYERS, 1f, 1f);
+            PacketDistributor.sendToPlayer(player, SpawnerCapturePayload.INSTANCE);
+        }));
     }
 }

@@ -193,5 +193,6 @@
   "message.the_undervoid.sanity_totem.cooldown": "Le totem se recharge encore (%ss)",
   "message.the_undervoid.sanity_totem.calm": "Votre esprit est déjà apaisé",
   "the_undervoid.configuration.sanityTotemGain": "Santé mentale rendue par le totem",
-  "the_undervoid.configuration.sanityTotemCooldownSeconds": "Recharge du totem de santé mentale (secondes)"
+  "the_undervoid.configuration.sanityTotemCooldownSeconds": "Recharge du totem de santé mentale (secondes)",
+  "item.the_undervoid.poison_mushroom": "Champi empoisonné"
 }

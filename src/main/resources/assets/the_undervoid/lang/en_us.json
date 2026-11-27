@@ -193,5 +193,6 @@
   "message.the_undervoid.sanity_totem.cooldown": "The totem is still recharging (%ss)",
   "message.the_undervoid.sanity_totem.calm": "Your mind is already calm",
   "the_undervoid.configuration.sanityTotemGain": "Sanity restored by the totem",
-  "the_undervoid.configuration.sanityTotemCooldownSeconds": "Sanity totem cooldown (seconds)"
+  "the_undervoid.configuration.sanityTotemCooldownSeconds": "Sanity totem cooldown (seconds)",
+  "item.the_undervoid.poison_mushroom": "Poison Mushroom"
 }
