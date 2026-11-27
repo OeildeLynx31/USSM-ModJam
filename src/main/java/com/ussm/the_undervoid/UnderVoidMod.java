@@ -74,6 +74,7 @@ public class UnderVoidMod {
                 output.accept(ModBlocks.PEBBLES.asItem());
                 output.accept(ModBlocks.HANGING_CHAIN.asItem());
                 output.accept(ModBlocks.BLOOM_MUSHROOM.asItem());
+                output.accept(ModItems.POISON_MUSHROOM.get());
                 output.accept(ModBlocks.STONE_SKULL.asItem());
                 output.accept(ModBlocks.EYE_NEST.asItem());
                 output.accept(ModBlocks.BONE_PILE.asItem());

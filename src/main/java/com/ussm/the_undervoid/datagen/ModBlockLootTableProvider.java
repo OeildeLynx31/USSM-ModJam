@@ -35,6 +35,8 @@ public class ModBlockLootTableProvider extends BlockLootSubProvider {
                 applyExplosionDecay(ModBlocks.DEAD_SHRUB.get(), LootItem.lootTableItem(Items.STICK)
                         .apply(SetItemCountFunction.setCount(UniformGenerator.between(0.0F, 2.0F))))));
 
+        dropSelf(ModBlocks.BLOOM_MUSHROOM.get());
+        dropSelf(ModBlocks.FALSE_BLOOM_MUSHROOM.get());
         dropSelf(ModBlocks.DARK_DIRT.get());
         dropSelf(ModBlocks.VOID_STONE.get());
         add(ModBlocks.BONE_PILE.get(), block -> createSingleItemTable(Items.BONE, UniformGenerator.between(1, 3)));

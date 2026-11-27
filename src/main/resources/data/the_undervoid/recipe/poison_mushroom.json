@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    { "item": "the_undervoid:false_bloom_mushroom" }
+  ],
+  "result": {
+    "id": "the_undervoid:poison_mushroom",
+    "count": 1
+  }
+}

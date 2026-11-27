@@ -23,6 +23,9 @@ public class ModItems {
     public static final DeferredItem<Item> CAPTURED_SPAWNER = ITEMS.register("captured_spawner",
             () -> new CapturedSpawnerItem(Blocks.SPAWNER, new Item.Properties()));
 
+    public static final DeferredItem<Item> POISON_MUSHROOM = ITEMS.register("poison_mushroom",
+            () -> new Item(new Item.Properties()));
+
     public static final DeferredItem<Item> HAZMAT_FABRIC = ITEMS.register("hazmat_fabric",
             () -> new Item(new Item.Properties()));
     public static final DeferredItem<Item> HAZMAT_MASK = ITEMS.register("hazmat_mask",
