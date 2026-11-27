@@ -7,6 +7,10 @@ import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectCategory;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredRegister;
+import com.ussm.the_undervoid.sanity.Sanity;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.effect.InstantenousMobEffect;
+import net.minecraft.world.entity.LivingEntity;
 
 public class ModEffects {
     public static final DeferredRegister<MobEffect> MOB_EFFECTS =
@@ -29,6 +33,17 @@ public class ModEffects {
 
     public static final Holder<MobEffect> EROSION = MOB_EFFECTS.register("erosion",
             () -> new MobEffect(MobEffectCategory.HARMFUL, 0x5A2A5A) {});
+
+    public static final Holder<MobEffect> FALSE_COMFORT = MOB_EFFECTS.register("false_comfort",
+            () -> new InstantenousMobEffect(MobEffectCategory.BENEFICIAL, 0x4FC3F7) {
+                @Override
+                public boolean applyEffectTick(LivingEntity entity, int amplifier) {
+                    if (entity instanceof ServerPlayer player) {
+                        Sanity.applyFalseComfort(player);
+                    }
+                    return true;
+                }
+            });
 
     public static void register(IEventBus eventBus) {
         MOB_EFFECTS.register(eventBus);

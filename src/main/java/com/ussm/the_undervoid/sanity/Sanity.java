@@ -22,6 +22,7 @@ import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.Biome;
+import com.ussm.the_undervoid.attachment.ModAttachments.SanityIllusion;
 
 public class Sanity {
     public static final float MAX = 100f;
@@ -35,7 +36,27 @@ public class Sanity {
     }
 
     public static void set(ServerPlayer player, float value) {
-        player.setData(ModAttachments.SANITY, Mth.clamp(value, MIN, MAX));
+        float sanity = Mth.clamp(value, MIN, MAX);
+        boolean lostSanity = sanity < get(player);
+        player.setData(ModAttachments.SANITY, sanity);
+
+        if (lostSanity) {
+            SanityIllusion illusion = player.getData(ModAttachments.SANITY_ILLUSION);
+            if (illusion.active()) {
+                player.setData(ModAttachments.SANITY_ILLUSION,
+                        new SanityIllusion(illusion.start(), illusion.target(), illusion.dose(), false));
+            }
+        }
+    }
+
+    public static void applyFalseComfort(ServerPlayer player) {
+        if (player.isCreative() || player.isSpectator()) return;
+
+        float sanity = get(player);
+        int previousDose = player.getData(ModAttachments.SANITY_ILLUSION).dose();
+        player.setData(ModAttachments.SANITY, Math.max(MIN, sanity - 20f));
+        player.setData(ModAttachments.SANITY_ILLUSION,
+                new SanityIllusion(sanity, Math.min(MAX, sanity + 20f), previousDose + 1, true));
     }
 
     public static void add(ServerPlayer player, float amount) {
@@ -73,7 +94,7 @@ public class Sanity {
         float ceiling = Mth.clamp(avant, gainCeiling, MAX);
         float sanity = Mth.clamp(avant + amount, MIN, ceiling);
         if (sanity != avant) {
-            player.setData(ModAttachments.SANITY, sanity);
+            set(player, sanity);
             if (avant >= MAX && sanity < MAX) {
                 ModAdvancements.award(player, ModAdvancements.OUCH_MY_HEAD);
             }

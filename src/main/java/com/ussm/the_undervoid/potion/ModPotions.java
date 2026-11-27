@@ -7,6 +7,7 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.PotionItem;
 import net.minecraft.world.item.alchemy.Potion;
 import net.minecraft.world.item.alchemy.PotionContents;
 import net.neoforged.bus.api.IEventBus;
@@ -16,7 +17,6 @@ public class ModPotions {
     public static final DeferredRegister<Potion> POTIONS =
             DeferredRegister.create(BuiltInRegistries.POTION, UnderVoidMod.MODID);
 
-    //----------------------------SERENITY----------------------------
     public static final Holder<Potion> SERENITY = POTIONS.register("serenity",
             () -> new Potion("serenity", new MobEffectInstance(ModEffects.SERENITY, 3600, 0)));
     public static final Holder<Potion> LONG_SERENITY = POTIONS.register("long_serenity",
@@ -24,7 +24,6 @@ public class ModPotions {
     public static final Holder<Potion> STRONG_SERENITY = POTIONS.register("strong_serenity",
             () -> new Potion("serenity", new MobEffectInstance(ModEffects.SERENITY, 1800, 1)));
 
-    //----------------------------CLARITY-----------------------------
     public static final Holder<Potion> CLARITY = POTIONS.register("clarity",
             () -> new Potion("clarity", new MobEffectInstance(ModEffects.CLARITY, 3600, 0)));
     public static final Holder<Potion> LONG_CLARITY = POTIONS.register("long_clarity",
@@ -49,6 +48,10 @@ public class ModPotions {
     public static final Holder<Potion> LONG_EROSION = POTIONS.register("long_erosion",
             () -> new Potion("erosion", new MobEffectInstance(ModEffects.EROSION, 9600)));
 
+    public static final Holder<Potion> FALSE_COMFORT = POTIONS.register("false_comfort",
+            () -> new Potion("false_comfort",
+                    new MobEffectInstance(ModEffects.FALSE_COMFORT, 1, 0, false, false, false)));
+
     public static void addNewPotions(CreativeModeTab.Output output) {
         output.accept(PotionContents.createItemStack(Items.POTION, RESTORATION));
         output.accept(PotionContents.createItemStack(Items.POTION, STRONG_RESTORATION));
@@ -63,6 +66,7 @@ public class ModPotions {
         output.accept(PotionContents.createItemStack(Items.POTION, SERENITY));
         output.accept(PotionContents.createItemStack(Items.POTION, LONG_SERENITY));
         output.accept(PotionContents.createItemStack(Items.POTION, STRONG_SERENITY));
+        output.accept(PotionContents.createItemStack(Items.POTION, FALSE_COMFORT));
 
     }
 

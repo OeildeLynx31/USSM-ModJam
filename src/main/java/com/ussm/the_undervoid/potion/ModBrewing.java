@@ -34,5 +34,7 @@ public class ModBrewing {
         builder.addMix(ModPotions.EROSION, Items.GLOWSTONE_DUST, ModPotions.STRONG_EROSION);
         builder.addMix(ModPotions.EROSION, Items.REDSTONE, ModPotions.LONG_EROSION);
 
+        builder.addMix(Potions.AWKWARD, ModItems.POISON_MUSHROOM.asItem(), ModPotions.FALSE_COMFORT);
+
     }
 }

@@ -12,6 +12,8 @@ import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
+import com.ussm.the_undervoid.attachment.ModAttachments;
+import com.ussm.the_undervoid.attachment.ModAttachments.SanityIllusion;
 
 public class SanityHudLayer implements LayeredDraw.Layer {
     public static final ResourceLocation ID = ResourceLocation.fromNamespaceAndPath(UnderVoidMod.MODID, "sanity");
@@ -21,6 +23,10 @@ public class SanityHudLayer implements LayeredDraw.Layer {
     private static final ResourceLocation EMPTY = ResourceLocation.fromNamespaceAndPath(UnderVoidMod.MODID, "hud/sanity_empty");
 
     private final RandomSource random = RandomSource.create();
+    private LocalPlayer trackedPlayer;
+    private int displayedDose;
+    private double riseStarted;
+    private double revealStarted = Double.NaN;
 
     @Override
     public void render(GuiGraphics guiGraphics, DeltaTracker deltaTracker) {
@@ -30,10 +36,11 @@ public class SanityHudLayer implements LayeredDraw.Layer {
             return;
         }
 
-        float sanity = Sanity.get(player);
-        //guiGraphics.drawString(mc.font, "sanity " + sanity, 5, 5, 0xFFFFFF);
-        if (sanity >= Sanity.MAX && !player.level().dimension().equals(ModDimensions.UNDERVOID_DIM_LEVEL_KEY)) return;
-
+        float actualSanity = Sanity.get(player);
+        SanityIllusion illusion = player.getData(ModAttachments.SANITY_ILLUSION);
+        double now = player.tickCount + (double) deltaTracker.getGameTimeDeltaPartialTick(false);
+        float sanity = displayedSanity(player, illusion, now, actualSanity);
+        if (actualSanity >= Sanity.MAX && sanity >= Sanity.MAX && !illusion.active() && !player.level().dimension().equals(ModDimensions.UNDERVOID_DIM_LEVEL_KEY)) return;
         int x = guiGraphics.guiWidth() / 2 + 91;
         int y = guiGraphics.guiHeight() - mc.gui.rightHeight;
         mc.gui.rightHeight += 10;
@@ -56,5 +63,27 @@ public class SanityHudLayer implements LayeredDraw.Layer {
             }
         }
         RenderSystem.disableBlend();
+    }
+
+    private float displayedSanity(LocalPlayer player, SanityIllusion illusion, double now, float actualSanity) {
+        if (trackedPlayer != player) {
+            trackedPlayer = player;
+            displayedDose = 0;
+        }
+        if (illusion.dose() == 0) return actualSanity;
+
+        if (displayedDose != illusion.dose()) {
+            displayedDose = illusion.dose();
+            riseStarted = now;
+            revealStarted = Double.NaN;
+        }
+
+        float riseProgress = Mth.clamp((float) ((now - riseStarted) / 6), 0f, 1f);
+        if (riseProgress < 1f) return Mth.lerp(riseProgress, illusion.start(), illusion.target());
+        if (illusion.active()) return illusion.target();
+
+        if (Double.isNaN(revealStarted)) revealStarted = now;
+        float revealProgress = Mth.clamp((float) ((now - revealStarted) / 8), 0f, 1f);
+        return revealProgress < 1f ? Mth.lerp(revealProgress, illusion.target(), actualSanity) : actualSanity;
     }
 }
