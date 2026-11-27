@@ -79,6 +79,17 @@ public class SmokeBossEntity extends Monster {
     public final AnimationState spawnState = new AnimationState();
     private int spawnTime;
 
+    public enum WaitingPhase {
+        NONE, BEGIN, IDLE, END
+    }
+
+    public final AnimationState waitingState = new AnimationState();
+    private WaitingPhase waitingPhase = WaitingPhase.NONE;
+    private int waitingPhaseStarted;
+
+    public WaitingPhase getWaitingPhase() {
+        return waitingPhase;
+    }
     public SmokeBossEntity(EntityType<? extends Monster> type, Level level) {
         super(type, level);
         this.xpReward = 50;
@@ -317,7 +328,8 @@ public class SmokeBossEntity extends Monster {
             }
             if (attackAnimTimeout > 0 && --attackAnimTimeout == 0) {
                 attack1State.stop(); attack2State.stop(); attack3State.stop();
-            }
+                }
+            updateWaitingAnimation();
             spawnSmokeBody();
         }
     }
@@ -403,5 +415,44 @@ public class SmokeBossEntity extends Monster {
     @Override
     public boolean removeWhenFarAway(double distanceToClosestPlayer) {
         return false;
+    }
+
+    private void updateWaitingAnimation() {
+        if (isSpawning() || !isAlive() || attackAnimTimeout > 0) {
+            setWaitingPhase(WaitingPhase.NONE);
+            return;
+        }
+
+        boolean still = onGround() && walkAnimation.speed() < 0.02F;
+        int elapsed = tickCount - waitingPhaseStarted;
+
+        switch (waitingPhase) {
+            case NONE -> {
+                if (still) setWaitingPhase(WaitingPhase.BEGIN);
+            }
+            case BEGIN -> {
+                if (!still) setWaitingPhase(WaitingPhase.END);
+                else if (elapsed >= 20) setWaitingPhase(WaitingPhase.IDLE);
+            }
+            case IDLE -> {
+                if (!still) setWaitingPhase(WaitingPhase.END);
+            }
+            case END -> {
+                if (elapsed >= 11) setWaitingPhase(still ? WaitingPhase.BEGIN : WaitingPhase.NONE);
+            }
+        }
+    }
+
+    private void setWaitingPhase(WaitingPhase phase) {
+        if (waitingPhase == phase) return;
+
+        waitingPhase = phase;
+        waitingPhaseStarted = tickCount;
+
+        if (phase == WaitingPhase.NONE) {
+            waitingState.stop();
+        } else {
+            waitingState.start(tickCount);
+        }
     }
 }
