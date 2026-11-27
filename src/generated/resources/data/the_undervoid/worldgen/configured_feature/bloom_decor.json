@@ -42,6 +42,42 @@
         },
         {
           "data": {
+            "Name": "the_undervoid:false_bloom_mushroom",
+            "Properties": {
+              "facing": "north"
+            }
+          },
+          "weight": 1
+        },
+        {
+          "data": {
+            "Name": "the_undervoid:false_bloom_mushroom",
+            "Properties": {
+              "facing": "east"
+            }
+          },
+          "weight": 1
+        },
+        {
+          "data": {
+            "Name": "the_undervoid:false_bloom_mushroom",
+            "Properties": {
+              "facing": "south"
+            }
+          },
+          "weight": 1
+        },
+        {
+          "data": {
+            "Name": "the_undervoid:false_bloom_mushroom",
+            "Properties": {
+              "facing": "west"
+            }
+          },
+          "weight": 1
+        },
+        {
+          "data": {
             "Name": "the_undervoid:eye_bloom",
             "Properties": {
               "facing": "north"

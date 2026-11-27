@@ -71,6 +71,11 @@ public class SanityTotemBlock extends BaseEntityBlock {
 
     @Override
     public void setPlacedBy(Level level, BlockPos pos, BlockState state, LivingEntity placer, ItemStack stack) {
+        if (placer instanceof ServerPlayer player && !player.isCreative()
+                && level.getBlockEntity(pos) instanceof SanityTotemBlockEntity totem) {
+            totem.use(level.getGameTime(), Config.SANITY_TOTEM_COOLDOWN.get() * 20);
+        }
+
         level.setBlock(pos.above(), state.setValue(PART, 1), 3);
         level.setBlock(pos.above(2), state.setValue(PART, 2), 3);
     }
@@ -147,8 +152,8 @@ public class SanityTotemBlock extends BaseEntityBlock {
             return InteractionResult.CONSUME;
         }
 
-        float gain = Math.min(Config.SANITY_TOTEM_GAIN.get().floatValue(), max - Sanity.get(serverPlayer));
-        Sanity.add(serverPlayer, gain);
+        float gain = Config.SANITY_TOTEM_GAIN.get().floatValue();
+        Sanity.add(serverPlayer, gain, max);
         totem.use(now, Config.SANITY_TOTEM_COOLDOWN.get() * 20);
 
         ServerLevel serverLevel = (ServerLevel) level;
