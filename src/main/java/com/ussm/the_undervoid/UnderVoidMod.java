@@ -4,6 +4,7 @@ import com.mojang.logging.LogUtils;
 import com.ussm.the_undervoid.attachment.ModAttachments;
 import com.ussm.the_undervoid.network.ModEvents;
 import com.ussm.the_undervoid.block.ModBlocks;
+import com.ussm.the_undervoid.block.entity.ModBlockEntities;
 import com.ussm.the_undervoid.effect.ModEffects;
 import com.ussm.the_undervoid.entity.ModEntities;
 import com.ussm.the_undervoid.item.ModArmorMaterials;
@@ -55,6 +56,7 @@ public class UnderVoidMod {
                 output.accept(ModBlocks.CORRUPTED_GRASS.asItem());
                 output.accept(ModBlocks.VOID_MATTER_ORE.asItem());
                 output.accept(ModBlocks.BEDROCK_BREAKER.asItem());
+                output.accept(ModBlocks.SANITY_TOTEM.asItem());
                 output.accept(ModBlocks.VOID_SAPLING.asItem());
                 output.accept(ModBlocks.VOID_LOG.asItem());
                 output.accept(ModBlocks.VOID_WOOD.asItem());
@@ -74,6 +76,7 @@ public class UnderVoidMod {
                 output.accept(ModBlocks.PEBBLES.asItem());
                 output.accept(ModBlocks.HANGING_CHAIN.asItem());
                 output.accept(ModBlocks.BLOOM_MUSHROOM.asItem());
+                output.accept(ModItems.POISON_MUSHROOM.get());
                 output.accept(ModBlocks.STONE_SKULL.asItem());
                 output.accept(ModBlocks.EYE_NEST.asItem());
                 output.accept(ModBlocks.BONE_PILE.asItem());
@@ -129,6 +132,7 @@ public class UnderVoidMod {
 
         ModItems.register(modEventBus);
         ModBlocks.register(modEventBus);
+        ModBlockEntities.register(modEventBus);
         ModEffects.register(modEventBus);
         ModPotions.register(modEventBus);
         ModArmorMaterials.register(modEventBus);

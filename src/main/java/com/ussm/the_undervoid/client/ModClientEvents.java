@@ -1,6 +1,7 @@
 package com.ussm.the_undervoid.client;
 
 import com.ussm.the_undervoid.UnderVoidMod;
+import com.ussm.the_undervoid.block.entity.ModBlockEntities;
 import com.ussm.the_undervoid.entity.ModEntities;
 import com.ussm.the_undervoid.particle.ModParticles;
 import com.ussm.the_undervoid.worldgen.dimension.ModDimensions;
@@ -21,8 +22,11 @@ import net.neoforged.neoforge.client.event.RegisterClientCommandsEvent;
 import net.neoforged.neoforge.client.event.RegisterDimensionSpecialEffectsEvent;
 import net.neoforged.neoforge.client.event.RegisterGuiLayersEvent;
 import net.neoforged.neoforge.client.event.RegisterParticleProvidersEvent;
+import net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent;
 import net.neoforged.neoforge.client.gui.ConfigurationScreen;
 import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
+import com.ussm.the_undervoid.block.ModBlocks;
+import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
 
 //bus = MOD est deprecated maintenant, ca marche sans
 @EventBusSubscriber(modid = UnderVoidMod.MODID, value = Dist.CLIENT)
@@ -38,6 +42,7 @@ public class ModClientEvents {
         event.registerEntityRenderer(ModEntities.BLOOM_BUTTERFLY.get(), BloomButterflyRenderer::new);
         event.registerEntityRenderer(ModEntities.FLOATING_LIGHT.get(), FloatingLightRenderer::new);
         event.registerEntityRenderer(ModEntities.CARNIVOROUS_PLANT.get(), CarnivorousPlantRenderer::new);
+        event.registerBlockEntityRenderer(ModBlockEntities.SANITY_TOTEM.get(), SanityTotemRenderer::new);
     }
 
     @SubscribeEvent
@@ -50,6 +55,20 @@ public class ModClientEvents {
         event.registerLayerDefinition(FloatingLightModel.LAYER_LOCATION, FloatingLightModel::createBodyLayer);
         event.registerLayerDefinition(CarnivorousPlantModel.LAYER_LOCATION, CarnivorousPlantModel::createBodyLayer);
         event.registerLayerDefinition(MimicTrueFormModel.LAYER_LOCATION, MimicTrueFormModel::createBodyLayer);
+        event.registerLayerDefinition(SanityTotemModel.LAYER_LOCATION, SanityTotemModel::createBodyLayer);
+    }
+
+    @SubscribeEvent
+    public static void registerItemExtensions(RegisterClientExtensionsEvent event) {
+        event.registerItem(new IClientItemExtensions() {
+            private SanityTotemItemRenderer renderer;
+
+            @Override
+            public net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer getCustomRenderer() {
+                if (renderer == null) renderer = new SanityTotemItemRenderer();
+                return renderer;
+            }
+        }, ModBlocks.SANITY_TOTEM.asItem());
     }
 
     @SubscribeEvent

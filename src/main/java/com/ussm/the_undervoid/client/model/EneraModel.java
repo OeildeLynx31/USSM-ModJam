@@ -73,10 +73,13 @@ public class EneraModel extends HierarchicalModel<SmokeBossEntity> {
     public void setupAnim(SmokeBossEntity entity, float limbSwing, float limbSwingAmount,
                           float ageInTicks, float netHeadYaw, float headPitch) {
         this.root().getAllParts().forEach(ModelPart::resetPose);
-
+        if (entity.isSpawning()) {
+            this.animate(entity.spawnState, EneraSpawnAnimation.SPAWN, ageInTicks, 1.0F);
+            return;
+        }
         // Marche
         this.animateWalk(EneraAnimations.animationmarcheboss, limbSwing, limbSwingAmount, 2.0F, 2.5F);
-        // Attaques (démarrées par le boss quand il frappe)
+        // Attak
         this.animate(entity.attack1State, EneraAnimations.animationattack1, ageInTicks, 1.0F);
         this.animate(entity.attack2State, EneraAnimations.animationattack2, ageInTicks, 1.0F);
         this.animate(entity.attack3State, EneraAnimations.animationattack3, ageInTicks, 1.0F);

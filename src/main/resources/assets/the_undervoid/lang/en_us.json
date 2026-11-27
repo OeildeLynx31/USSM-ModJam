@@ -191,5 +191,10 @@
   "item.the_undervoid.void_stabilizer": "Void Stabilizer",
   "item.the_undervoid.void_ball": "Void Ball",
   "item.the_undervoid.captured_spawner": "Captured Spawner",
-  "block.the_undervoid.void_matter_ore": "Void Matter Ore"
+  "block.the_undervoid.void_matter_ore": "Void Matter Ore",
+  "block.the_undervoid.sanity_totem": "Sanity Totem",
+  "message.the_undervoid.sanity_totem.cooldown": "The totem is still recharging (%ss)",
+  "message.the_undervoid.sanity_totem.calm": "Your mind is already calm",
+  "the_undervoid.configuration.sanityTotemGain": "Sanity restored by the totem",
+  "the_undervoid.configuration.sanityTotemCooldownSeconds": "Sanity totem cooldown (seconds)"
 }

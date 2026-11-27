@@ -29,6 +29,10 @@ public class ModBlocks {
     public static final DeferredRegister.Blocks BLOCKS =
             DeferredRegister.createBlocks(UnderVoidMod.MODID);
 
+    public static final DeferredBlock<Block> SANITY_TOTEM = registerBlock("sanity_totem",
+            () -> new SanityTotemBlock(BlockBehaviour.Properties.of().strength(3f, 6f)
+                    .sound(SoundType.DEEPSLATE).noOcclusion().lightLevel(state -> 7)));
+
     public static final DeferredBlock<Block> VOID_STONE = registerBlock("void_stone",
             () -> new VoidStone(BlockBehaviour.Properties.of().strength(1.5f)
                     .sound(SoundType.STONE)));
@@ -181,7 +185,10 @@ public class ModBlocks {
                     BlockBehaviour.Properties.of().sound(SoundType.CHAIN).instabreak().noLootTable().noCollission().noOcclusion().pushReaction(PushReaction.DESTROY)));
     public static final DeferredBlock<Block> BLOOM_MUSHROOM = registerBlock("bloom_mushroom",
             () -> new DecorBlock(1, 0, 2, 15, 3, 15, false, false,
-                    BlockBehaviour.Properties.of().sound(SoundType.FUNGUS).instabreak().noLootTable().noCollission().noOcclusion().pushReaction(PushReaction.DESTROY)));
+                    BlockBehaviour.Properties.of().sound(SoundType.FUNGUS).instabreak().noCollission().noOcclusion().pushReaction(PushReaction.DESTROY)));
+    public static final DeferredBlock<Block> FALSE_BLOOM_MUSHROOM = registerBlock("false_bloom_mushroom",
+            () -> new DecorBlock(1, 0, 2, 15, 3, 15, false, false,
+                    BlockBehaviour.Properties.of().sound(SoundType.FUNGUS).instabreak().noCollission().noOcclusion().pushReaction(PushReaction.DESTROY)));
     public static final DeferredBlock<Block> STONE_SKULL = registerBlock("stone_skull",
             () -> new DecorBlock(3.5, 0, 2.4, 12, 12.1, 12.2, true, false,
                     BlockBehaviour.Properties.of().sound(SoundType.BONE_BLOCK).strength(1f).noOcclusion().pushReaction(PushReaction.DESTROY)));

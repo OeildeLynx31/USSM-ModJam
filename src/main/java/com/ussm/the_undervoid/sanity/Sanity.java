@@ -39,6 +39,9 @@ public class Sanity {
     }
 
     public static void add(ServerPlayer player, float amount) {
+        add(player, amount, MAX);
+    }
+    public static void add(ServerPlayer player, float amount, float gainCeiling) {
         if (amount == 0f || player.isCreative() || player.isSpectator()) {
             return;
         }
@@ -67,7 +70,8 @@ public class Sanity {
 
 //        player.setData(ModAttachments.SANITY, Mth.clamp(get(player) + amount, 0f, MAX));
         float avant = get(player);
-        float sanity = Mth.clamp(avant + amount, 0f, MAX);
+        float ceiling = Mth.clamp(avant, gainCeiling, MAX);
+        float sanity = Mth.clamp(avant + amount, MIN, ceiling);
         if (sanity != avant) {
             player.setData(ModAttachments.SANITY, sanity);
             if (avant >= MAX && sanity < MAX) {
@@ -91,7 +95,7 @@ public class Sanity {
             }
             return;
         }
-
+        float euphoriaThreshold = Config.EUPHORIA_THRESHOLD.get().floatValue();
         boolean miasma = false;
         if (level.dimension() == ModDimensions.UNDERVOID_DIM_LEVEL_KEY) {
             Holder<Biome> biome = level.getBiome(BlockPos.containing(player.getEyePosition()));
@@ -102,7 +106,7 @@ public class Sanity {
                 miasma = true;
                 add(player, (float) -Config.MIASMA_SANITY_LOSS.get());
             } else if (biome.is(ModBiomes.BLOOM)) {
-                add(player, Config.BLOOM_GAIN.get().floatValue());
+                add(player, Config.BLOOM_GAIN.get().floatValue(), euphoriaThreshold);
             } else if (player.getEyeY() >= GLOOM_SURFACE_Y) {
                 add(player, -Config.GLOOM_SURFACE_LOSS.get().floatValue());
             } else {
@@ -131,7 +135,7 @@ public class Sanity {
         }
 
         //euphorie, si t'es trop bien dans l'undervoid ca fait mal aussi
-        if (player.level().dimension().equals(ModDimensions.UNDERVOID_DIM_LEVEL_KEY) && sanity > Config.EUPHORIA_THRESHOLD.get()) {
+        if (player.level().dimension().equals(ModDimensions.UNDERVOID_DIM_LEVEL_KEY) && sanity > euphoriaThreshold) {
             player.addEffect(new MobEffectInstance(MobEffects.CONFUSION, 100, 0, false, false, true));
             if (player.tickCount % (20 * Config.EUPHORIA_DAMAGE_SECONDS.get()) < 20) {
                 player.hurt(damageSource(player, "euphoria"), Config.EUPHORIA_DAMAGE.get().floatValue());

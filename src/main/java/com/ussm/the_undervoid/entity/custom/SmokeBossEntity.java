@@ -4,7 +4,12 @@ import com.ussm.the_undervoid.item.ModItems;
 import com.ussm.the_undervoid.particle.ModParticles;
 import com.ussm.the_undervoid.sanity.Sanity;
 import net.minecraft.network.chat.Component;
-import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.syncher.EntityDataAccessor;
+import net.minecraft.network.syncher.EntityDataSerializers;
+import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.world.entity.ai.goal.Goal;
+import java.util.EnumSet;
 import net.minecraft.server.level.ServerBossEvent;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Mth;
@@ -68,7 +73,11 @@ public class SmokeBossEntity extends Monster {
     public final AnimationState attack2State = new AnimationState();
     public final AnimationState attack3State = new AnimationState();
     private int attackAnimTimeout;
-
+    private static final int SPAWN_TICKS = 149; // l'animation dure 7,44 s
+    private static final EntityDataAccessor<Boolean> SPAWNING =
+            SynchedEntityData.defineId(SmokeBossEntity.class, EntityDataSerializers.BOOLEAN);
+    public final AnimationState spawnState = new AnimationState();
+    private int spawnTime;
 
     public SmokeBossEntity(EntityType<? extends Monster> type, Level level) {
         super(type, level);
@@ -103,6 +112,43 @@ public class SmokeBossEntity extends Monster {
         goalSelector.addGoal(4, new RandomLookAroundGoal(this));
         targetSelector.addGoal(1, new HurtByTargetGoal(this));
         targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, Player.class, true));
+        goalSelector.addGoal(-1, new Goal() {
+            { setFlags(EnumSet.of(Flag.MOVE, Flag.LOOK, Flag.JUMP)); }
+            @Override public boolean canUse() { return isSpawning(); }
+            @Override public boolean canContinueToUse() { return isSpawning(); }
+        });
+    }
+    @Override
+    public void tick() {
+        super.tick();
+        if (!level().isClientSide() && isSpawning()) {
+            if (spawnTime == 0) playSound(SoundEvents.WARDEN_EMERGE, 2.0f, 0.6f);
+            if (++spawnTime >= SPAWN_TICKS) entityData.set(SPAWNING, false);
+        }
+    }
+
+    @Override
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(SPAWNING, true);
+    }
+
+    public boolean isSpawning() {
+        return entityData.get(SPAWNING);
+    }
+
+    @Override
+    public void addAdditionalSaveData(CompoundTag tag) {
+        super.addAdditionalSaveData(tag);
+        tag.putBoolean("Spawning", isSpawning());
+        tag.putInt("SpawnTime", spawnTime);
+    }
+
+    @Override
+    public void readAdditionalSaveData(CompoundTag tag) {
+        super.readAdditionalSaveData(tag);
+        entityData.set(SPAWNING, tag.getBoolean("Spawning"));
+        spawnTime = tag.getInt("SpawnTime");
     }
 
     @Override
@@ -111,6 +157,11 @@ public class SmokeBossEntity extends Monster {
         bossEvent.setProgress(getHealth() / getMaxHealth());
         if (tickCount % 200 == 0 && level().getNearestPlayer(this, 128.0) == null) {
             discard();
+            return;
+        }
+
+        // pendant l'apparition il ne fait rien
+        if (isSpawning()) {
             return;
         }
 
@@ -247,12 +298,23 @@ public class SmokeBossEntity extends Monster {
 
     @Override
     public boolean isInvulnerableTo(DamageSource source) {
-        return source.is(DamageTypeTags.IS_FIRE) || super.isInvulnerableTo(source);
+        return (isSpawning() && !source.is(DamageTypeTags.BYPASSES_INVULNERABILITY))
+                || source.is(DamageTypeTags.IS_FIRE) || super.isInvulnerableTo(source);
     }
+
     @Override
     public void aiStep() {
         super.aiStep();
         if (level().isClientSide()) {
+            if (isSpawning()) {
+                spawnState.startIfStopped(tickCount);
+                for (int i = 0; i < 4; i++) {
+                    level().addParticle(ModParticles.BLACK_SMOKE.get(), getX() + (random.nextDouble() - 0.5) * 1.4,
+                            getY() + 0.1, getZ() + (random.nextDouble() - 0.5) * 1.4, 0.0, 0.04, 0.0);
+                }
+            } else {
+                spawnState.stop();
+            }
             if (attackAnimTimeout > 0 && --attackAnimTimeout == 0) {
                 attack1State.stop(); attack2State.stop(); attack3State.stop();
             }

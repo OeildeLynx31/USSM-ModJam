@@ -18,6 +18,7 @@ import net.minecraft.world.level.storage.loot.providers.number.UniformGenerator;
 import net.neoforged.neoforge.registries.DeferredBlock;
 import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.functions.ApplyBonusCount;
+import com.ussm.the_undervoid.block.custom.SanityTotemBlock;
 
 import java.util.Set;
 
@@ -35,6 +36,8 @@ public class ModBlockLootTableProvider extends BlockLootSubProvider {
                 applyExplosionDecay(ModBlocks.DEAD_SHRUB.get(), LootItem.lootTableItem(Items.STICK)
                         .apply(SetItemCountFunction.setCount(UniformGenerator.between(0.0F, 2.0F))))));
 
+        dropSelf(ModBlocks.BLOOM_MUSHROOM.get());
+        dropSelf(ModBlocks.FALSE_BLOOM_MUSHROOM.get());
         dropSelf(ModBlocks.DARK_DIRT.get());
         dropSelf(ModBlocks.VOID_STONE.get());
         add(ModBlocks.BONE_PILE.get(), block -> createSingleItemTable(Items.BONE, UniformGenerator.between(1, 3)));
@@ -50,6 +53,15 @@ public class ModBlockLootTableProvider extends BlockLootSubProvider {
         dropSelf(ModBlocks.SPORETHORN.get());
         add(ModBlocks.DIRTY_VOID_STONE.get(), block -> createSingleItemTableWithSilkTouch(block, ModBlocks.VOID_STONE.get()));
         dropSelf(ModBlocks.BEDROCK_BREAKER.get());
+
+        add(ModBlocks.SANITY_TOTEM.get(), block -> net.minecraft.world.level.storage.loot.LootTable.lootTable()
+                .withPool(applyExplosionCondition(block, net.minecraft.world.level.storage.loot.LootPool.lootPool()
+                        .setRolls(net.minecraft.world.level.storage.loot.providers.number.ConstantValue.exactly(1.0f))
+                        .add(net.minecraft.world.level.storage.loot.entries.LootItem.lootTableItem(block)
+                                .when(net.minecraft.world.level.storage.loot.predicates.LootItemBlockStatePropertyCondition.hasBlockStateProperties(block)
+                                        .setProperties(net.minecraft.advancements.critereon.StatePropertiesPredicate.Builder.properties()
+                                                .hasProperty(com.ussm.the_undervoid.block.custom.SanityTotemBlock.PART, 0)))))));
+
         this.add(ModBlocks.VOID_MATTER_ORE.get(),
                 block -> createOreDrops(
                         ModBlocks.VOID_MATTER_ORE.get(),
@@ -111,7 +123,5 @@ public class ModBlockLootTableProvider extends BlockLootSubProvider {
                 )
         );
     }
-
-
 }
 

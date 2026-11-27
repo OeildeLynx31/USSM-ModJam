@@ -191,5 +191,10 @@
   "block.the_undervoid.void_matter_ore": "Minerai de matière du vide",
   "tooltip.the_undervoid.spawner_receptacle_tooltip": "Placé dans votre main secondaire, cet artefact permet de miner les spawners.",
   "entity.the_undervoid.smoke_boss": "Enera",
-  "entity.the_undervoid.enera": "Enera"
+  "entity.the_undervoid.enera": "Enera",
+  "block.the_undervoid.sanity_totem": "Totem de santé mentale",
+  "message.the_undervoid.sanity_totem.cooldown": "Le totem se recharge encore (%ss)",
+  "message.the_undervoid.sanity_totem.calm": "Votre esprit est déjà apaisé",
+  "the_undervoid.configuration.sanityTotemGain": "Santé mentale rendue par le totem",
+  "the_undervoid.configuration.sanityTotemCooldownSeconds": "Recharge du totem de santé mentale (secondes)"
 }
